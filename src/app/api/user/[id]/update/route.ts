@@ -33,7 +33,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   }
 
   const {
-    username,
+    fullname,
     isAdmin,
     email,
     password,
@@ -41,13 +41,15 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     firstName,
     lastName,
     adress,
+    zipcode,
+    city,
     latitude,
     longitude,
     roleId,
   } = Object.fromEntries(data.entries()) as unknown as User;
 
   const updateData: Partial<User> = {
-    ...(username && { username }),
+    ...(fullname && { fullname }),
     ...(isAdmin && { isAdmin }),
     ...(email && { email }),
     ...(password && { password }),
@@ -55,6 +57,8 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     ...(firstName && { firstName }),
     ...(lastName && { lastName }),
     ...(adress && { adress }),
+    ...(zipcode && { zipcode }),
+    ...(city && { city }),
     ...(latitude && { latitude }),
     ...(longitude && { longitude }),
     ...(roleId && { roleId }),

@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   await writeFile(path, buffer);
   try {
     const {
-      username,
+      fullname,
       isAdmin,
       email,
       password,
@@ -27,6 +27,8 @@ export async function POST(req: NextRequest) {
       firstName,
       lastName,
       adress,
+      zipcode,
+      city,
       latitude,
       longitude,
       roleId,
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
 
     const newUser: User = await prisma.user.create({
       data: {
-        username: username,
+        fullname: fullname,
         isAdmin: isAdmin,
         email: email,
         password: password,
@@ -42,6 +44,8 @@ export async function POST(req: NextRequest) {
         firstName: firstName,
         lastName: lastName,
         adress: adress,
+        zipcode: zipcode,
+        city: city,
         latitude: latitude,
         longitude: longitude,
         role: {
