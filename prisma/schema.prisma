@@ -41,19 +41,18 @@ model Driver {
   userId       Int
   user         User     @relation(fields: [userId], references: [id])
   passengers   DriverPassenger[]
-  groups       Group[]
+  groupId Int?
+  group   Group?  @relation(fields: [groupId], references: [id])
 }
 
 model Group {
   id       Int       @id @default(autoincrement())
-  name     String
   userId   Int
   eventId  Int
   creator  User      @relation("createdGroups", fields: [userId], references: [id])
   event    Event     @relation(fields: [eventId], references: [id])
-  driver   Driver   @relation(fields: [driverId], references: [id])
-  driverId Int
   members  UserGroup[]
+  drivers Driver[]
 }
 
 model UserGroup {
