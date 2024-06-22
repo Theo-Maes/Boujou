@@ -4,10 +4,23 @@ import { unlink, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
 
+interface EventFormData {
+  name: string;
+  description: string;
+  endingDate: string;
+  startingDate: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  latitude: string;
+  longitude: string;
+  categoryId: string;
+}
+
 export async function POST(req: NextRequest) {
   const data = await req.formData();
 
-  const file: File | null = data.get("file") as unknown as File;
+  const file: File | null = data.get("image") as unknown as File;
   if (!file) {
     return NextResponse.json({ erreur: "No file" }, { status: 400 });
   }
@@ -29,7 +42,7 @@ export async function POST(req: NextRequest) {
       latitude,
       longitude,
       categoryId,
-    } = Object.fromEntries(data.entries()) as unknown as Event;
+    } = Object.fromEntries(data.entries()) as unknown as EventFormData;
 
     const newEvent: Event = await prisma.event.create({
       data: {
@@ -45,7 +58,7 @@ export async function POST(req: NextRequest) {
         image: path.replace(join(process.cwd(), "public"), ""),
         category: {
           connect: {
-            id: categoryId,
+            id: Number.parseInt(categoryId),
           },
         },
       },

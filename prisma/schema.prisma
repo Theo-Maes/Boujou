@@ -71,13 +71,15 @@ model UserGroup {
 
 model User {
   id        Int      @id @default(autoincrement())
-  username  String  
+  fullname  String  
   email     String   @unique
   password  String
   avatar    String   
   firstName String   
   lastName  String
   adress    String
+  zipcode   String
+  city      String
   latitude  String
   longitude String
   role      Role     @relation(fields: [roleId], references: [id])
