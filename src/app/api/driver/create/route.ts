@@ -32,6 +32,30 @@ export async function POST(req: Request) {
     userId,
   } = Object.fromEntries(data.entries()) as unknown as DriverFormData;
 
+  const group = await prisma.group.findUnique({
+    where: {
+      id: Number.parseInt(groupId),
+    },
+  });
+
+  if (!group) {
+    return NextResponse.json({ error: "aucun groupe trouvé" }, { status: 404 });
+  }
+
+  const userInGroup = await prisma.groupUser.findFirst({
+    where: {
+      groupId: Number.parseInt(groupId),
+      userId: Number.parseInt(userId),
+    },
+  });
+
+  if (!userInGroup) {
+    return NextResponse.json(
+      { error: " l'utilisateur ne fait pas partie du groupe " },
+      { status: 403 }
+    );
+  }
+
   try {
     const newDriver: Driver = await prisma.driver.create({
       data: {
