@@ -8,7 +8,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   const id = Number.parseInt(params.params.id);
   const data = await req.formData();
 
-  const file: File | null = data.get("file") as unknown as File;
+  const file: File | null = data.get("image") as unknown as File;
   let path: string = "";
 
   if (file) {
