@@ -8,7 +8,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   const id = Number.parseInt(params.params.id);
   const data = await req.formData();
 
-  const file: File | null = data.get("file") as unknown as File;
+  const file: File | null = data.get("image") as unknown as File;
   let path: string = "";
 
   if (file) {
@@ -43,6 +43,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     latitude,
     longitude,
     categoryId,
+    url,
   } = Object.fromEntries(data.entries()) as unknown as Event;
 
   const updateData: Partial<Event> = {
@@ -56,6 +57,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     ...(latitude && { latitude }),
     ...(longitude && { longitude }),
     ...(categoryId && { categoryId }),
+    ...(url && { url }),
     image: file ? path.replace(join(process.cwd(), "public"), "") : undefined,
   };
 

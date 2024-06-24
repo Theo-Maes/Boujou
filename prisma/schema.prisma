@@ -56,7 +56,6 @@ model Group {
 model UserGroup {
   userId  Int
   groupId Int
-  joinedAt DateTime @default(now())
 
   user   User   @relation(fields: [userId], references: [id])
   group  Group  @relation(fields: [groupId], references: [id])
@@ -150,5 +149,6 @@ model Event {
     zipCode     String    @db.VarChar(100)
     category    Category @relation(fields: [categoryId], references: [id])
     categoryId  Int
+    url         String?
     groups  Group[]
 }
