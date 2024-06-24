@@ -9,7 +9,16 @@ export async function GET(req: Request, params: { params: { id: string } }) {
       where: {
         id: id,
       },
-      include: { creator: true, event: true, members: true, drivers: true },
+      include: {
+        creator: true,
+        event: true,
+        members: {
+          include: {
+            user: true,
+          },
+        },
+        drivers: true,
+      },
     });
     return NextResponse.json({ data: groupFind }, { status: 200 });
   } catch (error) {

@@ -30,7 +30,7 @@ export async function POST(req: Request, params: { params: { id: string } }) {
   }
 
   try {
-    const newGroup: UserGroup = await prisma.userGroup.create({
+    const newUserGroup: UserGroup = await prisma.userGroup.create({
       data: {
         user: {
           connect: {
@@ -44,7 +44,7 @@ export async function POST(req: Request, params: { params: { id: string } }) {
         },
       },
     });
-    return NextResponse.json({ data: newGroup }, { status: 200 });
+    return NextResponse.json({ data: newUserGroup }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ erreur: error }, { status: 500 });

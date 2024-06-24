@@ -7,7 +7,7 @@ interface UserGroupFormData {
   groupId: string;
 }
 
-export async function POST(req: Request, params: { params: { id: string } }) {
+export async function DELETE(req: Request, params: { params: { id: string } }) {
   const groupId = Number.parseInt(params.params.id);
   const data = await req.formData();
 
@@ -30,21 +30,15 @@ export async function POST(req: Request, params: { params: { id: string } }) {
   }
 
   try {
-    const newGroup: UserGroup = await prisma.userGroup.create({
-      data: {
-        user: {
-          connect: {
-            id: Number.parseInt(userId),
-          },
-        },
-        group: {
-          connect: {
-            id: groupId,
-          },
+    const deletedUserGroup: UserGroup = await prisma.userGroup.delete({
+      where: {
+        userId_groupId: {
+          userId: Number.parseInt(userId),
+          groupId: groupId,
         },
       },
     });
-    return NextResponse.json({ data: newGroup }, { status: 200 });
+    return NextResponse.json({ data: deletedUserGroup }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ erreur: error }, { status: 500 });
