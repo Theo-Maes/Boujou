@@ -43,6 +43,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     latitude,
     longitude,
     categoryId,
+    url,
   } = Object.fromEntries(data.entries()) as unknown as Event;
 
   const updateData: Partial<Event> = {
@@ -56,6 +57,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     ...(latitude && { latitude }),
     ...(longitude && { longitude }),
     ...(categoryId && { categoryId }),
+    ...(url && { url }),
     image: file ? path.replace(join(process.cwd(), "public"), "") : undefined,
   };
 
