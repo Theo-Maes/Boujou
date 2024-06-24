@@ -72,15 +72,15 @@ model User {
   id        Int      @id @default(autoincrement())
   fullname  String  
   email     String   @unique
-  password  String
+  password  String?
   avatar    String   
   firstName String   
   lastName  String
   adress    String
   zipcode   String
   city      String
-  latitude  String
-  longitude String
+  latitude  String?
+  longitude String?
   role      Role     @relation(fields: [roleId], references: [id])
   roleId    Int
   groups    UserGroup[]
