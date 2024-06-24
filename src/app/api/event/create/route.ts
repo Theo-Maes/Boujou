@@ -15,6 +15,7 @@ interface EventFormData {
   latitude: string;
   longitude: string;
   categoryId: string;
+  url: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -42,12 +43,14 @@ export async function POST(req: NextRequest) {
       latitude,
       longitude,
       categoryId,
+      url,
     } = Object.fromEntries(data.entries()) as unknown as EventFormData;
 
     const newEvent: Event = await prisma.event.create({
       data: {
         name: name,
         description: description,
+        url: url ? url : null,
         endingDate: endingDate,
         startingDate: startingDate,
         address: address,
