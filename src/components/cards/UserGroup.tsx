@@ -10,7 +10,7 @@ export interface UserGroupProps {
 
 export const UserGroup: React.FC<UserGroupProps> = ({ chevron, avatar, fullname }) => {
     const { theme } = useTheme();
-
+    
     return (
         <div className="flex flex-row">
             {chevron ? (

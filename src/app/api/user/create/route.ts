@@ -10,18 +10,18 @@ interface UserFormData {
   password: string;
   firstName: string;
   lastName: string;
-  adress: string;
-  zipcode: string;
-  city: string;
-  latitude: string;
-  longitude: string;
+  adress?: string;
+  zipcode?: string;
+  city?: string;
+  latitude?: string;
+  longitude?: string;
   roleId: string;
 }
 
 export async function POST(req: NextRequest) {
   const data = await req.formData();
-
-  const file: File | null = data.get("avatar") as unknown as File;
+  console.log(data);
+  const file: File | null = data.get("avatar") as File;
   if (!file) {
     return NextResponse.json({ erreur: "No file" }, { status: 400 });
   }
@@ -54,11 +54,11 @@ export async function POST(req: NextRequest) {
         avatar: path.replace(join(process.cwd(), "public"), ""),
         firstName: firstName,
         lastName: lastName,
-        adress: adress,
-        zipcode: zipcode,
-        city: city,
-        latitude: latitude,
-        longitude: longitude,
+        adress: adress || "",
+        zipcode: zipcode || "",
+        city: city || "",
+        latitude: latitude || "0",
+        longitude: longitude || "0",
         role: {
           connect: {
             id: Number.parseInt(roleId),

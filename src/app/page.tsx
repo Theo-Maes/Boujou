@@ -21,7 +21,6 @@ const generateCardEvents = (count: number): JSX.Element[] => {
     image: "hero-card.jpeg",
     startingDate: new Date(),
     endingDate: new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000),
-    numberOfOpenGroups: 5,
     numberOfGroups: 13,
     numberOfPeople: 238,
     location: "Saint-Etienne du Rouvray",

@@ -1,22 +1,61 @@
 "use client"
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Input, Button, Spacer } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 
-export default function SignupForm() {
+interface SignupFormProps {
+  initialValues: {
+    email: string;
+    firstName: string;
+    lastName: string;
+    avatar: string;
+  };
+}
+
+interface FormState {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+  address: string;
+  zipcode: string;
+  city: string;
+  avatar: string;
+  latitude: string;
+  longitude: string;
+  roleId: string;
+}
+
+const initialFormState: FormState = {
+  email: "",
+  password: "",
+  confirmPassword: "",
+  firstName: "",
+  lastName: "",
+  address: "",
+  zipcode: "",
+  city: "",
+  avatar: "",
+  latitude: "0",
+  longitude: "0",
+  roleId: "1",
+};
+
+export default function SignupForm({ initialValues }: SignupFormProps) {
   const { theme } = useTheme();
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    firstName: "",
-    lastName: "",
-    address: "",
-    zipcode: "",
-    city: "",
-    avatar: "",
-  });
+  const [form, setForm] = useState<FormState>(initialFormState);
+
+  useEffect(() => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      email: initialValues.email,
+      firstName: initialValues.firstName,
+      lastName: initialValues.lastName,
+      avatar: initialValues.avatar,
+    }));
+  }, [initialValues]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,21 +63,21 @@ export default function SignupForm() {
   const [fileName, setFileName] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === "avatar" && e.target.files?.[0]) {
-      const file = e.target.files[0];
+    const { name, value, files } = e.target;
+    if (name === "avatar" && files?.[0]) {
+      const file = files[0];
       setFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setForm({ ...form, avatar: reader.result as string });
+        setForm((prevForm) => ({ ...prevForm, avatar: reader.result as string }));
       };
       reader.readAsDataURL(file);
     } else {
-      setForm({ ...form, [name]: value });
+      setForm((prevForm) => ({ ...prevForm, [name]: value }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -60,15 +99,20 @@ export default function SignupForm() {
       return;
     }
 
-    // TODO: Appel API pour l'inscription
     try {
-      const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
+      const formData = new FormData();
+      Object.keys(form).forEach((key) => {
+        let value = form[key as keyof FormState];
+        formData.append(key, value);
       });
+
+      const res = await fetch("/api/user/create", {
+        method: "POST",
+        body: formData,
+      });
+
+console.log(formData);
+
 
       if (res.ok) {
         setSuccess(true);
@@ -125,13 +169,17 @@ export default function SignupForm() {
       form.confirmPassword !== "" &&
       !validateConfirmPassword(form.confirmPassword, form.password),
     [form.confirmPassword, form.password]
-  );
+  );  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-gray-800 px-4">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
+      {initialValues ? (
         <h2 className="uppercase font-extrabold text-2xl text-center mb-6">Inscription</h2>
-        <form onSubmit={handleSubmit} className="flex flex-col w-full">
+      ) : (
+        <h2 className="uppercase font-extrabold text-2xl text-center mb-6">Finalisation de l&apos;inscription</h2>
+      )}
+        <form onSubmit={handleSubmit} className="flex flex-col w-full" encType="multipart/form-data">
           <Spacer y={1} />
           <Input
             fullWidth
@@ -139,53 +187,59 @@ export default function SignupForm() {
             type="email"
             variant="bordered"
             name="email"
-            value={form.email}
+            value={initialValues.email || form.email}
             onChange={handleChange}
             isInvalid={isInvalidEmail}
             color={isInvalidEmail ? "danger" : "default"}
             errorMessage={isInvalidEmail ? "L'email n'est pas valide" : ""}
+            disabled={!!initialValues.email}
             required
           />
           <Spacer y={1} />
-          <Input
-            fullWidth
-            label="Mot de passe *"
-            variant="bordered"
-            name="password"
-            value={form.password}
-            onChange={handleChange}
-            isInvalid={isInvalidPassword}
-            color={isInvalidPassword ? "danger" : "default"}
-            errorMessage={isInvalidPassword ? "Au moins 8 caractères, une min., une maj., un chiffre et un symbole" : ""}
-            type="password"
-            minLength={8}
-            required
-          />
-          <Spacer y={1} />
-          <Input
-            fullWidth
-            label="Confirmation du mot de passe *"
-            variant="bordered"
-            name="confirmPassword"
-            value={form.confirmPassword}
-            onChange={handleChange}
-            isInvalid={isInvalidConfirmPassword}
-            color={isInvalidConfirmPassword ? "danger" : "default"}
-            errorMessage={isInvalidConfirmPassword ? "Les mots de passe ne sont pas identiques" : ""}
-            type="password"
-            required
-          />
-          <Spacer y={1} />
+          {!initialValues.email && (
+            <>
+              <Input
+                fullWidth
+                label="Mot de passe *"
+                variant="bordered"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                isInvalid={isInvalidPassword}
+                color={isInvalidPassword ? "danger" : "default"}
+                errorMessage={isInvalidPassword ? "Au moins 8 caractères, une min., une maj., un chiffre et un symbole" : ""}
+                type="password"
+                minLength={8}
+                required
+              />
+              <Spacer y={1} />
+              <Input
+                fullWidth
+                label="Confirmation du mot de passe *"
+                variant="bordered"
+                name="confirmPassword"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                isInvalid={isInvalidConfirmPassword}
+                color={isInvalidConfirmPassword ? "danger" : "default"}
+                errorMessage={isInvalidConfirmPassword ? "Les mots de passe ne sont pas identiques" : ""}
+                type="password"
+                required
+              />
+              <Spacer y={1} />
+            </>
+          )}
           <Input
             fullWidth
             label="Prénom *"
             variant="bordered"
             name="firstName"
-            value={form.firstName}
+            value={initialValues.firstName || form.firstName}
             onChange={handleChange}
             isInvalid={isInvalidFirstName}
             color={isInvalidFirstName ? "danger" : "default"}
             errorMessage={isInvalidFirstName ? "Le prénom n'est pas correct" : ""}
+            disabled={!!initialValues.firstName}
             required
           />
           <Spacer y={1} />
@@ -194,11 +248,12 @@ export default function SignupForm() {
             label="Nom *"
             variant="bordered"
             name="lastName"
-            value={form.lastName}
+            value={initialValues.lastName || form.lastName}
             onChange={handleChange}
             isInvalid={isInvalidLastName}
             color={isInvalidLastName ? "danger" : "default"}
             errorMessage={isInvalidLastName ? "Le nom n'est pas correct" : ""}
+            disabled={!!initialValues.lastName}
             required
           />
           <Spacer y={1} />
@@ -239,30 +294,34 @@ export default function SignupForm() {
             errorMessage={isInvalidCity ? "Lettres et tirets acceptés" : ""}
           />
           <Spacer y={1} />
-          <div className="flex flex-col align-center">
-            <label className="hidden">Avatar</label>
-            <input
-                type="file"
-                accept="image/*"
-                name="avatar"
-                id="avatar"
-                onChange={handleChange}
-                className="hidden"
-            />
-            <Button
-                as="label"
-                htmlFor="avatar"
-                variant="bordered"
-                className="cursor-pointer text-left text-gray-500 dark:text-gray-400 flex justify-between"
-            >
-                <span className="mr-1">Avatar</span>
-                <span className="mr-1">Choisir un fichier</span>
-                <span className="mr-1"></span>
-            </Button>
-            {fileName && (
-                <span className="mt-1 text-sm text-gray-500 dark:text-gray-400">{fileName}</span>
-            )}
-          </div>
+          {!initialValues.avatar && (
+            <>
+              <div className="flex flex-col align-center">
+                <label className="hidden">Avatar</label>
+                <input
+                    type="file"
+                    accept="image/*"
+                    name="avatar"
+                    id="avatar"
+                    onChange={handleChange}
+                    className="hidden"
+                />
+                <Button
+                    as="label"
+                    htmlFor="avatar"
+                    variant="bordered"
+                    className="cursor-pointer text-left text-gray-500 dark:text-gray-400 flex justify-between"
+                >
+                    <span className="mr-1">Avatar</span>
+                    <span className="mr-1">Choisir un fichier</span>
+                    <span className="mr-1"></span>
+                </Button>
+                {fileName && (
+                    <span className="mt-1 text-sm text-gray-500 dark:text-gray-400">{fileName}</span>
+                )}
+              </div>
+            </>
+          )}
           <Spacer y={2} />
           <Button
             type="submit"
