@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, FormEvent } from "react";
 import { Input, Button, Spacer } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 
@@ -69,7 +69,10 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
       setFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setForm((prevForm) => ({ ...prevForm, avatar: reader.result as string }));
+        setForm((prevForm) => ({
+          ...prevForm,
+          avatar: reader.result as string,
+        }));
       };
       reader.readAsDataURL(file);
     } else {
@@ -77,13 +80,14 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSuccess(false);
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!passwordRegex.test(form.password)) {
       setError(
@@ -100,19 +104,21 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
     }
 
     try {
-      const formData = new FormData();
-      Object.keys(form).forEach((key) => {
-        let value = form[key as keyof FormState];
-        formData.append(key, value);
-      });
+      const formData = new FormData(e.currentTarget);
+      // const formData = new FormData();
+      // Object.keys(form).forEach((key) => {
+      //   let value = form[key as keyof FormState];
+      //   formData.append(key, value);
+      // });
+
+      formData.append("roleId", "1");
 
       const res = await fetch("/api/user/create", {
         method: "POST",
         body: formData,
       });
 
-console.log(formData);
-
+      console.log(formData);
 
       if (res.ok) {
         setSuccess(true);
@@ -129,12 +135,18 @@ console.log(formData);
     }
   };
 
-  const validateEmail = (value: string) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value);
+  const validateEmail = (value: string) =>
+    /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value);
   const validateText = (value: string) => /^[a-zA-ZÀ-ÿ\s-]+$/.test(value);
-  const validateAddress = (value: string) => /^[a-zA-ZÀ-ÿ0-9\s,.-]+$/.test(value);
+  const validateAddress = (value: string) =>
+    /^[a-zA-ZÀ-ÿ0-9\s,.-]+$/.test(value);
   const validateZipcode = (value: string) => /^\d{5}$/.test(value);
-  const validatePassword = (value: string) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value);
-  const validateConfirmPassword = (confirmPassword: string, password: string) => confirmPassword === password;
+  const validatePassword = (value: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+      value
+    );
+  const validateConfirmPassword = (confirmPassword: string, password: string) =>
+    confirmPassword === password;
 
   const isInvalidEmail = useMemo(
     () => form.email !== "" && !validateEmail(form.email),
@@ -169,17 +181,25 @@ console.log(formData);
       form.confirmPassword !== "" &&
       !validateConfirmPassword(form.confirmPassword, form.password),
     [form.confirmPassword, form.password]
-  );  
+  );
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-gray-800 px-4">
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md">
-      {initialValues ? (
-        <h2 className="uppercase font-extrabold text-2xl text-center mb-6">Inscription</h2>
-      ) : (
-        <h2 className="uppercase font-extrabold text-2xl text-center mb-6">Finalisation de l&apos;inscription</h2>
-      )}
-        <form onSubmit={handleSubmit} className="flex flex-col w-full" encType="multipart/form-data">
+        {initialValues ? (
+          <h2 className="uppercase font-extrabold text-2xl text-center mb-6">
+            Inscription
+          </h2>
+        ) : (
+          <h2 className="uppercase font-extrabold text-2xl text-center mb-6">
+            Finalisation de l&apos;inscription
+          </h2>
+        )}
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col w-full"
+          encType="multipart/form-data"
+        >
           <Spacer y={1} />
           <Input
             fullWidth
@@ -207,7 +227,11 @@ console.log(formData);
                 onChange={handleChange}
                 isInvalid={isInvalidPassword}
                 color={isInvalidPassword ? "danger" : "default"}
-                errorMessage={isInvalidPassword ? "Au moins 8 caractères, une min., une maj., un chiffre et un symbole" : ""}
+                errorMessage={
+                  isInvalidPassword
+                    ? "Au moins 8 caractères, une min., une maj., un chiffre et un symbole"
+                    : ""
+                }
                 type="password"
                 minLength={8}
                 required
@@ -222,7 +246,11 @@ console.log(formData);
                 onChange={handleChange}
                 isInvalid={isInvalidConfirmPassword}
                 color={isInvalidConfirmPassword ? "danger" : "default"}
-                errorMessage={isInvalidConfirmPassword ? "Les mots de passe ne sont pas identiques" : ""}
+                errorMessage={
+                  isInvalidConfirmPassword
+                    ? "Les mots de passe ne sont pas identiques"
+                    : ""
+                }
                 type="password"
                 required
               />
@@ -238,7 +266,9 @@ console.log(formData);
             onChange={handleChange}
             isInvalid={isInvalidFirstName}
             color={isInvalidFirstName ? "danger" : "default"}
-            errorMessage={isInvalidFirstName ? "Le prénom n'est pas correct" : ""}
+            errorMessage={
+              isInvalidFirstName ? "Le prénom n'est pas correct" : ""
+            }
             disabled={!!initialValues.firstName}
             required
           />
@@ -266,7 +296,11 @@ console.log(formData);
             onChange={handleChange}
             isInvalid={isInvalidAddress}
             color={isInvalidAddress ? "danger" : "default"}
-            errorMessage={isInvalidAddress ? "Lettres, chiffres, virgules et tirets acceptés" : ""}
+            errorMessage={
+              isInvalidAddress
+                ? "Lettres, chiffres, virgules et tirets acceptés"
+                : ""
+            }
           />
           <Spacer y={1} />
           <Input
@@ -278,7 +312,9 @@ console.log(formData);
             onChange={handleChange}
             isInvalid={isInvalidZipcode}
             color={isInvalidZipcode ? "danger" : "default"}
-            errorMessage={isInvalidZipcode ? "Le code postal n'est pas au bon format" : ""}
+            errorMessage={
+              isInvalidZipcode ? "Le code postal n'est pas au bon format" : ""
+            }
             maxLength={5}
           />
           <Spacer y={1} />
@@ -299,25 +335,27 @@ console.log(formData);
               <div className="flex flex-col align-center">
                 <label className="hidden">Avatar</label>
                 <input
-                    type="file"
-                    accept="image/*"
-                    name="avatar"
-                    id="avatar"
-                    onChange={handleChange}
-                    className="hidden"
+                  type="file"
+                  accept="image/*"
+                  name="avatar"
+                  id="avatar"
+                  onChange={handleChange}
+                  className="hidden"
                 />
                 <Button
-                    as="label"
-                    htmlFor="avatar"
-                    variant="bordered"
-                    className="cursor-pointer text-left text-gray-500 dark:text-gray-400 flex justify-between"
+                  as="label"
+                  htmlFor="avatar"
+                  variant="bordered"
+                  className="cursor-pointer text-left text-gray-500 dark:text-gray-400 flex justify-between"
                 >
-                    <span className="mr-1">Avatar</span>
-                    <span className="mr-1">Choisir un fichier</span>
-                    <span className="mr-1"></span>
+                  <span className="mr-1">Avatar</span>
+                  <span className="mr-1">Choisir un fichier</span>
+                  <span className="mr-1"></span>
                 </Button>
                 {fileName && (
-                    <span className="mt-1 text-sm text-gray-500 dark:text-gray-400">{fileName}</span>
+                  <span className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {fileName}
+                  </span>
                 )}
               </div>
             </>
@@ -329,8 +367,8 @@ console.log(formData);
             className="text-white dark:text-black"
             isLoading={loading}
           >
-  {loading ? "Inscription en cours..." : "S'inscrire"}
-</Button>
+            {loading ? "Inscription en cours..." : "S'inscrire"}
+          </Button>
           {success && (
             <>
               <Spacer y={1} />

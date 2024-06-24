@@ -21,13 +21,14 @@ interface UserFormData {
 export async function POST(req: NextRequest) {
   const data = await req.formData();
   console.log(data);
-  const file: File | null = data.get("avatar") as File;
+  const file: File | null = data.get("avatar") as File | null;
   if (!file) {
     return NextResponse.json({ erreur: "No file" }, { status: 400 });
   }
 
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
+  const buffer = Buffer.from(await file.arrayBuffer());
+  // const bytes = await file.arrayBuffer();
+  // const buffer = Buffer.from(bytes);
 
   const path = join(process.cwd(), "public", "avatar", Date.now() + file.name);
   await writeFile(path, buffer);
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
 
     const newUser: User = await prisma.user.create({
       data: {
-        fullname: fullname,
+        fullname: fullname || "aa",
         email: email,
         password: password,
         avatar: path.replace(join(process.cwd(), "public"), ""),
