@@ -7,6 +7,9 @@ import { twMerge } from "tailwind-merge";
 import SearchInput from "@/components/inputs/SearchInput";
 import CardEvent, { InformationsEventProps } from "@/components/cards/EventCard";
 import { Pagination } from "@nextui-org/react";
+import ButtonModal from "@/components/forms/ButtonModal";
+import EventForm from "@/components/forms/EventForm";
+import { useSession } from "next-auth/react";
 
 // export const metadata: Metadata = {
 //   title: "Boujou",
@@ -32,6 +35,7 @@ const generateCardEvents = (count: number): JSX.Element[] => {
 const roboto = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500", "700", "900"] });
 
 export default function Home() {
+  const { data: session } = useSession();
   const totalEvents = 30;
   const eventsPerPage = 8;
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +52,7 @@ export default function Home() {
   return (
     <main className="flex flex-col">
       <section id="top" className="pl-0 md:px-9">
-        <div className="flex flex-col items-center px-4 py-16 md:py-20">
+        <div className="flex flex-col items-center px-4 pb-16 md:py-20">
           <h1
             className={twMerge(
               "hidden text-black dark:text-white relative z-20 !p-0 !m-0",
@@ -57,7 +61,16 @@ export default function Home() {
           >
             Boujou Normandie
           </h1>
-          <div className="w-full md:w-2/5">
+          {session && session.user ? (
+            <div className="flex md:hidden flex-1 justify-center mt-5">
+              <ButtonModal title="Proposer un événement">
+                <EventForm userId={session.user.id} />
+              </ButtonModal>
+            </div>    
+          ) : (
+            <></>
+          )}
+          <div className="w-full md:w-2/5 mt-5">
             <SearchInput placeholder="Rechercher un événement" />
           </div>
           <section className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

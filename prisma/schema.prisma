@@ -152,5 +152,6 @@ model Event {
     zipCode     String    @db.VarChar(100)
     category    Category @relation(fields: [categoryId], references: [id])
     categoryId  Int
+    url         String?
     groups  Group[]
 }

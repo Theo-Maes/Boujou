@@ -69,7 +69,7 @@ const STEPS = [
         .string()
         .matches(/^\d{5}$/, "Le code postal est requis")
         .required("Le code postal est requis"),
-      city: yup.string().required("La ville requise"),
+      city: yup.string().required("La ville est requise"),
     },
     renderInputFields: (control: any) => (
       <div className="grid grid-cols-4 gap-4 justify-center items-center ">
@@ -156,7 +156,7 @@ const STEPS = [
       <div className="flex flex-1 flex-col justify-center items-center">
         <ImageField
           control={control}
-          label="Visuel *"
+          label="Visuel"
           name="image"
           isLoading={false}
           className="flex flex-1 flex-col justify-center"
@@ -177,7 +177,7 @@ const STEPS = [
           }
           return value;
         })
-        .min(0)
+        .min(0, "Le tarif doit être positif")
         .typeError("Un tarif est obligatoire, mettre 0 si gratuit")
         .required(),
     },
@@ -219,7 +219,7 @@ const STEPS = [
         />
       </div>
     ),
-  },
+  },  
 ];
 
 interface IFormInputs {
@@ -260,6 +260,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
   const paginate = (newDirection: number) => {
     setPage([page + newDirection, newDirection]);
   };
+
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
     if (page == STEPS.length - 1) {
       const filename = data.image.name;
