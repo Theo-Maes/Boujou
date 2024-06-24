@@ -33,6 +33,8 @@ const ButtonModal: React.FC<ButtonModalProps> = ({ children, title }: ButtonModa
         backdrop="opaque"
         isOpen={isOpen}
         onOpenChange={setIsOpen}
+        isDismissable={false} 
+        isKeyboardDismissDisabled={true}
         radius="lg"
         classNames={{
           body: "py-6",

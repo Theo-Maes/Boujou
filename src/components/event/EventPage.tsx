@@ -9,9 +9,75 @@ import { InformationsEventCard } from "../cards/InformationsEventCard";
 import { useState } from "react";
 import EventGroupCard from "../cards/EventGroupCard";
 
-export default function EventPage() {
-    const { theme } = useTheme();
+export interface EventPageProps {
+  eventName: string;
+  location: string;
+  address: string;
+  zipCode: string;
+  city: string;
+  image: string;
+  price: number;
+  categoryId: number;
+  startingDate: number;
+  endingDate?: number;
+  url?: string;
+}
+
+const formatDate = (timestamp: number) => {
+  const date = new Date(timestamp);
+  const options: Intl.DateTimeFormatOptions = { day: "numeric", month: "long", year: "numeric" };
+  return date.toLocaleDateString("fr-FR", options);
+};
+
+const formatTime = (timestamp: number) => {
+  const date = new Date(timestamp);
+  const options: Intl.DateTimeFormatOptions = { hour: "numeric", minute: "numeric" };
+  return date.toLocaleTimeString("fr-FR", options);
+};
+
+const generateMessage = (startingDate: number, endingDate: number | undefined) => {
+  const startDateFormatted = formatDate(startingDate);
+
+  if (!endingDate) {
+    // Single date case
+    return `Le ${startDateFormatted}`;
+  } else {
+    // Date range case
+    const endDateFormatted = formatDate(endingDate);
+    return `Du ${startDateFormatted} au ${endDateFormatted}`;
+  }
+};
+
+const generateMessageWithHour = (startingDate: number, endingDate: number | undefined) => {
+  const startDateFormatted = formatDate(startingDate);
+  const startTimeFormatted = formatTime(startingDate);
+
+  if (!endingDate) {
+    return `Le ${startDateFormatted} à ${startTimeFormatted}`;
+  } else {
+    const endDateFormatted = formatDate(endingDate);
+    const endTimeFormatted = formatTime(endingDate);
+    return `Du ${startDateFormatted} à ${startTimeFormatted}\n` + `au ${endDateFormatted} à ${endTimeFormatted}`;  
+  }
+};
+
+export default function EventPage({
+  eventName,
+  location,
+  address,
+  zipCode,
+  city,
+  image,
+  price,
+  categoryId,
+  startingDate,
+  endingDate,
+  url
+}: EventPageProps): JSX.Element {    
+  const { theme } = useTheme();
     const [collectifCount, setCollectifCount] = useState(1);
+    const eventDate = generateMessage(startingDate, endingDate);
+    const eventDateWithHour = generateMessageWithHour(startingDate, endingDate);
 
     return (
       <main className="flex flex-col">
@@ -21,20 +87,20 @@ export default function EventPage() {
               <div className="relative w-full md:w-6/12 z-10">
                 <div className="absolute rounded-none top-2 left-2 md:top-5 md:left-5 w-full h-full bg-secondary z-0"></div>
                 <Image
-                  alt="Card background"
+                  alt="Event image"
                   className="relative w-full z-10 !rounded-none"
-                  src="/hero-card.jpeg"
+                  src={`/${image}`}
                   width={1200}
                   height={800}
                 />
               </div>
               <Card className="relative md:right-10 flex flex-col ml-0 md:ml-auto mt-6 md:mt-0 rounded-none w-full md:w-6/12 md:h-1/2 z-20 bg-white dark:bg-gray-800">
                   <CardHeader className="flex flex-row justify-center">
-                      <p className="uppercase text-tertiary font-medium my-2 md:my-5">Catégorie</p>
+                      <p className="uppercase text-tertiary font-medium my-2 md:my-5">{categoryId}</p>
                   </CardHeader>
                   <CardBody className="flex flex-col items-center justify-center">
-                      <p className="uppercase font-extrabold text-2xl text-center mb-2 md:mb-3">Festival musiques indiennes</p>
-                      <p className="mt-2 md:mt-3">Du samedi 01 juin au dimanche 02 juin 2024</p>
+                      <p className="uppercase font-extrabold text-2xl text-center mb-2 md:mb-3">{eventName}</p>
+                      <p className="mt-2 md:mt-3">{eventDate}</p>
                   </CardBody>
                   <CardFooter className="flex flex-row justify-center">
                       <Link href={"/about"}>
@@ -60,23 +126,26 @@ export default function EventPage() {
                 <div className="flex flex-col w-full md:w-5/12 lg:w-1/3">
                     <InformationsEventCard 
                         iconName="location" 
-                        primaryInformation="Centre culturel Pierre Cerdan"
-                        secondaryInformation="123 rue de Gessard 76000 Rouen"
-                    />
+                        primaryInformation={location}
+                        secondaryInformation={`${address} ${zipCode} ${city}`}
+                        />
                     <InformationsEventCard 
                         iconName="calendar" 
-                        primaryInformation="Samedi 01 juin au dimanche 02 juin 2024"
+                        primaryInformation={eventDateWithHour}
                     />
                     <InformationsEventCard 
                         iconName="euro" 
-                        primaryInformation="Gratuit"
-                        secondaryInformation="Tout public"
-                    />
-                    <InformationsEventCard 
-                        iconName="information" 
-                        primaryInformation="https://www.rouen.fr"
-                        piIsLink
-                    />
+                        primaryInformation={price === 0 ? "Gratuit" : price.toString()}
+                        />
+                    {url ? (
+                      <InformationsEventCard 
+                          iconName="information" 
+                          primaryInformation={url}
+                          piIsLink
+                      />
+                    ): (
+                      <></>
+                    )}
                     {collectifCount > 0 ? (
                         <Card className="rounded-none mb-2 bg-secondaryLight dark:bg-gray-800">
                             <CardBody className="mx-2 flex flex-row items-baseline">

@@ -10,8 +10,6 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, Checkbox } from "@nextui-org/react";
 import { useTheme } from "next-themes";
-import ButtonModal from "../forms/ButtonModal";
-import EventForm from "../forms/EventForm";
 
 export default function UserMenu({
   session,
@@ -73,13 +71,6 @@ export default function UserMenu({
             </MenuItem>
             <MenuItem>
               {({ focus }) => (
-                <ButtonModal title="Proposer un événement">
-                  <EventForm userId={session.user.id} />
-                </ButtonModal>
-              )}
-            </MenuItem>
-            <MenuItem>
-              {({ focus }) => (
                 <Link
                   href="/profile"
                   className={classNames(
@@ -114,7 +105,7 @@ export default function UserMenu({
                   className={classNames(
                     focus ? "bg-red-100 dark:bg-red-500 text-red-500 dark:text-red-100" : "",
                     "block px-4 py-2 text-sm cursor-pointer"
-                  )}
+              )}
                   onClick={handleSignOutClick}
                 >
                   Déconnexion
@@ -188,13 +179,25 @@ export default function UserMenu({
               </Button>
             </div>
           </ModalBody>
-          <ModalFooter>
-            <Button color="danger" variant="flat" onPress={handleCloseModal} className="dark:text-white">
-              Annuler
-            </Button>
-            <Button color={theme === "dark" ? "secondary" : "primary"} onPress={handleCloseModal} className="text-white dark:text-black">
-              Se connecter
-            </Button>
+          <ModalFooter className="flex justify-between align-center">
+            <div>
+              <Link 
+                color={theme === "dark" ? "secondary" : "primary"} 
+                href="/signup"
+              >
+                <Button color={theme === "dark" ? "primary" : "secondary"} onPress={handleCloseModal} className="text-dark dark:text-white">
+                  S&apos;inscrire
+                </Button>
+              </Link>
+            </div>
+            <div className="flex gap-3">
+              <Button color="danger" variant="flat" onPress={handleCloseModal} className="dark:text-white">
+                Annuler
+              </Button>
+              <Button color={theme === "dark" ? "secondary" : "primary"} onPress={handleCloseModal} className="text-white dark:text-black">
+                Se connecter
+              </Button>
+            </div>
           </ModalFooter>
         </ModalContent>
       </Modal>
