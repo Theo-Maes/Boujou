@@ -32,7 +32,6 @@ model Driver {
   quantity     Int
   city         String
   adress       String
-  description  String
   zipcode      String
   startingdate DateTime
   endingdate   DateTime
