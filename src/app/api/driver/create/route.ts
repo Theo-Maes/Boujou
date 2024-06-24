@@ -5,7 +5,6 @@ import { NextResponse } from "next/server";
 interface DriverFormData {
   adress: string;
   city: string;
-  description: string;
   endingdate: string;
   latitude: string;
   longitude: string;
@@ -42,7 +41,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "aucun groupe trouvé" }, { status: 404 });
   }
 
-  const userInGroup = await prisma.groupUser.findFirst({
+  const userInGroup = await prisma.userGroup.findFirst({
     where: {
       groupId: Number.parseInt(groupId),
       userId: Number.parseInt(userId),
@@ -52,6 +51,20 @@ export async function POST(req: Request) {
   if (!userInGroup) {
     return NextResponse.json(
       { error: " l'utilisateur ne fait pas partie du groupe " },
+      { status: 403 }
+    );
+  }
+
+  const driver = await prisma.driver.findFirst({
+    where: {
+      userId: Number.parseInt(userId),
+      groupId: Number.parseInt(groupId),
+    },
+  });
+
+  if (driver) {
+    return NextResponse.json(
+      { error: " l'utilisateur est déjà un driver dans ce groupe " },
       { status: 403 }
     );
   }
