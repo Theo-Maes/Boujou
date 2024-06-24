@@ -27,6 +27,13 @@ export async function POST(req: Request, params: { params: { id: string } }) {
     );
   }
 
+  if (driver.userId == Number.parseInt(userId)) {
+    return NextResponse.json(
+      { error: "le driver ne peut pas rejoindre son propre trajet" },
+      { status: 403 }
+    );
+  }
+
   const groupId: number | null = driver.groupId;
 
   if (groupId === null) {
