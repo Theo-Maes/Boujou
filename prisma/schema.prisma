@@ -87,6 +87,7 @@ model User {
   createdGroups Group[] @relation("createdGroups")
   drivers       Driver[]
   passengerIn   DriverPassenger[]
+  createdAt DateTime @default(now())
 }
 
 model Role {
