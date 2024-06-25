@@ -60,7 +60,7 @@ const ImageField: React.FC<CustomTextFieldProps> = ({
             backgroundPosition: "center",
           }}
         >
-          {isLoading ? <Spinner /> : "Choisir une image *"}
+          {isLoading ? <Spinner /> : "Choisir une image"}
         </Button>
       </label>
     </div>

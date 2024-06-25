@@ -6,12 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle, UserMenu } from "..";
-import { Button } from "..";
 import { useTheme } from "next-themes";
 
 import EventForm from "../forms/EventForm";
+import ServiceForm from "../forms/ServiceForm";
 import ButtonModal from "../forms/ButtonModal";
-import { useEffect } from "react";
 
 export default function MainNavbar() {
   const { data: session } = useSession();
@@ -51,7 +50,8 @@ export default function MainNavbar() {
           {session && session.user ? (
             <div className="hidden md:flex flex-1 justify-center">
               <ButtonModal title="Proposer un événement">
-                <EventForm userId={session.user.id} />
+                <ServiceForm userId={session.user.id}/>
+                {/* <EventForm userId={session.user.id} /> */}
               </ButtonModal>
             </div>    
           ) : (

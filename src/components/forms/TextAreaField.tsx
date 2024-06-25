@@ -12,7 +12,7 @@ interface CustomTextFieldProps {
   [key: string]: any;
 }
 
-const TextAreaField: React.FC<CustomTextFieldProps> = ({
+const TextAreaField = ({
   name,
   control,
   label,
@@ -32,8 +32,7 @@ const TextAreaField: React.FC<CustomTextFieldProps> = ({
   return (
     <Textarea
       variant="bordered"
-      label="Description"
-      placeholder="Décrivez votre événement"
+      placeholder={placeholder}
       {...field}
       isInvalid={!!error?.message}
       errorMessage={error?.message}
@@ -44,10 +43,12 @@ const TextAreaField: React.FC<CustomTextFieldProps> = ({
           "bg-transparent",
           "text-gray-600",
           "placeholder:text-default-700/50 dark:placeholder:text-white/60",
+          "h-[150px]",
         ],
         innerWrapper: "bg-transparent",
         inputWrapper: [
           "bg-page",
+          "h-[350px]",
           //   "dark:bg-default/60",
           "backdrop-blur-xl",
           "backdrop-saturate-200",
