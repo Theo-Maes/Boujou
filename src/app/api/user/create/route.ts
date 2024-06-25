@@ -21,7 +21,6 @@ interface UserFormData {
 
 export async function POST(req: NextRequest) {
   const data = await req.formData();
-
   const {
     fullname,
     email,
@@ -73,17 +72,17 @@ export async function POST(req: NextRequest) {
   try {
     const newUser: User = await prisma.user.create({
       data: {
-        fullname: fullname,
+        fullname: fullname || "aa",
         email: email,
         password: password,
         avatar: path.replace(join(process.cwd(), "public"), ""),
         firstName: firstName,
         lastName: lastName,
-        adress: adress,
-        zipcode: zipcode,
-        city: city,
-        latitude: latitude,
-        longitude: longitude,
+        adress: adress || "",
+        zipcode: zipcode || "",
+        city: city || "",
+        latitude: latitude || "0",
+        longitude: longitude || "0",
         role: {
           connect: {
             id: Number.parseInt(roleId),

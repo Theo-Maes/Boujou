@@ -13,7 +13,6 @@ export interface InformationsEventProps {
   image: string;
   startingDate: Date;
   endingDate: Date;
-  numberOfOpenGroups?: number;
   numberOfGroups?: number;
   numberOfPeople?: number;
   location: string;
@@ -23,7 +22,6 @@ export default function EventCard({
   title,
   startingDate,
   endingDate,
-  numberOfOpenGroups,
   numberOfGroups,
   numberOfPeople,
   location,
@@ -47,7 +45,7 @@ export default function EventCard({
               width={18}
               height={18}
             />
-            <span className="text-xs text-black dark:text-black">{numberOfOpenGroups}/{numberOfGroups}</span>
+            <span className="text-xs text-black dark:text-black">{numberOfGroups}</span>
           </div>
           <div className="flex items-center space-x-1 mr-2">
             <Image

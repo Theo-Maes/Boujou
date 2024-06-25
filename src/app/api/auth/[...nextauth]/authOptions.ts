@@ -1,8 +1,15 @@
 import { AuthOptions, CustomUser, Session, User } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
 import { PrismaClient } from "@prisma/client";
 import { JWT } from "next-auth/jwt";
+import { prisma } from "@/libs";
 
+interface GoogleUser extends GoogleProfile {
+  given_name: string;
+  family_name: string;
+  email: string;
+  picture: string;
+}
 
 const authOptions: AuthOptions = {
   session: {
@@ -25,7 +32,25 @@ const authOptions: AuthOptions = {
   ],
 
   callbacks: {
-    async signIn() {
+    async signIn({ user, account, profile }) {
+      const googleUser = profile as GoogleUser;
+      const existingUser = await prisma.user.findUnique({
+        where: { email: googleUser.email ?? "" },
+      });
+
+      console.log(existingUser);
+
+      if (!existingUser) {
+        const queryParams = new URLSearchParams({
+          email: googleUser.email,
+          firstName: googleUser.given_name,
+          lastName: googleUser.family_name,
+          avatar: googleUser.picture,
+        }).toString();
+
+        return `/todo?${queryParams}`;
+      }
+
       return true;
     },
     async jwt({ token, user }) {
@@ -43,7 +68,6 @@ const authOptions: AuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      
       session.user.id = token.id;
       session.user.fullname = token.username;
       session.user.email = token.email;

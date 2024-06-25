@@ -14,7 +14,7 @@ export default function EventGroupCard(): JSX.Element {
     { avatar: "user-1.png", fullname: "Pierre Paul Jacques" },
     { avatar: "user-2.png", fullname: "John Doe" },
     { avatar: "user-3.png", fullname: "Jean-Michel Loremipsum" },
-    { avatar: "user-1.png", fullname: "Pierre Paul Jacques" },
+    { avatar: "user-1.png", fullname: "Pierre-Paul Jacques" },
     { avatar: "user-2.png", fullname: "John Doe" }
   ];
 

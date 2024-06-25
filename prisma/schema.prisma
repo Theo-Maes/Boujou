@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  //binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -148,7 +148,7 @@ model Event {
     cancelledAt DateTime?
     description String
     zipCode     String    @db.VarChar(100)
-    category    Category @relation(fields: [categoryId], references: [id])
+    category    Category  @relation(fields: [categoryId], references: [id])
     categoryId  Int
     url         String?
     groups  Group[]
