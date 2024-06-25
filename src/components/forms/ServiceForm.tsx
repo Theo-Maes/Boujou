@@ -19,6 +19,7 @@ import {
   SUCCESS_STEPS,
 } from "./utils/steps";
 interface StepProps {
+  transition: boolean;
   title: string;
   subtitle: string;
   isTransition?: boolean;
@@ -35,9 +36,8 @@ interface IFormInputs {
 interface FormProps {
   userId: string;
   currentPage?: number;
-  children?: React.ReactNode; // Typage pour les enfants
-  // Ajouter d'autres props si nécessaire
-  [key: string]: any; // Pour les autres props optionnelles
+  children?: React.ReactNode;
+  [key: string]: any;
 }
 
 const EventForm = ({ userId, children, ...props }: FormProps) => {
@@ -66,78 +66,81 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
       //start: "2022-04-17" /* now(getLocalTimeZone())*/,
     },
   });
+
   useEffect(() => {
     currentPage === 0 && setIsDark(true);
   }, [currentPage, setIsDark]);
+
   const paginate = (newDirection: number) => {
     setPage([currentPage + newDirection, newDirection]);
   };
+
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
-    if (currentPage == pages.length - 1) {
+    if (currentPage == pages.length - 2) {
       const filename = data.image.name;
       const fileType = data.image.type;
 
       try {
-        setIsOpen(false);
-        // const res = await fetch(
-        //   `/api/presign?file=${filename}&fileType=${fileType}`
-        // );
-        // const { url } = await res.json();
+        const res = await fetch(
+          `/api/presign?file=${filename}&fileType=${fileType}`
+        );
+        const { url } = await res.json();
+        const upload = await fetch(url, {
+          method: "PUT",
+          body: data.image,
+          headers: { "Content-Type": fileType },
+        });
+        setIsLoading(false);
+        if (upload.ok) {
+          const imageUrl = new URL(url);
 
-        // const upload = await fetch(url, {
-        //   method: "PUT",
-        //   body: data.image,
-        //   headers: { "Content-Type": fileType },
-        // });
-        // setIsLoading(false);
-        // if (upload.ok) {
-        //   const imageUrl = new URL(url);
-
-        //   const eventData = {
-        //     ...data,
-        //     image: `${imageUrl.origin}${imageUrl.pathname}`,
-        //     latitude: "00000000.4444444",
-        //     longitude: "00000000.4444444",
-        //     categoryId: 1,
-        //     userId,
-        //   };
-        //   const response = await fetch("/api/event/create/aws", {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify(eventData),
-        //   });
-
-        //   if (response.ok) {
-        //     alert("Event created successfully!");
-        //   } else {
-        //     const errorData = await response.json();
-
-        //     console.error(errorData);
-        //   }
-        // } else {
-        //   console.error("Upload failed.");
-        // }
+          console.log(`${imageUrl.origin}${imageUrl.pathname}`);
+          // const eventData = {
+          //   ...data,
+          //   image: `${imageUrl.origin}${imageUrl.pathname}`,
+          //   latitude: "00000000.4444444",
+          //   longitude: "00000000.4444444",
+          //   categoryId: 1,
+          //   userId,
+          // };
+          // const response = await fetch("/api/event/create/aws", {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify(eventData),
+          // });
+          // if (response.ok) {
+          //   alert("Event created successfully!");
+          // } else {
+          //   const errorData = await response.json();
+          //   console.error(errorData);
+          // }
+        } else {
+          console.error("Upload failed.");
+        }
+        paginate(1);
       } catch (error) {
         console.log(error);
       }
     } else {
-      console.log(data);
+      paginate(1);
       setIsDark(false);
     }
-    paginate(1);
+    if (currentPage === pages.length - 1) setIsOpen(false);
   };
   const pagesHelper = (choices: string[]) => {
     switch (true) {
-      case choices.includes("Covoiturage") && choices.includes("Hébergement"):
-        setPages([...CHOICE_STEPS, ...CHOICE_STEPS, ...SUCCESS_STEPS]);
-        break;
       case choices.includes("Covoiturage"):
-        setPages([...CHOICE_STEPS, ...CAR_POOL_STEPS, ...SUCCESS_STEPS]);
+        setPages([
+          ...CHOICE_STEPS,
+          ...EVENT_STEPS,
+          ...CAR_POOL_STEPS,
+          ...SUCCESS_STEPS,
+        ]);
         break;
-      case choices.includes("Hébergement"):
-        // setPages([]);
+      default:
+        setPages([...CHOICE_STEPS, ...EVENT_STEPS]);
         break;
     }
   };
@@ -145,16 +148,26 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
     handleSubmit(onSubmit)();
   };
 
+  //size of step in loader page success et transition
+  const getStepLength = () => pages.length - 2;
+  //current step for loader is currentpage minus 2 step for succes and transition
+  const getSCurrentStep = () => {
+    if (currentPage === 0) return 0;
+    return currentPage - 1;
+  };
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col justify-between items-stretch space-y-6 h-[500px] w-[380px]"
     >
-      <Loader
-        currentStep={currentPage}
-        totalSteps={pages.length}
-        className="flex relative flex-row space-x-4 w-100 h-1"
-      />
+      {!pages[currentPage].transition && (
+        <Loader
+          currentStep={getSCurrentStep()}
+          totalSteps={getStepLength()}
+          className="flex relative flex-row space-x-4 w-100 h-1"
+        />
+      )}
+
       <AnimatePresence initial={false} custom={direction} mode="wait">
         {pages.map(
           (step, index) =>
@@ -166,7 +179,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="flex flex-1 flex-col space-y-8 overflow-hidden max-w-[350px]"
+                className="flex flex-1 flex-col space-y-8  items-center overflow-hidden w-full"
               >
                 <span className="space-y-2">
                   <Typography variant="h4">{step.title}</Typography>
@@ -180,7 +193,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  className="flex flex-1 justify-center flex-col space-y-4"
+                  className="flex w-full flex-1 justify-center flex-col space-y-4"
                 >
                   {step.renderInputFields &&
                     step.renderInputFields(control, pagesHelper)}

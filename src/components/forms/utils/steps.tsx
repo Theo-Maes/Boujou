@@ -8,6 +8,7 @@ import ImageField from "../ImageField";
 import Typography from "@/components/ui/Typography";
 export const CHOICE_STEPS = [
   {
+    transition: true,
     title: "Partager Un Service ?",
     subtitle:
       "Souhaitez vous mettre à disposition du collectif un covoiturage et/ou un hébergement ?",
@@ -15,7 +16,7 @@ export const CHOICE_STEPS = [
       choices: yup.mixed().notRequired(),
     },
     type: "checkbox",
-    options: ["Hébergement", "Covoiturage"],
+    options: ["Covoiturage"],
 
     renderInputFields: (control: any, onChange?: any) => (
       <div className="flex flex-1 flex-col justify-center items-center">
@@ -23,7 +24,7 @@ export const CHOICE_STEPS = [
           control={control}
           name="choices"
           className="col-span-4 text-black border-blue-500 hover:border-blue-500"
-          options={["Hébergement", "Covoiturage"]}
+          options={["Covoiturage"]}
           onChange={onChange}
         />
       </div>
@@ -32,6 +33,7 @@ export const CHOICE_STEPS = [
 ];
 export const CAR_POOL_STEPS = [
   {
+    transition: false,
     title: "Adresse",
     subtitle: "Veuillez renseignez le lieu du rendez vous",
     schema: {
@@ -50,6 +52,7 @@ export const CAR_POOL_STEPS = [
     ),
   },
   {
+    transition: false,
     title: "Vos horaires",
     subtitle: "Veuillez renseignez vos dates de départ et retour",
     schema: {
@@ -80,6 +83,7 @@ export const CAR_POOL_STEPS = [
     ),
   },
   {
+    transition: false,
     title: "Places disponibles",
     subtitle: "Renseignez le nombre de place dans le champ ci-dessous",
     schema: {
@@ -98,6 +102,7 @@ export const CAR_POOL_STEPS = [
     ),
   },
   {
+    transition: false,
     title: "Description",
     subtitle:
       "Ce message sera lu par vos futurs utilisateurs. Veuillez fournir une bref description.",
@@ -121,6 +126,7 @@ export const CAR_POOL_STEPS = [
 
 export const EVENT_STEPS = [
   {
+    transition: false,
     title: "Info generale de l'evenement",
     subtitle: "Veuillez renseignez les informations ci dessous",
     schema: {
@@ -156,6 +162,7 @@ export const EVENT_STEPS = [
     ),
   },
   {
+    transition: false,
     title: "Dates de l'evenement",
     subtitle: "Choisir dates et heures de debut et fin d'événement",
     schema: {
@@ -186,6 +193,7 @@ export const EVENT_STEPS = [
     ),
   },
   {
+    transition: false,
     title: "Affiche de l'événement",
     subtitle: "Choisir un visuel, ce dernier sera visible dans le catalogue",
     schema: {
@@ -208,6 +216,7 @@ export const EVENT_STEPS = [
     ),
   },
   {
+    transition: false,
     title: "Tarif de l'événement",
     subtitle: "Veullez renseigner un tarif",
     schema: {
@@ -227,6 +236,7 @@ export const EVENT_STEPS = [
     ),
   },
   {
+    transition: false,
     title: "Web site et description",
     subtitle: "Veullez fournir une bref description et une url d'un site",
     schema: {
@@ -257,6 +267,7 @@ export const EVENT_STEPS = [
 
 export const SUCCESS_STEPS = [
   {
+    transition: false,
     title: "",
     subtitle: "",
     schema: {
