@@ -7,7 +7,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   const data = await req.formData();
   const { name } = Object.fromEntries(data.entries()) as unknown as Role;
   try {
-    const roleFind: Role = await prisma.role.update({
+    const roleUpdate: Role = await prisma.role.update({
       data: {
         name: name,
       },
@@ -15,7 +15,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
         id: id,
       },
     });
-    return NextResponse.json({ data: roleFind }, { status: 200 });
+    return NextResponse.json({ data: roleUpdate }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ erreur: error }, { status: 500 });
   }

@@ -1,5 +1,5 @@
 import { prisma } from "@/libs";
-import { Driver, DriverPassenger, UserGroup } from "@prisma/client";
+import { Host, HostedUser, UserGroup } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 interface DriverPassengerFormData {
@@ -7,38 +7,35 @@ interface DriverPassengerFormData {
 }
 
 export async function DELETE(req: Request, params: { params: { id: string } }) {
-  const driverId: number = Number.parseInt(params.params.id);
+  const hostId: number = Number.parseInt(params.params.id);
   const data: FormData = await req.formData();
 
   const { userId } = Object.fromEntries(
     data.entries()
   ) as unknown as DriverPassengerFormData;
 
-  const driver: Driver | null = await prisma.driver.findUnique({
+  const host: Host | null = await prisma.host.findUnique({
     where: {
-      id: driverId,
+      id: hostId,
     },
   });
 
-  if (!driver) {
-    return NextResponse.json(
-      { error: "le driver nexiste pas" },
-      { status: 404 }
-    );
+  if (!host) {
+    return NextResponse.json({ error: "le host nexiste pas" }, { status: 404 });
   }
 
-  if (driver.userId == Number.parseInt(userId)) {
+  if (host.userId == Number.parseInt(userId)) {
     return NextResponse.json(
-      { error: "le driver ne peut pas quitter son propre trajet" },
+      { error: "le host ne peut pas quitter son propre logement" },
       { status: 403 }
     );
   }
 
-  const groupId: number | null = driver.groupId;
+  const groupId: number | null = host.groupId;
 
   if (groupId === null) {
     return NextResponse.json(
-      { error: "le driver n'est pas dans un groupe" },
+      { error: "le host n'est pas dans un groupe" },
       { status: 404 }
     );
   }
@@ -57,31 +54,30 @@ export async function DELETE(req: Request, params: { params: { id: string } }) {
     );
   }
 
-  const isDriverPassenger: DriverPassenger | null =
-    await prisma.driverPassenger.findFirst({
-      where: {
-        driverId: driverId,
-        userId: Number.parseInt(userId),
-      },
-    });
+  const isHostedUser: HostedUser | null = await prisma.hostedUser.findFirst({
+    where: {
+      hostId: hostId,
+      userId: Number.parseInt(userId),
+    },
+  });
 
-  if (!isDriverPassenger) {
+  if (!isHostedUser) {
     return NextResponse.json(
-      { error: "l'utilisateur n'est pas passager du driver" },
+      { error: "l'utilisateur n'est pas hébergé par se Host" },
       { status: 403 }
     );
   }
 
   try {
-    const leavingDriver: DriverPassenger = await prisma.driverPassenger.delete({
+    const leavingHost: HostedUser = await prisma.hostedUser.delete({
       where: {
-        driverId_userId: {
-          driverId: driverId,
+        hostId_userId: {
+          hostId: hostId,
           userId: Number.parseInt(userId),
         },
       },
     });
-    return NextResponse.json({ data: leavingDriver }, { status: 200 });
+    return NextResponse.json({ data: leavingHost }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ erreur: error }, { status: 500 });

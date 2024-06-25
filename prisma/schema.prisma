@@ -26,6 +26,36 @@ model DriverPassenger {
   @@index([userId], name: "idx_driver_passenger_userId")
 }
 
+model HostedUser {
+  hostId Int
+  userId Int
+
+  host Host @relation(fields: [hostId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([hostId, userId])
+  @@index([hostId], name: "idx_hosted_user_hostId")
+  @@index([userId], name: "idx_hosted_user_userId")
+}
+
+model Host {
+  id           Int      @id @default(autoincrement())
+  quantity     Int
+  city         String
+  adress       String
+  zipcode      String
+  startingdate DateTime
+  endingdate   DateTime
+  longitude    String
+  latitude     String
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  hostedUsers  HostedUser[]
+  groupId      Int
+  group        Group  @relation(fields: [groupId], references: [id])
+}
+
+
 model Driver {
   id           Int      @id @default(autoincrement())
   quantity     Int
@@ -39,8 +69,8 @@ model Driver {
   userId       Int
   user         User     @relation(fields: [userId], references: [id])
   passengers   DriverPassenger[]
-  groupId Int?
-  group   Group?  @relation(fields: [groupId], references: [id])
+  groupId      Int
+  group        Group  @relation(fields: [groupId], references: [id])
 }
 
 model Group {
@@ -51,6 +81,7 @@ model Group {
   event    Event     @relation(fields: [eventId], references: [id])
   members  UserGroup[]
   drivers Driver[]
+  hosts   Host[]
 }
 
 model UserGroup {
@@ -66,25 +97,27 @@ model UserGroup {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  fullname  String  
-  email     String   @unique
-  password  String?
-  avatar    String   
-  firstName String   
-  lastName  String
-  adress    String?
-  zipcode   String?
-  city      String?
-  latitude  String?
-  longitude String?
-  role      Role     @relation(fields: [roleId], references: [id])
-  roleId    Int
-  groups    UserGroup[]
-  createdGroups Group[] @relation("createdGroups")
+  id            Int               @id @default(autoincrement())
+  fullname      String  
+  email         String            @unique
+  password      String?
+  avatar        String   
+  firstName     String   
+  lastName      String
+  adress        String?
+  zipcode       String?
+  city          String?
+  latitude      String?
+  longitude     String?
+  role          Role              @relation(fields: [roleId], references: [id])
+  roleId        Int
+  groups        UserGroup[]
+  createdGroups Group[]           @relation("createdGroups")
   drivers       Driver[]
+  hosts         Host[]
+  HostedUsers   HostedUser[]
   passengerIn   DriverPassenger[]
-  createdAt DateTime @default(now())
+  createdAt     DateTime          @default(now())
 }
 
 model Role {

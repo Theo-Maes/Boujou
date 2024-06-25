@@ -1,5 +1,5 @@
 import { prisma } from "@/libs";
-import { Driver, DriverPassenger, UserGroup } from "@prisma/client";
+import { Host, HostedUser, UserGroup } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 interface DriverPassengerFormData {
@@ -7,38 +7,35 @@ interface DriverPassengerFormData {
 }
 
 export async function POST(req: Request, params: { params: { id: string } }) {
-  const driverId: number = Number.parseInt(params.params.id);
+  const hostId: number = Number.parseInt(params.params.id);
   const data: FormData = await req.formData();
 
   const { userId } = Object.fromEntries(
     data.entries()
   ) as unknown as DriverPassengerFormData;
 
-  const driver: Driver | null = await prisma.driver.findUnique({
+  const host: Host | null = await prisma.host.findUnique({
     where: {
-      id: driverId,
+      id: hostId,
     },
   });
 
-  if (!driver) {
-    return NextResponse.json(
-      { error: "le driver nexiste pas" },
-      { status: 404 }
-    );
+  if (!host) {
+    return NextResponse.json({ error: "le Host nexiste pas" }, { status: 404 });
   }
 
-  if (driver.userId == Number.parseInt(userId)) {
+  if (host.userId == Number.parseInt(userId)) {
     return NextResponse.json(
-      { error: "le driver ne peut pas rejoindre son propre trajet" },
+      { error: "le Host ne peut pas rejoindre son propre logement" },
       { status: 403 }
     );
   }
 
-  const groupId: number | null = driver.groupId;
+  const groupId: number | null = host.groupId;
 
   if (groupId === null) {
     return NextResponse.json(
-      { error: "le driver n'est pas dans un groupe" },
+      { error: "le host n'est pas dans un groupe" },
       { status: 404 }
     );
   }
@@ -57,40 +54,40 @@ export async function POST(req: Request, params: { params: { id: string } }) {
     );
   }
 
-  const nbDriverMember: Number = await prisma.driverPassenger.count({
+  const nbHostUser: Number = await prisma.hostedUser.count({
     where: {
-      driverId: driverId,
+      hostId: hostId,
     },
   });
 
-  if (nbDriverMember == driver.quantity) {
+  if (nbHostUser == host.quantity) {
     return NextResponse.json(
-      { error: "le covoiturage est déjà plein" },
+      { error: "le logement est déjà plein" },
       { status: 403 }
     );
   }
 
-  const isAlreadyDriverPassenger: DriverPassenger | null =
-    await prisma.driverPassenger.findFirst({
+  const isAlreadyHostedUser: HostedUser | null =
+    await prisma.hostedUser.findFirst({
       where: {
-        driverId: driverId,
+        hostId: hostId,
         userId: Number.parseInt(userId),
       },
     });
 
-  if (isAlreadyDriverPassenger) {
+  if (isAlreadyHostedUser) {
     return NextResponse.json(
-      { error: "l'utilisateur est déjà passager du driver" },
+      { error: "l'utilisateur est déjà dans le logement" },
       { status: 403 }
     );
   }
 
   try {
-    const joiningDriver: DriverPassenger = await prisma.driverPassenger.create({
+    const joiningHost: HostedUser = await prisma.hostedUser.create({
       data: {
-        driver: {
+        host: {
           connect: {
-            id: driverId,
+            id: hostId,
           },
         },
         user: {
@@ -100,7 +97,7 @@ export async function POST(req: Request, params: { params: { id: string } }) {
         },
       },
     });
-    return NextResponse.json({ data: joiningDriver }, { status: 200 });
+    return NextResponse.json({ data: joiningHost }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ erreur: error }, { status: 500 });
