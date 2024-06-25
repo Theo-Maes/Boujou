@@ -48,12 +48,7 @@ export async function POST(req: NextRequest) {
     }
     const bytes = await response.arrayBuffer();
     buffer = Buffer.from(bytes);
-    path = join(
-      process.cwd(),
-      "public",
-      "avatar",
-      Date.now() + "test" + ".jpg"
-    );
+    path = join(process.cwd(), "public", "avatar", Date.now() + ".jpg");
     await writeFile(path, buffer);
   } else {
     let file: File;
