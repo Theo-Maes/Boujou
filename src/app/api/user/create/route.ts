@@ -6,7 +6,6 @@ import { join } from "path";
 import bcrypt from "bcrypt";
 
 interface UserFormData {
-  fullname: string;
   email: string;
   password?: string;
   firstName: string;
@@ -64,7 +63,9 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const avatarPath = path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/");
+  const avatarPath = path
+    .replace(join(process.cwd(), "public"), "")
+    .replace(/\\/g, "/");
 
   try {
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;

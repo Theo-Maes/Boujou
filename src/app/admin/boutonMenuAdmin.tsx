@@ -32,7 +32,6 @@ export default function Button({
           ? "lightgray"
           : "transparent",
 
-        // backgroundColor: active ? theme === "dark" ? vars.COLORS.secondary : "#D5EEFF" : "transparent",
         color: active
           ? "black"
           : theme === "dark"

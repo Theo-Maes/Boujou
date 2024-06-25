@@ -14,8 +14,15 @@ export async function DELETE(req: Request, params: { params: { id: string } }) {
     });
 
     if (userDeleted) {
-      const path = join(process.cwd(), "public", userDeleted.avatar);
-      await unlink(path);
+      const path = join(process.cwd(), "public", userDeleted.avatar).replace(
+        /\\/g,
+        "/"
+      );
+      if (
+        userDeleted.avatar &&
+        userDeleted.avatar !== "/avatar/defaultAvatar.webp"
+      )
+        await unlink(path);
     }
     return NextResponse.json({ data: userDeleted }, { status: 200 });
   } catch (error) {
