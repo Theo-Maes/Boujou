@@ -1,8 +1,8 @@
 import { prisma } from "@/libs";
-import { Driver } from "@prisma/client";
+import { Host } from "@prisma/client";
 import { NextResponse } from "next/server";
 
-interface DriverFormData {
+interface HostFormData {
   adress: string;
   city: string;
   description: string;
@@ -31,9 +31,9 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     quantity,
     groupId,
     userId,
-  } = Object.fromEntries(data.entries()) as unknown as DriverFormData;
+  } = Object.fromEntries(data.entries()) as unknown as HostFormData;
 
-  const updateData: Partial<Driver> = {
+  const updateData: Partial<Host> = {
     adress,
     city,
     zipcode,
@@ -47,7 +47,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   };
 
   try {
-    const driverUpdate: Driver = await prisma.driver.update({
+    const driverUpdate: Host = await prisma.host.update({
       where: {
         id: id,
       },
