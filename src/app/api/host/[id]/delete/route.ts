@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function DELETE(req: Request, params: { params: { id: string } }) {
   const id = Number.parseInt(params.params.id);
   try {
-    const hostDelete: Host = await prisma.driver.delete({
+    const hostDelete: Host = await prisma.host.delete({
       where: {
         id: id,
       },

@@ -14,7 +14,7 @@ export async function POST(req: Request, params: { params: { id: string } }) {
     data.entries()
   ) as unknown as DriverPassengerFormData;
 
-  const host: Host | null = await prisma.driver.findUnique({
+  const host: Host | null = await prisma.host.findUnique({
     where: {
       id: hostId,
     },
