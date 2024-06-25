@@ -19,6 +19,8 @@ export default function UserMenu({
   currentPath: string;
 }): JSX.Element {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { theme } = useTheme();
 
   const handleSignInClick = () => {
@@ -31,6 +33,19 @@ export default function UserMenu({
 
   const handleSignOutClick = () => {
     signOut({ callbackUrl: "/" });
+  };
+
+  const handleSignIn = async () => {
+    const result = await signIn("credentials", {
+      email,
+      password,
+    });
+    if (result?.error) {
+      console.error(result.error);
+    } else {
+      handleCloseModal();
+      //window.location.href = "/";
+    }
   };
 
   if (session && session.user) {
@@ -66,6 +81,7 @@ export default function UserMenu({
                   <p className="font-semibold text-primary dark:text-secondary">{session.user.fullname}</p>
                   <p>{session.user.roleId} / ROLE</p>
                   <p>{session.user.id} / ID</p>
+                  <p>img: {session.user.avatar?.toString()}</p>
                 </div>
               )}
             </MenuItem>
@@ -82,30 +98,26 @@ export default function UserMenu({
                 </Link>
               )}
             </MenuItem>
-            {/* { session && session.user.isAdmin ? ( */}
-              <MenuItem>
-                {({ focus }) => (
-                  <Link
-                    href="/admin"
-                    className={classNames(
-                      focus ? "bg-blue-100 dark:bg-primary text-primary dark:text-blue-100" : "",
-                      "block px-4 py-2 text-sm cursor-pointer"
-                    )}
-                  >
-                    Accès admin
-                  </Link>
-                )}
-              </MenuItem>
-            {/* ) : (
-              <></>
-            )} */}
+            <MenuItem>
+              {({ focus }) => (
+                <Link
+                  href="/admin"
+                  className={classNames(
+                    focus ? "bg-blue-100 dark:bg-primary text-primary dark:text-blue-100" : "",
+                    "block px-4 py-2 text-sm cursor-pointer"
+                  )}
+                >
+                  Accès admin
+                </Link>
+              )}
+            </MenuItem>
             <MenuItem>
               {({ focus }) => (
                 <div
                   className={classNames(
                     focus ? "bg-red-100 dark:bg-red-500 text-red-500 dark:text-red-100" : "",
                     "block px-4 py-2 text-sm cursor-pointer"
-              )}
+                  )}
                   onClick={handleSignOutClick}
                 >
                   Déconnexion
@@ -137,12 +149,16 @@ export default function UserMenu({
               label="Email"
               placeholder="Entrez votre adresse email"
               variant="bordered"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               label="Mot de passe"
               placeholder="Entrez votre mot de passe"
               type="password"
               variant="bordered"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
             <div className="flex py-2 px-1 justify-between">
               <Checkbox
@@ -194,7 +210,7 @@ export default function UserMenu({
               <Button color="danger" variant="flat" onPress={handleCloseModal} className="dark:text-white">
                 Annuler
               </Button>
-              <Button color={theme === "dark" ? "secondary" : "primary"} onPress={handleCloseModal} className="text-white dark:text-black">
+              <Button color={theme === "dark" ? "secondary" : "primary"} onClick={handleSignIn} className="text-white dark:text-black">
                 Se connecter
               </Button>
             </div>

@@ -8,7 +8,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   const id = Number.parseInt(params.params.id);
   const data = await req.formData();
 
-  const file: File | null = data.get("file") as unknown as File;
+  const file: File | null = data.get("avatar") as unknown as File;
   let path: string = "";
 
   if (file) {
@@ -60,7 +60,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     ...(latitude && { latitude }),
     ...(longitude && { longitude }),
     ...(roleId && { roleId }),
-    avatar: file ? path.replace(join(process.cwd(), "public"), "") : undefined,
+    avatar: file ? path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/") : undefined,
   };
 
   try {
