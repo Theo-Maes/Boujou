@@ -140,7 +140,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
         ]);
         break;
       default:
-        setPages([...CHOICE_STEPS, ...EVENT_STEPS]);
+        setPages([...CHOICE_STEPS, ...EVENT_STEPS, ...SUCCESS_STEPS]);
         break;
     }
   };
@@ -179,7 +179,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="flex flex-1 flex-col space-y-8  items-center overflow-hidden w-full"
+                className="flex  flex-1 flex-col space-y-8  items-center overflow-hidden w-full"
               >
                 <span className="space-y-5">
                   <Typography
@@ -207,7 +207,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  className="flex w-full flex-1 justify-center flex-col space-y-4"
+                  className="flex w-full flex-1 justify-center items-center flex-col space-y-4"
                 >
                   {step.renderInputFields &&
                     step.renderInputFields(control, pagesHelper)}
