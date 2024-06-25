@@ -103,12 +103,23 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
         setLoading(false);
         return;
       }
+
+      console.log(form.avatar);
+      
     }
 
     try {
       const formData = new FormData(e.currentTarget);
-      formData.append("fullname", `${formData.get("firstName")} ${formData.get("lastName")}`)
       formData.append("roleId", "1");
+      if (initialValues.email !== "") formData.set("email", initialValues.email);
+      if (initialValues.firstName !== "") formData.set("firstName", initialValues.firstName);
+      if (initialValues.lastName !== "") formData.set("lastName", initialValues.lastName);
+      if (initialValues.firstName !== "" && initialValues.lastName !== "") {
+        formData.set("fullName", `${initialValues.firstName} ${initialValues.lastName}`);
+      } else 
+      {
+        formData.append("fullname", `${formData.get("firstName")} ${formData.get("lastName")}`)
+      }
 
       const res = await fetch("/api/user/create", {
         method: "POST",
@@ -118,7 +129,6 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
       if (res.ok) {
         setSuccess(true);
         console.log("Inscription réussie : ", form);
-        alert("Inscription réussie !");
       } else {
         const data = await res.json();
         setError(data.message || "Une erreur est survenue");
@@ -367,7 +377,7 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
           {success && (
             <>
               <Spacer y={1} />
-              <div className="text-green-500">Inscription réussie !</div>
+              <div className="text-green-500">Inscription réussie ! Vous pouvez vous connecter.</div>
             </>
           )}
           {error && (

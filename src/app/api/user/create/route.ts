@@ -3,6 +3,7 @@ import { User } from "@prisma/client";
 import { unlink, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
+import bcrypt from "bcrypt";
 
 interface UserFormData {
   fullname: string;
@@ -64,18 +65,21 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const avatarPath = path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/");
+
   try {
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
     const newUser: User = await prisma.user.create({
       data: {
-        fullname: fullname || "aa",
+        fullname: fullname,
         email: email,
-        password: password,
-        avatar: path.replace(join(process.cwd(), "public"), ""),
+        password: hashedPassword,
+        avatar: avatarPath,
         firstName: firstName,
         lastName: lastName,
-        adress: adress || "",
-        zipcode: zipcode || "",
-        city: city || "",
+        adress: adress,
+        zipcode: zipcode,
+        city: city,
         latitude: latitude || "0",
         longitude: longitude || "0",
         role: {

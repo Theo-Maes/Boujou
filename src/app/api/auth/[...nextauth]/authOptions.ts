@@ -1,8 +1,9 @@
-import { AuthOptions, CustomUser, Session, User } from "next-auth";
+import { AuthOptions, CustomUser, Session } from "next-auth";
 import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
-import { PrismaClient } from "@prisma/client";
-import { JWT } from "next-auth/jwt";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaClient, User } from "@prisma/client";
 import { prisma } from "@/libs";
+import bcrypt from "bcrypt";
 
 interface GoogleUser extends GoogleProfile {
   given_name: string;
@@ -16,6 +17,42 @@ const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   providers: [
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Mot de passe", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials) {
+          throw new Error("Invalid credentials");
+        }
+
+        const { email, password } = credentials;
+
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (!user) {
+          throw new Error("No user found with the provided email");
+        }
+
+        const isValidPassword = await bcrypt.compare(password, user.password || "");
+        if (!isValidPassword) {
+          throw new Error("Invalid password");
+        }
+
+        return {
+            id: user.id.toString(),
+            fullname: user.fullname,
+            email: user.email,
+            avatar: user.avatar,
+            roleId: user.roleId,
+          
+        };
+      }
+    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -33,30 +70,49 @@ const authOptions: AuthOptions = {
 
   callbacks: {
     async signIn({ user, account, profile }) {
-      const googleUser = profile as GoogleUser;
-      const existingUser = await prisma.user.findUnique({
-        where: { email: googleUser.email ?? "" },
-      });
+      console.log(account?.provider.toString());
+      
+      if (account?.provider === "credentials") {
+        const credentialUser = user as CustomUser;
+        const existingCredentialUser = await prisma.user.findUnique({
+          where: { email: credentialUser.email ?? "" },
+        });
 
-      console.log(existingUser);
+        if (!existingCredentialUser) return false;
+      }
 
-      if (!existingUser) {
-        const queryParams = new URLSearchParams({
-          email: googleUser.email,
-          firstName: googleUser.given_name,
-          lastName: googleUser.family_name,
-          avatar: googleUser.picture,
-        }).toString();
+      if (account?.provider === "google") {
+        const googleUser = profile as GoogleUser;
+        const existingGoogleUser = await prisma.user.findUnique({
+          where: { email: googleUser.email ?? "" },
+        });
 
-        return `/todo?${queryParams}`;
+        if (!existingGoogleUser) {
+          const queryParams = new URLSearchParams({
+            email: googleUser.email,
+            firstName: googleUser.given_name,
+            lastName: googleUser.family_name,
+            avatar: googleUser.picture,
+          }).toString();
+
+          return `/signup?${queryParams}`;
+        }
       }
 
       return true;
     },
     async jwt({ token, user }) {
       if (user) {
+        console.log("1" + user);
+        
         const customUser = user as CustomUser;
-        token.id = customUser.id;
+        console.log("2" + customUser);
+        
+
+        const userConnected = await prisma.user.findUnique({
+          where: { email: customUser.email}
+        })
+        token.id = userConnected?.id;
         token.username = customUser.fullname ?? "";
         token.email = customUser.email ?? "";
         token.avatar = customUser.avatar ?? "";

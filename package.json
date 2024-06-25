@@ -23,6 +23,8 @@
     "@mui/x-date-pickers": "^7.7.0",
     "@nextui-org/react": "^2.3.6",
     "@prisma/client": "^5.13.0",
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^5.1.1",
     "dayjs": "^1.11.11",
     "framer-motion": "^11.1.9",
     "next": "^14.2.3",
