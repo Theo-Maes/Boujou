@@ -86,39 +86,34 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
     setError("");
     setSuccess(false);
 
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-    if (!passwordRegex.test(form.password)) {
-      setError(
-        "Le mot de passe doit contenir au moins 8 caractères, une minuscule, une majuscule, un chiffre et un symbole."
-      );
-      setLoading(false);
-      return;
-    }
-
-    if (form.password !== form.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
-      setLoading(false);
-      return;
+    if (!initialValues) {
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  
+      if (!passwordRegex.test(form.password)) {
+        setError(
+          "Le mot de passe doit contenir au moins 8 caractères, une minuscule, une majuscule, un chiffre et un symbole."
+        );
+        setLoading(false);
+        return;
+      }
+  
+      if (form.password !== form.confirmPassword) {
+        setError("Les mots de passe ne correspondent pas");
+        setLoading(false);
+        return;
+      }
     }
 
     try {
       const formData = new FormData(e.currentTarget);
-      // const formData = new FormData();
-      // Object.keys(form).forEach((key) => {
-      //   let value = form[key as keyof FormState];
-      //   formData.append(key, value);
-      // });
-
+      formData.append("fullname", `${formData.get("firstName")} ${formData.get("lastName")}`)
       formData.append("roleId", "1");
 
       const res = await fetch("/api/user/create", {
         method: "POST",
         body: formData,
       });
-
-      console.log(formData);
 
       if (res.ok) {
         setSuccess(true);
