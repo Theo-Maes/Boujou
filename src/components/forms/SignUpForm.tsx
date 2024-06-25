@@ -102,10 +102,7 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
         setError("Les mots de passe ne correspondent pas");
         setLoading(false);
         return;
-      }
-
-      console.log(form.avatar);
-      
+      }      
     }
 
     try {

@@ -29,8 +29,9 @@ export async function POST(req: NextRequest) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const path = join(process.cwd(), "public", "event", Date.now() + file.name);
+  const path = join(process.cwd(), "public", "event", Date.now() + file.name).replace(" ", "_");
   await writeFile(path, buffer);
+
   try {
     const {
       name,
@@ -40,25 +41,38 @@ export async function POST(req: NextRequest) {
       address,
       city,
       zipCode,
-      latitude,
-      longitude,
       categoryId,
       url,
     } = Object.fromEntries(data.entries()) as unknown as EventFormData;
+
+    const eventGeoData = await fetch(
+      `https://geocode.maps.co/search?q=${encodeURIComponent(
+        address + "," + zipCode + "," + city
+      )}&api_key=${process.env.GEOCODE_API}`
+    );
+
+    const eventGeoDataJSon = await eventGeoData.json();
+    const lat = eventGeoDataJSon[0].lat;
+    const long = eventGeoDataJSon[0].lon;
+
+    const endingDateDateTime = new Date(Number(endingDate));     
+    const startingDateDateTime = new Date(Number(startingDate));
+
+    const avatarPath = path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/");
 
     const newEvent: Event = await prisma.event.create({
       data: {
         name: name,
         description: description,
         url: url ? url : null,
-        endingDate: endingDate,
-        startingDate: startingDate,
+        endingDate: endingDateDateTime,
+        startingDate: startingDateDateTime,
         address: address,
         city: city,
         zipCode: zipCode,
-        latitude: latitude,
-        longitude: longitude,
-        image: path.replace(join(process.cwd(), "public"), ""),
+        latitude: lat,
+        longitude: long,
+        image: avatarPath,
         category: {
           connect: {
             id: Number.parseInt(categoryId),

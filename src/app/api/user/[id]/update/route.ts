@@ -4,6 +4,21 @@ import { unlink, writeFile } from "fs/promises";
 import { NextResponse } from "next/server";
 import { join } from "path";
 
+interface UserFormData {
+  fullname: string;
+  email: string;
+  password?: string;
+  firstName: string;
+  lastName: string;
+  adress?: string;
+  zipcode?: string;
+  city?: string;
+  latitude?: string;
+  longitude?: string;
+  roleId: string;
+  avatar?: string;
+}
+
 export async function PATCH(req: Request, params: { params: { id: string } }) {
   const id = Number.parseInt(params.params.id);
   const data = await req.formData();
@@ -36,19 +51,19 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     fullname,
     email,
     password,
-    avatar,
     firstName,
     lastName,
+    avatar,
     adress,
     zipcode,
     city,
     latitude,
     longitude,
     roleId,
-  } = Object.fromEntries(data.entries()) as unknown as User;
+  } = Object.fromEntries(data.entries()) as unknown as UserFormData;
 
   const updateData: Partial<User> = {
-    ...(fullname && { fullname }),
+    ...(fullname && { fullname: `${firstName} ${lastName}` }),
     ...(email && { email }),
     ...(password && { password }),
     ...(avatar && { avatar }),
@@ -59,7 +74,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     ...(city && { city }),
     ...(latitude && { latitude }),
     ...(longitude && { longitude }),
-    ...(roleId && { roleId }),
+    ...(roleId && { roleId: Number.parseInt(roleId) }),
     avatar: file ? path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/") : undefined,
   };
 

@@ -1,8 +1,23 @@
 import { prisma } from "@/libs";
 import { Event } from "@prisma/client";
-import { unlink, writeFile } from "fs/promises";
+import { constants } from "fs";
+import { access, unlink, writeFile } from "fs/promises";
 import { NextResponse } from "next/server";
 import { join } from "path";
+
+interface EventFormData {
+  name: string;
+  description: string;
+  endingDate: string;
+  startingDate: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  latitude: string;
+  longitude: string;
+  categoryId: string;
+  url: string;
+}
 
 export async function PATCH(req: Request, params: { params: { id: string } }) {
   const id = Number.parseInt(params.params.id);
@@ -11,7 +26,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   const file: File | null = data.get("image") as unknown as File;
   let path: string = "";
 
-  if (file) {
+  if (file) {   
     try {
       const eventFind: Event | null = await prisma.event.findUnique({
         where: {
@@ -21,12 +36,12 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
       if (eventFind) {
         path = join(process.cwd(), "public", eventFind.image);
       }
+      await access(path, constants.F_OK);
       await unlink(path);
     } catch (error) {
       return NextResponse.json({ erreur: error }, { status: 500 });
     }
-
-    path = join(process.cwd(), "public", "event", Date.now() + file.name);
+    path = join(process.cwd(), "public", "event", Date.now() + file.name).replace(" ", "_");
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     await writeFile(path, buffer);
@@ -44,22 +59,37 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     longitude,
     categoryId,
     url,
-  } = Object.fromEntries(data.entries()) as unknown as Event;
+  } = Object.fromEntries(data.entries()) as unknown as EventFormData;
+  
+  const eventGeoData = await fetch(
+    `https://geocode.maps.co/search?q=${encodeURIComponent(
+      address + "," + zipCode + "," + city
+    )}&api_key=${process.env.GEOCODE_API}`
+  );
+
+  const eventGeoDataJSon = await eventGeoData.json();
+  const lat = eventGeoDataJSon[0].lat;
+  const long = eventGeoDataJSon[0].lon;
+
+  const endingDateDateTime = new Date(Number(endingDate));     
+  const startingDateDateTime = new Date(Number(startingDate));
 
   const updateData: Partial<Event> = {
     ...(name && { name }),
     ...(description && { description }),
-    ...(endingDate && { endingDate }),
-    ...(startingDate && { startingDate }),
+    ...(endingDate && { endingDate: endingDateDateTime }),
+    ...(startingDate && { startingDate: startingDateDateTime }),
     ...(address && { address }),
     ...(city && { city }),
     ...(zipCode && { zipCode }),
-    ...(latitude && { latitude }),
+    ...(latitude && { latitude: lat }),
+    ...(longitude && { longitude: long }),
     ...(longitude && { longitude }),
-    ...(categoryId && { categoryId }),
+    ...(categoryId && { categoryId: Number.parseInt(categoryId) }),
     ...(url && { url }),
-    image: file ? path.replace(join(process.cwd(), "public"), "") : undefined,
+    image: file ? path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/") : undefined,
   };
+
 
   try {
     const eventUpdated: Event | null = await prisma.event.update({
