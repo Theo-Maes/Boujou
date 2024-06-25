@@ -23,7 +23,6 @@ interface UserFormData {
 export async function POST(req: NextRequest) {
   const data = await req.formData();
   const {
-    fullname,
     email,
     password,
     firstName,
@@ -71,7 +70,7 @@ export async function POST(req: NextRequest) {
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
     const newUser: User = await prisma.user.create({
       data: {
-        fullname: fullname,
+        fullname: firstName + " " + lastName,
         email: email,
         password: hashedPassword,
         avatar: avatarPath,

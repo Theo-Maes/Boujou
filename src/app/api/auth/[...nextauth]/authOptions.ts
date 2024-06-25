@@ -1,7 +1,6 @@
-import { AuthOptions, CustomUser, Session } from "next-auth";
+import { AuthOptions, CustomUser } from "next-auth";
 import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaClient, User } from "@prisma/client";
 import { prisma } from "@/libs";
 import bcrypt from "bcrypt";
 
@@ -102,13 +101,8 @@ const authOptions: AuthOptions = {
       return true;
     },
     async jwt({ token, user }) {
-      if (user) {
-        console.log("1" + user);
-        
-        const customUser = user as CustomUser;
-        console.log("2" + customUser);
-        
-
+      if (user) {      
+        const customUser = user as CustomUser; 
         const userConnected = await prisma.user.findUnique({
           where: { email: customUser.email}
         })
