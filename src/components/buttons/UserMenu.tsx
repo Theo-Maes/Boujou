@@ -44,7 +44,12 @@ export default function UserMenu({
       console.error(result.error);
     } else {
       handleCloseModal();
-      //window.location.href = "/";
+
+      if (["/signin", "/signup"].includes(currentPath)) {
+        window.location.href = "/";
+      } else {
+        window.location.href = currentPath;
+      }    
     }
   };
 
