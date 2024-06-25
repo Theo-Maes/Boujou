@@ -9,14 +9,14 @@ import Image from "next/image";
 interface CustomTextFieldProps {
   name: string;
   control?: any;
-  label: string;
+  label?: string;
   defaultValue?: string;
   placeholder?: string;
   endIcon?: string;
   [key: string]: any;
 }
 
-const Textfield: React.FC<CustomTextFieldProps> = ({
+const TextField = ({
   name,
   control,
   label,
@@ -33,6 +33,7 @@ const Textfield: React.FC<CustomTextFieldProps> = ({
     control,
     defaultValue: defaultValue || "",
   });
+
   return (
     <Input
       label={label}
@@ -47,9 +48,9 @@ const Textfield: React.FC<CustomTextFieldProps> = ({
       endContent={
         endIcon && (
           <Image
-            className="mx-2 drop-shadow-lg"
+            className="drop-shadow-lg"
             src={`/icons/form/${endIcon}.png`}
-            alt="Icon"
+            alt="Apple Logo"
             width={24}
             height={24}
           />
@@ -64,6 +65,7 @@ const Textfield: React.FC<CustomTextFieldProps> = ({
         ],
         innerWrapper: "bg-transparent",
         inputWrapper: [
+          "h-[60px]",
           "bg-page",
           //   "dark:bg-default/60",
           "backdrop-blur-xl",
@@ -81,4 +83,4 @@ const Textfield: React.FC<CustomTextFieldProps> = ({
   );
 };
 
-export default Textfield;
+export default TextField;
