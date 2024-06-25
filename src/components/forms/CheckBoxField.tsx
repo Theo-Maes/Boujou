@@ -49,7 +49,7 @@ const CheckBoxField = ({
             value={option}
             radius="md"
             classNames={{
-              label: "w-full text-black",
+              label: "w-full text-white",
               wrapper: "bg-blue-200 checked:bg-red-400",
               base: "focus:ring-0 focus:outline-none checked:bg-red-400",
             }}

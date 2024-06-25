@@ -24,7 +24,7 @@ export const CHOICE_STEPS = [
           control={control}
           name="choices"
           className="col-span-4 text-black border-blue-500 hover:border-blue-500"
-          options={["Covoiturage"]}
+          options={["Covoiturage", "Hébergement"]}
           onChange={onChange}
         />
       </div>

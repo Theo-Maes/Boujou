@@ -140,7 +140,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
         ]);
         break;
       default:
-        setPages([...CHOICE_STEPS, ...EVENT_STEPS]);
+        setPages([...CHOICE_STEPS, ...EVENT_STEPS, ...SUCCESS_STEPS]);
         break;
     }
   };
