@@ -1,26 +1,23 @@
 import { prisma } from "@/libs";
-import { Group } from "@prisma/client";
+import { Driver } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request, params: { params: { id: string } }) {
   const id = Number.parseInt(params.params.id);
   try {
-    const groupFind: Group | null = await prisma.group.findUnique({
+    const DriverFind: Driver | null = await prisma.driver.findUnique({
       where: {
         id: id,
       },
       include: {
-        creator: true,
-        event: true,
-        members: {
-          include: {
-            user: true,
-          },
+        user: true,
+        group: true,
+        passengers: {
+          include: { user: true },
         },
-        drivers: true,
       },
     });
-    return NextResponse.json({ data: groupFind }, { status: 200 });
+    return NextResponse.json({ data: DriverFind }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ erreur: error }, { status: 500 });
   }
