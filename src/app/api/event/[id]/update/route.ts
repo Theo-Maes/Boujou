@@ -16,6 +16,7 @@ interface EventFormData {
   latitude: string;
   longitude: string;
   categoryId: string;
+  price: string;
   url: string;
 }
 
@@ -58,6 +59,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     latitude,
     longitude,
     categoryId,
+    price,
     url,
   } = Object.fromEntries(data.entries()) as unknown as EventFormData;
   
@@ -87,6 +89,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     ...(longitude && { longitude }),
     ...(categoryId && { categoryId: Number.parseInt(categoryId) }),
     ...(url && { url }),
+    ...(price && { price: Number.parseInt(price) }),
     image: file ? path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/") : undefined,
   };
 

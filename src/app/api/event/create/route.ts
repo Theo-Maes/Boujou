@@ -15,6 +15,7 @@ interface EventFormData {
   latitude: string;
   longitude: string;
   categoryId: string;
+  price: string;
   url: string;
 }
 
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
       zipCode,
       categoryId,
       url,
+      price,
     } = Object.fromEntries(data.entries()) as unknown as EventFormData;
 
     const eventGeoData = await fetch(
@@ -73,6 +75,7 @@ export async function POST(req: NextRequest) {
         latitude: lat,
         longitude: long,
         image: avatarPath,
+        price: Number.parseInt(price),
         category: {
           connect: {
             id: Number.parseInt(categoryId),
