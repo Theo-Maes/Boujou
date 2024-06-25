@@ -70,18 +70,33 @@ export async function POST(req: Request, params: { params: { id: string } }) {
     );
   }
 
+  const isAlreadyDriverPassenger: DriverPassenger | null =
+    await prisma.driverPassenger.findFirst({
+      where: {
+        driverId: driverId,
+        userId: Number.parseInt(userId),
+      },
+    });
+
+  if (isAlreadyDriverPassenger) {
+    return NextResponse.json(
+      { error: "l'utilisateur est déjà passager du driver" },
+      { status: 403 }
+    );
+  }
+
   try {
     const newDriverPassenger: DriverPassenger =
       await prisma.driverPassenger.create({
         data: {
           driver: {
             connect: {
-              id: 1,
+              id: driverId,
             },
           },
           user: {
             connect: {
-              id: 1,
+              id: Number.parseInt(userId),
             },
           },
         },
@@ -92,3 +107,5 @@ export async function POST(req: Request, params: { params: { id: string } }) {
     return NextResponse.json({ erreur: error }, { status: 500 });
   }
 }
+
+//verif le join de plusieurs user and le leave et normalement plus qu'a merge mais pas de reseau téléphonique 4g ou fibre a partir de 00h45 donc sad j'ai attendu mais 1h du mat je vais dodo du coup
