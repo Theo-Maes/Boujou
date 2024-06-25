@@ -9,7 +9,13 @@ export async function GET(req: Request, params: { params: { id: string } }) {
       where: {
         id: id,
       },
-      include: { user: true, group: true },
+      include: {
+        user: true,
+        group: true,
+        passengers: {
+          include: { user: true },
+        },
+      },
     });
     return NextResponse.json({ data: DriverFind }, { status: 200 });
   } catch (error) {
