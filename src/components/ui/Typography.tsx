@@ -22,7 +22,7 @@ const Typography: React.FC<TypographyProps> = ({
   children,
   className,
 }) => {
-  const baseClasses = `text-gray-900 ${className}`;
+  const baseClasses = `text-gray-900 font-body ${className}`;
 
   const variantClasses: { [key in TypographyProps["variant"]]: string } = {
     h1: "text-4xl font-bold",
