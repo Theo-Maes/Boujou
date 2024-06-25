@@ -20,7 +20,7 @@ export default function Menu({ labelActive }: MenuProps) {
       alt: "icon de statistiques",
       icon: ChartPie,
       onClick: () => {
-        console.log("click");
+        window.location.href = "/admin";
       },
     },
     {
@@ -28,7 +28,7 @@ export default function Menu({ labelActive }: MenuProps) {
       alt: "icon de Utilistateurs",
       icon: ChartPie,
       onClick: () => {
-        console.log("click");
+        window.location.href = "/admin/users";
       },
     },
     {

@@ -6,7 +6,6 @@ import { join } from "path";
 import bcrypt from "bcrypt";
 
 interface UserFormData {
-  fullname: string;
   email: string;
   password?: string;
   firstName: string;
@@ -23,7 +22,6 @@ interface UserFormData {
 export async function POST(req: NextRequest) {
   const data = await req.formData();
   const {
-    fullname,
     email,
     password,
     firstName,
@@ -65,13 +63,15 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  const avatarPath = path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/");
+  const avatarPath = path
+    .replace(join(process.cwd(), "public"), "")
+    .replace(/\\/g, "/");
 
   try {
     const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
     const newUser: User = await prisma.user.create({
       data: {
-        fullname: fullname,
+        fullname: firstName + " " + lastName,
         email: email,
         password: hashedPassword,
         avatar: avatarPath,
