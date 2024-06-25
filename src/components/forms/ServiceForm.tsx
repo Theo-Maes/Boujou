@@ -76,7 +76,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
   };
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
-    if (currentPage == pages.length - 2) {
+    if (currentPage == pages.length - 1) {
       const filename = data.image.name;
       const fileType = data.image.type;
 
@@ -160,7 +160,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col justify-between items-stretch space-y-6 h-[500px] w-[380px]"
     >
-      {!pages[currentPage].transition && (
+      {currentPage !== pages.length - 1 && currentPage !== 0 && (
         <Loader
           currentStep={getSCurrentStep()}
           totalSteps={getStepLength()}
@@ -181,9 +181,23 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
                 exit="exit"
                 className="flex flex-1 flex-col space-y-8  items-center overflow-hidden w-full"
               >
-                <span className="space-y-2">
-                  <Typography variant="h4">{step.title}</Typography>
-                  <Typography variant="body">{step.subtitle}</Typography>
+                <span className="space-y-5">
+                  <Typography
+                    variant="h3"
+                    className={`${
+                      step.transition ? "text-white" : "text-black"
+                    } tracking-wide`}
+                  >
+                    {step.title}
+                  </Typography>
+                  <Typography
+                    variant="p"
+                    className={`${
+                      step.transition ? "text-white" : "text-black"
+                    } tracking-wide`}
+                  >
+                    {step.subtitle}
+                  </Typography>
                 </span>
 
                 <motion.div
