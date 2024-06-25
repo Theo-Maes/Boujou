@@ -86,22 +86,21 @@ export async function POST(req: Request, params: { params: { id: string } }) {
   }
 
   try {
-    const newDriverPassenger: DriverPassenger =
-      await prisma.driverPassenger.create({
-        data: {
-          driver: {
-            connect: {
-              id: driverId,
-            },
-          },
-          user: {
-            connect: {
-              id: Number.parseInt(userId),
-            },
+    const joiningDriver: DriverPassenger = await prisma.driverPassenger.create({
+      data: {
+        driver: {
+          connect: {
+            id: driverId,
           },
         },
-      });
-    return NextResponse.json({ data: newDriverPassenger }, { status: 200 });
+        user: {
+          connect: {
+            id: Number.parseInt(userId),
+          },
+        },
+      },
+    });
+    return NextResponse.json({ data: joiningDriver }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ erreur: error }, { status: 500 });

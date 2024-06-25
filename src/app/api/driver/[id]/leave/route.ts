@@ -73,16 +73,15 @@ export async function DELETE(req: Request, params: { params: { id: string } }) {
   }
 
   try {
-    const newDriverPassenger: DriverPassenger =
-      await prisma.driverPassenger.delete({
-        where: {
-          driverId_userId: {
-            driverId: driverId,
-            userId: Number.parseInt(userId),
-          },
+    const leavingDriver: DriverPassenger = await prisma.driverPassenger.delete({
+      where: {
+        driverId_userId: {
+          driverId: driverId,
+          userId: Number.parseInt(userId),
         },
-      });
-    return NextResponse.json({ data: newDriverPassenger }, { status: 200 });
+      },
+    });
+    return NextResponse.json({ data: leavingDriver }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ erreur: error }, { status: 500 });

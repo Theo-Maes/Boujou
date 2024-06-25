@@ -46,7 +46,7 @@ export async function POST(req: Request) {
   };
 
   try {
-    const newDriver: Driver = await prisma.driver.create({
+    const driverUpdate: Driver = await prisma.driver.create({
       data: {
         adress,
         city,
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
         },
       },
     });
-    return NextResponse.json({ data: newDriver }, { status: 200 });
+    return NextResponse.json({ data: driverUpdate }, { status: 200 });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ erreur: error }, { status: 500 });

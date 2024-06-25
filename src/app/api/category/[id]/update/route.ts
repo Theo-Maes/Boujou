@@ -7,7 +7,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   const data = await req.formData();
   const { name } = Object.fromEntries(data.entries()) as unknown as Category;
   try {
-    const categoryFind: Category = await prisma.category.update({
+    const categoryUpdate: Category = await prisma.category.update({
       data: {
         name: name,
       },
@@ -15,7 +15,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
         id: id,
       },
     });
-    return NextResponse.json({ data: categoryFind }, { status: 200 });
+    return NextResponse.json({ data: categoryUpdate }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ erreur: error }, { status: 500 });
   }
