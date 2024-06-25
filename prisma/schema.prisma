@@ -76,9 +76,9 @@ model User {
   avatar    String   
   firstName String   
   lastName  String
-  adress    String
-  zipcode   String
-  city      String
+  adress    String?
+  zipcode   String?
+  city      String?
   latitude  String?
   longitude String?
   role      Role     @relation(fields: [roleId], references: [id])

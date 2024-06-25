@@ -7,14 +7,14 @@ import { join } from "path";
 interface UserFormData {
   fullname: string;
   email: string;
-  password: string;
+  password?: string;
   firstName: string;
   lastName: string;
-  adress: string;
-  zipcode: string;
-  city: string;
-  latitude: string;
-  longitude: string;
+  adress?: string;
+  zipcode?: string;
+  city?: string;
+  latitude?: string;
+  longitude?: string;
   roleId: string;
   avatarUrl?: string;
 }
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     let file: File;
     file = data.get("avatar") as unknown as File;
     if (!file) {
-      file = new File([], "/public/avatar/1719296463884test.jpg");
+      file = new File([], "/public/avatar/defaultAvatar.webp");
       path = join(process.cwd(), file.name);
     } else {
       path = join(process.cwd(), "public", "avatar", Date.now() + file.name);
