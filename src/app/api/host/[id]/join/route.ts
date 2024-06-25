@@ -103,5 +103,3 @@ export async function POST(req: Request, params: { params: { id: string } }) {
     return NextResponse.json({ erreur: error }, { status: 500 });
   }
 }
-
-//verif le join de plusieurs user and le leave et normalement plus qu'a merge mais pas de reseau téléphonique 4g ou fibre a partir de 00h45 donc sad j'ai attendu mais 1h du mat je vais dodo du coup
