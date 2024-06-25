@@ -66,7 +66,7 @@ const DatePickerField = ({
       selectorIcon={
         <Image
           className="drop-shadow-lg"
-          src={`/icons/calendar.png`}
+          src={`/icons/form/calendar.svg`}
           alt="Apple Logo"
           width={24}
           height={24}

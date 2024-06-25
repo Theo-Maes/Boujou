@@ -133,7 +133,7 @@ export const EVENT_STEPS = [
       name: yup.string().required(),
     },
     renderInputFields: (control: any) => (
-      <div className="grid grid-cols-4 gap-4 justify-center items-center ">
+      <div className="grid grid-cols-4 gap-4  justify-center items-center ">
         <TextField
           control={control}
           name="name"
