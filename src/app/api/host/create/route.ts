@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 
   if (host) {
     return NextResponse.json(
-      { error: " l'utilisateur est déjà un host dans ce groupe " },
+      { error: " l'utilisateur est déjà un Host dans ce groupe " },
       { status: 403 }
     );
   }
