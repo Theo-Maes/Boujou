@@ -24,6 +24,7 @@ import { Event } from "@prisma/client";
 import { EyeIcon } from "@/components/icons/EyeIcon";
 import ModalDetailEvent from "./ModalDetailEvent";
 import { EditIcon } from "@/components/icons/EditIcon";
+import ModalUpdateEvent from "./modalUpdateEvent";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   Attente: "warning",
@@ -34,6 +35,7 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 export default function App({ events }: { events: Event[] }) {
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [openModalValidation, setOpenModalValidation] = useState(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [eventModal, setEventModal] = useState<Event | undefined>(undefined);
   const [TypeModal, setTypeModal] = useState<"accept" | "refuse" | "cancel">(
     "accept"
@@ -41,17 +43,21 @@ export default function App({ events }: { events: Event[] }) {
 
   const openModal = (
     event: Event,
-    type: "accept" | "refuse" | "cancel" | "detail"
+    type: "accept" | "refuse" | "cancel" | "detail" | "update"
   ) => {
     setEventModal(event);
     if (type === "detail") setOpenModalDetail(true);
     else {
-      setTypeModal(type);
+      if (type === "update") setOpenModalUpdate(true);
+      else setTypeModal(type);
       setOpenModalValidation(true);
     }
   };
 
   const onClose = () => {
+    if (openModalUpdate) {
+      setOpenModalUpdate(false);
+    }
     if (openModalDetail) {
       setOpenModalDetail(false);
     }
@@ -166,7 +172,10 @@ export default function App({ events }: { events: Event[] }) {
                 ) : (
                   <>
                     <Tooltip color="default" content="Modifier">
-                      <span className="text-lg cursor-pointer active:opacity-50">
+                      <span
+                        className="text-lg cursor-pointer active:opacity-50"
+                        onClick={() => openModal(event, "update")}
+                      >
                         <EditIcon />
                       </span>
                     </Tooltip>
@@ -379,6 +388,11 @@ export default function App({ events }: { events: Event[] }) {
       <ModalDetailEvent
         eventModal={eventModal}
         isOpen={openModalDetail}
+        onClose={onClose}
+      />
+      <ModalUpdateEvent
+        eventModal={eventModal}
+        isOpen={openModalUpdate}
         onClose={onClose}
       />
     </>
