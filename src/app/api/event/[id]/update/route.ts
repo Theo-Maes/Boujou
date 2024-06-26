@@ -4,6 +4,7 @@ import { constants } from "fs";
 import { access, unlink, writeFile } from "fs/promises";
 import { NextResponse } from "next/server";
 import { join } from "path";
+import sharp from "sharp";
 
 interface EventFormData {
   name: string;
@@ -16,7 +17,10 @@ interface EventFormData {
   latitude: string;
   longitude: string;
   categoryId: string;
+  price: string;
   url: string;
+  cancelledAt: string | null;
+  validatedAt: string | null;
 }
 
 export async function PATCH(req: Request, params: { params: { id: string } }) {
@@ -44,7 +48,10 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     path = join(process.cwd(), "public", "event", Date.now() + file.name).replace(" ", "_");
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(path, buffer);
+    const resizedImageBuffer = await sharp(buffer)
+    .resize(1600, 924)
+    .toBuffer();
+    await writeFile(path, resizedImageBuffer);
   }
 
   const {
@@ -58,18 +65,37 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     latitude,
     longitude,
     categoryId,
+    price,
     url,
+    validatedAt,
+    cancelledAt,
   } = Object.fromEntries(data.entries()) as unknown as EventFormData;
-  
-  const eventGeoData = await fetch(
-    `https://geocode.maps.co/search?q=${encodeURIComponent(
-      address + "," + zipCode + "," + city
-    )}&api_key=${process.env.GEOCODE_API}`
-  );
 
-  const eventGeoDataJSon = await eventGeoData.json();
-  const lat = eventGeoDataJSon[0].lat;
-  const long = eventGeoDataJSon[0].lon;
+  const isAddressModified = address !== undefined || city !== undefined || zipCode !== undefined;
+
+  const existingLat = data.get("latitude") as string;
+  const existingLong = data.get("longitude") as string;
+  let lat: string = "";
+  let long: string = "";
+
+  if (isAddressModified) {
+    try {
+      const eventGeoData = await fetch(
+        `https://geocode.maps.co/search?q=${encodeURIComponent(
+          address + "," + zipCode + "," + city
+        )}&api_key=${process.env.GEOCODE_API}`
+      );
+
+      const eventGeoDataJSon = await eventGeoData.json();
+      lat = eventGeoDataJSon[0].lat;
+      long = eventGeoDataJSon[0].lon;
+    } catch (error) {
+      return NextResponse.json({ erreur: error }, { status: 500 });
+    }
+  } else {
+    lat = existingLat;
+    long = existingLong;
+  }
 
   const endingDateDateTime = new Date(Number(endingDate));     
   const startingDateDateTime = new Date(Number(startingDate));
@@ -87,15 +113,34 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     ...(longitude && { longitude }),
     ...(categoryId && { categoryId: Number.parseInt(categoryId) }),
     ...(url && { url }),
+    ...(price && { price: Number.parseInt(price) }),
     image: file ? path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/") : undefined,
   };
 
-
   try {
+    const event = await prisma.event.findUnique({
+      where: { id },
+    });
+
+    if (!event) {
+      return NextResponse.json({ erreur: "Evénement non trouvé" }, { status: 404 });
+    }
+
+    if (validatedAt !== undefined) {
+      //updateData.validatedAt = event.validatedAt ? null : new Date();
+      updateData.validatedAt = event.validatedAt ? null : new Date(Number(validatedAt));
+    }
+
+    if (cancelledAt !== undefined) {
+      //updateData.cancelledAt = event.cancelledAt ? null : new Date();
+      updateData.cancelledAt = event.cancelledAt ? null : new Date(Number(cancelledAt));
+    }
+
     const eventUpdated: Event | null = await prisma.event.update({
       data: updateData,
       where: { id: id },
     });
+
     return NextResponse.json({ data: eventUpdated }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ erreur: error }, { status: 500 });

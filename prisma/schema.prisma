@@ -172,15 +172,16 @@ model Event {
     name          String    @unique @db.VarChar(100)
     startingDate  DateTime
     endingDate    DateTime
-    latitude      String    @db.VarChar(50)
-    longitude     String    @db.VarChar(100)
+    latitude      String    
+    longitude     String    
     image         String    @db.VarChar(100)
     city          String    @db.VarChar(100)
     address       String    @db.VarChar(100)
     validatedAt   DateTime?
     cancelledAt   DateTime?
     description   String
-    zipCode       String    @db.VarChar(100)
+    zipCode       String    @db.VarChar(5)
+    price         Int
     category      Category  @relation(fields: [categoryId], references: [id])
     categoryId    Int
     url           String?

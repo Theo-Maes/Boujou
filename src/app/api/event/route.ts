@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function GET(req: Request) {
   try {
     const eventFind: Event[] = await prisma.event.findMany({
-      include: { category: true },
+      include: { category: true, groups: true },
     });
 
     eventFind.forEach((event) => {
