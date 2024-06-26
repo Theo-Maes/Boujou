@@ -58,9 +58,13 @@ export default function App({ events }: { events: Event[] }) {
   };
 
   const onClose = () => {
-    setOpenModalValidation(false);
-    setOpenModalDetail(false);
-    window.location.reload();
+    if (openModalDetail) {
+      setOpenModalDetail(false);
+    }
+    if (openModalValidation) {
+      setOpenModalValidation(false);
+      window.location.reload();
+    }
   };
 
   const [filterValue, setFilterValue] = React.useState("");
