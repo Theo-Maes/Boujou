@@ -1,11 +1,30 @@
 import { Roboto } from "next/font/google";
 import Menu from "../menu";
 import Table from "./table";
-import { User } from "@prisma/client";
 
 // export const metadata: Metadata = {
 //   title: "Boujou", //TODO
 // };
+
+type User = {
+  id: number;
+  fullname: string;
+  email: string;
+  password: string | null;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  adress: string | null;
+  zipcode: string | null;
+  city: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  roleId: number;
+  createdAt: Date;
+  role: {
+    name: string;
+  };
+};
 
 const roboto = Roboto({
   subsets: ["latin"],
