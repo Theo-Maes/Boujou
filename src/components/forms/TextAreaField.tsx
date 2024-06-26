@@ -31,6 +31,7 @@ const TextAreaField = ({
   });
   return (
     <Textarea
+      label={label}
       variant="bordered"
       placeholder={placeholder}
       {...field}
@@ -48,6 +49,7 @@ const TextAreaField = ({
         innerWrapper: "bg-transparent",
         inputWrapper: [
           "bg-page",
+
           "h-[350px]",
           //   "dark:bg-default/60",
           "backdrop-blur-xl",

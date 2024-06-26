@@ -61,7 +61,7 @@ const Modal = ({ children, title, isBlue }: ButtonModal) => {
         }}
         closeButton={
           <Button onPress={() => setIsOpen(false)} variant="light">
-            CLOSE
+            fermer
           </Button>
         }
       >
