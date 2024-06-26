@@ -36,7 +36,7 @@ export default function Menu({ labelActive }: MenuProps) {
       alt: "icon de Evenements",
       icon: ChartPie,
       onClick: () => {
-        console.log("click");
+        window.location.href = "/admin/events";
       },
     },
   ];
