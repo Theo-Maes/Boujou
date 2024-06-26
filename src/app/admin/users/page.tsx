@@ -1,6 +1,6 @@
 import { Roboto } from "next/font/google";
 import Menu from "../menu";
-import Table from "./table";
+import Table from "./tableUser";
 
 // export const metadata: Metadata = {
 //   title: "Boujou", //TODO
