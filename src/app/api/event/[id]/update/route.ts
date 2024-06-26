@@ -30,7 +30,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
   const file: File | null = data.get("image") as unknown as File;
   let path: string = "";
 
-  if (file) {   
+  if (file) {
     try {
       const eventFind: Event | null = await prisma.event.findUnique({
         where: {
@@ -45,12 +45,15 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     } catch (error) {
       return NextResponse.json({ erreur: error }, { status: 500 });
     }
-    path = join(process.cwd(), "public", "event", Date.now() + file.name).replace(" ", "_");
+    path = join(
+      process.cwd(),
+      "public",
+      "event",
+      Date.now() + file.name
+    ).replace(" ", "_");
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const resizedImageBuffer = await sharp(buffer)
-    .resize(1600, 924)
-    .toBuffer();
+    const resizedImageBuffer = await sharp(buffer).resize(1600, 924).toBuffer();
     await writeFile(path, resizedImageBuffer);
   }
 
@@ -71,7 +74,8 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     cancelledAt,
   } = Object.fromEntries(data.entries()) as unknown as EventFormData;
 
-  const isAddressModified = address !== undefined || city !== undefined || zipCode !== undefined;
+  const isAddressModified =
+    address !== undefined || city !== undefined || zipCode !== undefined;
 
   const existingLat = data.get("latitude") as string;
   const existingLong = data.get("longitude") as string;
@@ -97,7 +101,7 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     long = existingLong;
   }
 
-  const endingDateDateTime = new Date(Number(endingDate));     
+  const endingDateDateTime = new Date(Number(endingDate));
   const startingDateDateTime = new Date(Number(startingDate));
 
   const updateData: Partial<Event> = {
@@ -114,7 +118,9 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     ...(categoryId && { categoryId: Number.parseInt(categoryId) }),
     ...(url && { url }),
     ...(price && { price: Number.parseInt(price) }),
-    image: file ? path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/") : undefined,
+    image: file
+      ? path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/")
+      : undefined,
   };
 
   try {
@@ -123,17 +129,24 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     });
 
     if (!event) {
-      return NextResponse.json({ erreur: "Evénement non trouvé" }, { status: 404 });
+      return NextResponse.json(
+        { erreur: "Evénement non trouvé" },
+        { status: 404 }
+      );
     }
 
     if (validatedAt !== undefined) {
       //updateData.validatedAt = event.validatedAt ? null : new Date();
-      updateData.validatedAt = event.validatedAt ? null : new Date(Number(validatedAt));
+      updateData.validatedAt = event.validatedAt
+        ? null
+        : new Date(Number(validatedAt));
     }
 
     if (cancelledAt !== undefined) {
       //updateData.cancelledAt = event.cancelledAt ? null : new Date();
-      updateData.cancelledAt = event.cancelledAt ? null : new Date(Number(cancelledAt));
+      updateData.cancelledAt = event.cancelledAt
+        ? null
+        : new Date(Number(cancelledAt));
     }
 
     const eventUpdated: Event | null = await prisma.event.update({
