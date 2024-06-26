@@ -15,7 +15,7 @@ const roboto = Roboto({
 });
 
 export default async function Home() {
-  async function getNbInscritsParMois() {
+  async function getNbNouveauInscritsParMois() {
     const response = await fetch("http://localhost:3000/api/user", {
       cache: "no-store",
     });
@@ -65,7 +65,7 @@ export default async function Home() {
           <div className="flex flex-col w-full h-full gap-10">
             <div className="flex flex-row gap-10 self-center">
               <GraphCard
-                data={await getNbInscritsParMois()}
+                data={await getNbNouveauInscritsParMois()}
                 labels={labels}
                 subTitle=""
                 title="nombre de nouveau d'inscrits par mois"

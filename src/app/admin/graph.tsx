@@ -92,6 +92,7 @@ const Graph: React.FC<GraphProps> = ({ type, labels, data, width, height }) => {
                 beginAtZero: true,
                 ticks: {
                   color: theme === "dark" ? "#fff" : "#000",
+                  stepSize: 1,
                 },
               },
             },
