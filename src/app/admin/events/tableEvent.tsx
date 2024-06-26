@@ -38,7 +38,6 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 };
 
 export default function App({ events }: { events: Event[] }) {
-  // const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [openModalValidation, setOpenModalValidation] = useState(false);
   const [eventModal, setEventModal] = useState<Event | undefined>(undefined);
