@@ -41,9 +41,14 @@ export default function App({ events }: { events: Event[] }) {
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [openModalValidation, setOpenModalValidation] = useState(false);
   const [eventModal, setEventModal] = useState<Event | undefined>(undefined);
-  const [TypeModal, setTypeModal] = useState<"accept" | "refuse">("accept");
+  const [TypeModal, setTypeModal] = useState<"accept" | "refuse" | "cancel">(
+    "accept"
+  );
 
-  const openModal = (event: Event, type: "accept" | "refuse" | "detail") => {
+  const openModal = (
+    event: Event,
+    type: "accept" | "refuse" | "cancel" | "detail"
+  ) => {
     setEventModal(event);
     if (type === "detail") setOpenModalDetail(true);
     else {
@@ -158,16 +163,20 @@ export default function App({ events }: { events: Event[] }) {
                 </span>
               </Tooltip>
               {event.validatedAt ? (
-                <>
-                  <Tooltip color="danger" content="Annuler">
-                    <span
-                      className="text-lg text-danger cursor-pointer active:opacity-50"
-                      // onClick={() => openModal(user)}
-                    >
-                      <DeleteIcon />
-                    </span>
-                  </Tooltip>
-                </>
+                event.cancelledAt ? (
+                  <></>
+                ) : (
+                  <>
+                    <Tooltip color="danger" content="Annuler">
+                      <span
+                        className="text-lg text-danger cursor-pointer active:opacity-50"
+                        onClick={() => openModal(event, "cancel")}
+                      >
+                        <DeleteIcon />
+                      </span>
+                    </Tooltip>
+                  </>
+                )
               ) : (
                 <>
                   <Tooltip color="success" content="Valider">
