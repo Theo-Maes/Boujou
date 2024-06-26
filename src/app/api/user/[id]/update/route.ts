@@ -3,6 +3,7 @@ import { User } from "@prisma/client";
 import { unlink, writeFile } from "fs/promises";
 import { NextResponse } from "next/server";
 import { join } from "path";
+import sharp from "sharp";
 
 interface UserFormData {
   fullname: string;
@@ -44,7 +45,10 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     path = join(process.cwd(), "public", "avatar", Date.now() + file.name);
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(path, buffer);
+    const resizedImageBuffer = await sharp(buffer)
+        .resize(160, 160)
+        .toBuffer();
+    await writeFile(path, resizedImageBuffer);
   }
 
   const {

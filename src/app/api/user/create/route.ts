@@ -4,6 +4,7 @@ import { unlink, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
 import bcrypt from "bcrypt";
+import sharp from "sharp";
 
 interface UserFormData {
   email: string;
@@ -59,7 +60,10 @@ export async function POST(req: NextRequest) {
       path = join(process.cwd(), "public", "avatar", Date.now() + file.name);
       const bytes = await file.arrayBuffer();
       buffer = Buffer.from(bytes);
-      await writeFile(path, buffer);
+      const resizedImageBuffer = await sharp(buffer)
+        .resize(160, 160)
+        .toBuffer();
+      await writeFile(path, resizedImageBuffer);
     }
   }
 
