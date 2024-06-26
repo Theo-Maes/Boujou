@@ -7,6 +7,11 @@ export async function GET(req: Request) {
     const eventFind: Event[] = await prisma.event.findMany({
       include: { category: true },
     });
+
+    eventFind.forEach((event) => {
+      event.image = event.image.replace(/\\/g, "/");
+    });
+
     return NextResponse.json({ data: eventFind }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ erreur: error }, { status: 500 });
