@@ -130,7 +130,7 @@ export default function App({ users }: { users: User[] }) {
       const cellValue = user[columnKey as keyof typeof user];
 
       switch (columnKey) {
-        case "identifiant":
+        case "user":
           return (
             <>
               <div className="flex flex-row gap-2">
@@ -307,23 +307,26 @@ export default function App({ users }: { users: User[] }) {
           onSortChange={setSortDescriptor}
         >
           <TableHeader>
-            <TableColumn key="identifiant" allowsSorting={true}>
-              USER
+            <TableColumn key="user" align="center" allowsSorting={true}>
+              UTILISATEUR
             </TableColumn>
-            <TableColumn key="createdAt" allowsSorting={true}>
-              CREATED AT
+            <TableColumn key="createdAt" align="center" allowsSorting={true}>
+              DATE DE CREATION
             </TableColumn>
-            <TableColumn key="fullname" allowsSorting={true}>
-              FULLNAME
+            <TableColumn key="fullname" align="center" allowsSorting={true}>
+              NOM COMPLET
             </TableColumn>
-            <TableColumn key="role" allowsSorting={true}>
+            <TableColumn key="role" align="center" allowsSorting={true}>
               ROLE
             </TableColumn>
             <TableColumn key="actions" align="center">
               ACTIONS
             </TableColumn>
           </TableHeader>
-          <TableBody emptyContent={"No users found"} items={sortedItems}>
+          <TableBody
+            emptyContent={"il n'y a aucun utilisateur"}
+            items={sortedItems}
+          >
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
