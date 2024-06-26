@@ -10,8 +10,9 @@ import { useState } from "react";
 import EventGroupCard from "../cards/EventGroupCard";
 
 export interface EventPageProps {
+  id: number;
+  description: string;
   eventName: string;
-  location: string;
   address: string;
   zipCode: string;
   city: string;
@@ -20,7 +21,9 @@ export interface EventPageProps {
   categoryId: number;
   startingDate: number;
   endingDate?: number;
+  cancelledAt: Date | null;
   url?: string;
+  category: string;
 }
 
 const formatDate = (timestamp: number) => {
@@ -39,10 +42,8 @@ const generateMessage = (startingDate: number, endingDate: number | undefined) =
   const startDateFormatted = formatDate(startingDate);
 
   if (!endingDate) {
-    // Single date case
     return `Le ${startDateFormatted}`;
   } else {
-    // Date range case
     const endDateFormatted = formatDate(endingDate);
     return `Du ${startDateFormatted} au ${endDateFormatted}`;
   }
@@ -62,14 +63,15 @@ const generateMessageWithHour = (startingDate: number, endingDate: number | unde
 };
 
 export default function EventPage({
+  id,
   eventName,
-  location,
   address,
   zipCode,
+  description,
   city,
   image,
   price,
-  categoryId,
+  category,
   startingDate,
   endingDate,
   url
@@ -89,14 +91,14 @@ export default function EventPage({
                 <Image
                   alt="Event image"
                   className="relative w-full z-10 !rounded-none"
-                  src={`/${image}`}
+                  src={`${image}`}
                   width={1200}
                   height={800}
                 />
               </div>
               <Card className="relative md:right-10 flex flex-col ml-0 md:ml-auto mt-6 md:mt-0 rounded-none w-full md:w-6/12 md:h-1/2 z-20 bg-white dark:bg-gray-800">
                   <CardHeader className="flex flex-row justify-center">
-                      <p className="uppercase text-tertiary font-medium my-2 md:my-5">{categoryId}</p>
+                      <p className="uppercase text-tertiary font-medium my-2 md:my-5">{category}</p>
                   </CardHeader>
                   <CardBody className="flex flex-col items-center justify-center">
                       <p className="uppercase font-extrabold text-2xl text-center mb-2 md:mb-3">{eventName}</p>
@@ -126,8 +128,8 @@ export default function EventPage({
                 <div className="flex flex-col w-full md:w-5/12 lg:w-1/3">
                     <InformationsEventCard 
                         iconName="location" 
-                        primaryInformation={location}
-                        secondaryInformation={`${address} ${zipCode} ${city}`}
+                        primaryInformation={address}
+                        secondaryInformation={`${zipCode} ${city}`}
                         />
                     <InformationsEventCard 
                         iconName="calendar" 
@@ -135,8 +137,8 @@ export default function EventPage({
                     />
                     <InformationsEventCard 
                         iconName="euro" 
-                        primaryInformation={price === 0 ? "Gratuit" : price.toString()}
-                        />
+                        primaryInformation={price === 0 ? "Gratuit" : `${price.toString()} €`}
+                    />
                     {url ? (
                       <InformationsEventCard 
                           iconName="information" 
@@ -163,7 +165,7 @@ export default function EventPage({
                 </div>
                 <Card className="w-full md:w-7/12 lg:w-8/12 mt-2 md:mt-0 mx-2 md:mx-10 rounded-none bg-white dark:bg-gray-800 p-5">
                     <CardBody className="leading-relaxed text-justify">
-                        Diam eirmod rebum ea sadipscing. Congue takimata aliquyam sit nonumy takimata vero elitr sed liber iriure accusam. Dolor at adipiscing tation ea eirmod duis hendrerit clita vero labore dolor. Accusam magna justo blandit tempor diam illum sit assum ipsum et consequat soluta facilisis sed labore dolor invidunt. Vero dolore dolor sit rebum lorem adipiscing diam eum labore invidunt illum dolor sed. Eirmod quod takimata eum blandit ea et tempor sanctus odio congue kasd nulla magna diam sanctus praesent eirmod takimata. Sed ut commodo est eirmod labore amet takimata sanctus ipsum et tempor takimata ipsum assum labore. Augue lorem no sea ad takimata dolore et vero et magna.
+                      {description}
                     </CardBody>
                 </Card>
             </div>
