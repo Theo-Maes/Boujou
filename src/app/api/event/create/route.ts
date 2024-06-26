@@ -13,11 +13,9 @@ interface EventFormData {
   address: string;
   city: string;
   zipCode: string;
-  latitude: string;
-  longitude: string;
   categoryId: string;
   price: string;
-  url: string;
+  url?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -30,11 +28,14 @@ export async function POST(req: NextRequest) {
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
-  const resizedImageBuffer = await sharp(buffer)
-    .resize(1600, 924)
-    .toBuffer();
+  const resizedImageBuffer = await sharp(buffer).resize(1600, 924).toBuffer();
 
-  const path = join(process.cwd(), "public", "event", Date.now() + file.name).replace(" ", "_");
+  const path = join(
+    process.cwd(),
+    "public",
+    "event",
+    Date.now() + file.name
+  ).replace(" ", "_");
   await writeFile(path, resizedImageBuffer);
 
   try {
@@ -61,10 +62,12 @@ export async function POST(req: NextRequest) {
     const lat = eventGeoDataJSon[0].lat;
     const long = eventGeoDataJSon[0].lon;
 
-    const endingDateDateTime = new Date(Number(endingDate));     
+    const endingDateDateTime = new Date(Number(endingDate));
     const startingDateDateTime = new Date(Number(startingDate));
 
-    const avatarPath = path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/");
+    const avatarPath = path
+      .replace(join(process.cwd(), "public"), "")
+      .replace(/\\/g, "/");
 
     const newEvent: Event = await prisma.event.create({
       data: {

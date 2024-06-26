@@ -30,19 +30,21 @@ export default function ModalAcceptEvent({
   type: "accept" | "refuse";
 }) {
   async function handleAcceptEvent() {
-    if (type === "accept") {
-      alert("Accepté");
-      //TODO
-    } else {
-      alert("Refusé");
-      //TODO
+    if (eventModal) {
+      if (type === "accept") {
+        const formData = new FormData();
+        formData.append("validatedAt", String(new Date().getTime()));
+
+        await fetch(`/api/event/${eventModal.id}/update`, {
+          method: "PATCH",
+          body: formData,
+        });
+      } else {
+        await fetch(`/api/event/${eventModal.id}/delete`, {
+          method: "DELETE",
+        });
+      }
     }
-    //     await fetch(`http://localhost:3000/api/event/${eventModal.id}/delete`, {
-    //       method: "DELETE",
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //       },
-    //     });
   }
 
   function getModalRefuse() {

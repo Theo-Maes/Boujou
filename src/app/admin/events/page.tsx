@@ -1,29 +1,10 @@
 import { Roboto } from "next/font/google";
 import Menu from "../menu";
 import Table from "./tableEvent";
+import { Event } from "@prisma/client";
 
 // export const metadata: Metadata = {
 //   title: "Boujou", //TODO
-// };
-
-// type User = {
-//   id: number;
-//   fullname: string;
-//   email: string;
-//   password: string | null;
-//   avatar: string;
-//   firstName: string;
-//   lastName: string;
-//   adress: string | null;
-//   zipcode: string | null;
-//   city: string | null;
-//   latitude: string | null;
-//   longitude: string | null;
-//   roleId: number;
-//   createdAt: Date;
-//   role: {
-//     name: string;
-//   };
 // };
 
 const roboto = Roboto({
@@ -38,7 +19,7 @@ export default async function Home() {
 
   const jsonResponse = await response.json();
 
-  const data: any[] = jsonResponse.data;
+  const data: Event[] = jsonResponse.data;
 
   return (
     <main className="flex flex-col my-5">
