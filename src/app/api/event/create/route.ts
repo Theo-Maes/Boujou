@@ -3,6 +3,7 @@ import { Event } from "@prisma/client";
 import { unlink, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
+import sharp from "sharp";
 
 interface EventFormData {
   name: string;
@@ -12,10 +13,9 @@ interface EventFormData {
   address: string;
   city: string;
   zipCode: string;
-  latitude: string;
-  longitude: string;
   categoryId: string;
-  url: string;
+  price: string;
+  url?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -28,9 +28,15 @@ export async function POST(req: NextRequest) {
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
+  const resizedImageBuffer = await sharp(buffer).resize(1600, 924).toBuffer();
 
-  const path = join(process.cwd(), "public", "event", Date.now() + file.name).replace(" ", "_");
-  await writeFile(path, buffer);
+  const path = join(
+    process.cwd(),
+    "public",
+    "event",
+    Date.now() + file.name
+  ).replace(" ", "_");
+  await writeFile(path, resizedImageBuffer);
 
   try {
     const {
@@ -43,6 +49,7 @@ export async function POST(req: NextRequest) {
       zipCode,
       categoryId,
       url,
+      price,
     } = Object.fromEntries(data.entries()) as unknown as EventFormData;
 
     const eventGeoData = await fetch(
@@ -55,10 +62,12 @@ export async function POST(req: NextRequest) {
     const lat = eventGeoDataJSon[0].lat;
     const long = eventGeoDataJSon[0].lon;
 
-    const endingDateDateTime = new Date(Number(endingDate));     
+    const endingDateDateTime = new Date(Number(endingDate));
     const startingDateDateTime = new Date(Number(startingDate));
 
-    const avatarPath = path.replace(join(process.cwd(), "public"), "").replace(/\\/g, "/");
+    const avatarPath = path
+      .replace(join(process.cwd(), "public"), "")
+      .replace(/\\/g, "/");
 
     const newEvent: Event = await prisma.event.create({
       data: {
@@ -73,6 +82,7 @@ export async function POST(req: NextRequest) {
         latitude: lat,
         longitude: long,
         image: avatarPath,
+        price: Number.parseInt(price),
         category: {
           connect: {
             id: Number.parseInt(categoryId),

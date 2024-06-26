@@ -27,7 +27,6 @@ import { DeleteIcon } from "@/components/icons/DeleteIcon";
 import { SearchIcon } from "@/components/icons/SearchIcon";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
-  test: "success",
   Utilisateur: "success",
   Admin: "danger",
 };

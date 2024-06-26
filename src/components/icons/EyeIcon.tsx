@@ -1,30 +1,34 @@
-import React from "react";
-export const EyeIcon = (
-  props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>
-) => (
+import React, { SVGProps } from "react";
+
+interface MySvg extends SVGProps<SVGSVGElement> {
+  title?: string;
+}
+
+export const EyeIcon: React.FC<MySvg> = (props) => (
   <svg
     aria-hidden="true"
     fill="none"
     focusable="false"
-    height="1em"
     role="presentation"
-    viewBox="0 0 20 20"
-    width="1em"
+    viewBox="0 0 19 18"
+    height={props.height ?? "24"}
+    width={props.width ?? "24"}
     {...props}
   >
+    <title>{props.title ?? ""}</title>
     <path
-      d="M12.9833 10C12.9833 11.65 11.65 12.9833 10 12.9833C8.35 12.9833 7.01666 11.65 7.01666 10C7.01666 8.35 8.35 7.01666 10 7.01666C11.65 7.01666 12.9833 8.35 12.9833 10Z"
-      stroke="currentColor"
+      d="M12.1644 9.02778C12.1644 10.5128 10.9644 11.7127 9.47944 11.7127C7.99444 11.7127 6.79443 10.5128 6.79443 9.02778C6.79443 7.54278 7.99444 6.34277 9.47944 6.34277C10.9644 6.34277 12.1644 7.54278 12.1644 9.02778Z"
+      stroke="#A1A1AA"
+      strokeWidth="1.35"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth={1.5}
     />
     <path
-      d="M9.99999 16.8916C12.9417 16.8916 15.6833 15.1583 17.5917 12.1583C18.3417 10.9833 18.3417 9.00831 17.5917 7.83331C15.6833 4.83331 12.9417 3.09998 9.99999 3.09998C7.05833 3.09998 4.31666 4.83331 2.40833 7.83331C1.65833 9.00831 1.65833 10.9833 2.40833 12.1583C4.31666 15.1583 7.05833 16.8916 9.99999 16.8916Z"
-      stroke="currentColor"
+      d="M9.47693 15.2298C12.1245 15.2298 14.5919 13.6699 16.3095 10.9699C16.9845 9.91237 16.9845 8.13488 16.3095 7.07738C14.5919 4.37738 12.1245 2.81738 9.47693 2.81738C6.82943 2.81738 4.36193 4.37738 2.64443 7.07738C1.96943 8.13488 1.96943 9.91237 2.64443 10.9699C4.36193 13.6699 6.82943 15.2298 9.47693 15.2298Z"
+      stroke="#A1A1AA"
+      strokeWidth="1.35"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth={1.5}
     />
   </svg>
 );
