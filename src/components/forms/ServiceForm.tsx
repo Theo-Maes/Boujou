@@ -16,6 +16,8 @@ import {
   CAR_POOL_STEPS,
   CHOICE_STEPS,
   EVENT_STEPS,
+  INTRO_CAR_STEPS,
+  INTRO_EVENT_STEPS,
   SUCCESS_STEPS,
 } from "./utils/steps";
 interface StepProps {
@@ -34,17 +36,20 @@ interface IFormInputs {
   end: any;
 }
 interface FormProps {
+  type: string;
   userId: string;
   currentPage?: number;
   children?: React.ReactNode;
   [key: string]: any;
 }
 
-const EventForm = ({ userId, children, ...props }: FormProps) => {
+const EventForm = ({ type, userId, children, ...props }: FormProps) => {
   const [[currentPage, direction], setPage] = useState([0, 0]);
+  const initialStep = type == "event" ? INTRO_EVENT_STEPS : INTRO_CAR_STEPS;
+  const mainStep = type == "event" ? EVENT_STEPS : CAR_POOL_STEPS;
   const [pages, setPages] = useState<StepProps[]>([
-    ...CHOICE_STEPS,
-    ...EVENT_STEPS,
+    ...initialStep,
+    ...mainStep,
     ...SUCCESS_STEPS,
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,7 +81,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
   };
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
-    if (currentPage == pages.length - 1) {
+    if (currentPage == pages.length - 2) {
       const filename = data.image.name;
       const fileType = data.image.type;
 
@@ -124,7 +129,7 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
         console.log(error);
       }
     } else {
-      paginate(1);
+      if (currentPage !== pages.length - 1) paginate(1);
       setIsDark(false);
     }
     if (currentPage === pages.length - 1) setIsOpen(false);

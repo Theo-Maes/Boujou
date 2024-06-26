@@ -46,14 +46,10 @@ export default function MainNavbar() {
               </Link>
             </div>
           </div>
-          <ButtonModal title="Proposer un événement" isBlue={true}>
-            <ServiceForm userId={"gggg"} />
-            {/* <EventForm userId={session.user.id} /> */}
-          </ButtonModal>
           {session && session.user ? (
             <div className="hidden md:flex flex-1 justify-center">
               <ButtonModal title="Proposer un événement" isBlue={true}>
-                <ServiceForm userId={session.user.id} />
+                <ServiceForm userId={session.user.id} type={"event"} />
                 {/* <EventForm userId={session.user.id} /> */}
               </ButtonModal>
             </div>

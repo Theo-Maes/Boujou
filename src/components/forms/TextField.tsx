@@ -50,8 +50,8 @@ const TextField = ({
             className="drop-shadow-lg"
             src={`/icons/form/${endIcon}.png`}
             alt="Apple Logo"
-            width={24}
-            height={24}
+            width={15}
+            height={15}
           />
         )
       }
@@ -65,7 +65,7 @@ const TextField = ({
         innerWrapper: "bg-transparent",
         inputWrapper: [
           "h-[60px]",
-          "max-w-[370px]",
+          // "max-w-[350px]",
           "bg-page",
           //   "dark:bg-default/60",
           "backdrop-blur-xl",
