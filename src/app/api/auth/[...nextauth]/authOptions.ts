@@ -90,7 +90,7 @@ const authOptions: AuthOptions = {
           const queryParams = new URLSearchParams({
             email: googleUser.email,
             firstName: googleUser.given_name,
-            lastName: googleUser.family_name,
+            lastName: googleUser.family_name || " ",
             avatar: googleUser.picture,
           }).toString();
 
