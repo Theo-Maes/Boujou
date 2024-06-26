@@ -1,6 +1,7 @@
 import { Roboto } from "next/font/google";
 import Menu from "../menu";
 import Table from "./table";
+import { User } from "@prisma/client";
 
 // export const metadata: Metadata = {
 //   title: "Boujou", //TODO
@@ -18,7 +19,7 @@ export default async function Home() {
 
   const jsonResponse = await response.json();
 
-  const data = jsonResponse.data;
+  const data: User[] = jsonResponse.data;
 
   return (
     <main className="flex flex-col my-5">

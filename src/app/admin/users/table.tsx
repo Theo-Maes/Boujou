@@ -34,7 +34,27 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   Admin: "danger",
 };
 
-export default function App({ users }: { users: any[] }) {
+type User = {
+  id: number;
+  fullname: string;
+  email: string;
+  password: string | null;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  adress: string | null;
+  zipcode: string | null;
+  city: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  roleId: number;
+  createdAt: Date;
+  role: {
+    name: string;
+  };
+};
+
+export default function App({ users }: { users: User[] }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [userModal, setUserModal] = useState<any>();
 
@@ -43,7 +63,7 @@ export default function App({ users }: { users: any[] }) {
     onOpen();
   };
 
-  async function removeUser(user: any) {
+  async function removeUser(user: User) {
     const response = await fetch(
       `http://localhost:3000/api/user/${user.id}/delete`,
       {
@@ -107,9 +127,9 @@ export default function App({ users }: { users: any[] }) {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback(
-    (user: any, columnKey: React.Key) => {
-      const cellValue = user[columnKey as keyof any];
+  const renderCell: any = React.useCallback(
+    (user: User, columnKey: React.Key) => {
+      const cellValue = user[columnKey as keyof typeof user];
 
       switch (columnKey) {
         case "identifiant":
@@ -171,6 +191,17 @@ export default function App({ users }: { users: any[] }) {
                 </span>
               </Tooltip>
             </div>
+          );
+        case "createdAt":
+          return new Date(cellValue?.toString() || "").toLocaleDateString(
+            "fr-FR",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+            }
           );
         default:
           return cellValue;
