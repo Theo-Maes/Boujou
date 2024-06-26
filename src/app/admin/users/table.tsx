@@ -24,8 +24,6 @@ import {
 } from "@nextui-org/react";
 import Image from "next/image";
 import { DeleteIcon } from "@/components/icons/DeleteIcon";
-import { EditIcon } from "@/components/icons/EditIcon";
-import { EyeIcon } from "@/components/icons/EyeIcon";
 import { SearchIcon } from "@/components/icons/SearchIcon";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
@@ -34,7 +32,27 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   Admin: "danger",
 };
 
-export default function App({ users }: { users: any[] }) {
+type User = {
+  id: number;
+  fullname: string;
+  email: string;
+  password: string | null;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  adress: string | null;
+  zipcode: string | null;
+  city: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  roleId: number;
+  createdAt: Date;
+  role: {
+    name: string;
+  };
+};
+
+export default function App({ users }: { users: User[] }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [userModal, setUserModal] = useState<any>();
 
@@ -43,7 +61,7 @@ export default function App({ users }: { users: any[] }) {
     onOpen();
   };
 
-  async function removeUser(user: any) {
+  async function removeUser(user: User) {
     const response = await fetch(
       `http://localhost:3000/api/user/${user.id}/delete`,
       {
@@ -57,7 +75,8 @@ export default function App({ users }: { users: any[] }) {
     if (!response.ok) {
       alert("Failed to delete user");
     }
-    users = users.filter((u) => u.id !== user.id);
+    // users = users.filter((u) => u.id !== user.id);
+    window.location.reload();
   }
 
   const [filterValue, setFilterValue] = React.useState("");
@@ -107,9 +126,9 @@ export default function App({ users }: { users: any[] }) {
     });
   }, [sortDescriptor, items]);
 
-  const renderCell = React.useCallback(
-    (user: any, columnKey: React.Key) => {
-      const cellValue = user[columnKey as keyof any];
+  const renderCell: any = React.useCallback(
+    (user: User, columnKey: React.Key) => {
+      const cellValue = user[columnKey as keyof typeof user];
 
       switch (columnKey) {
         case "identifiant":
@@ -145,23 +164,7 @@ export default function App({ users }: { users: any[] }) {
           );
         case "actions":
           return (
-            <div className="relative flex items-center gap-2">
-              <Tooltip content="Details">
-                <span
-                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                  onClick={() => console.log("details")}
-                >
-                  <EyeIcon />
-                </span>
-              </Tooltip>
-              <Tooltip content="Edit user">
-                <span
-                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                  onClick={() => console.log("edit", { user })}
-                >
-                  <EditIcon />
-                </span>
-              </Tooltip>
+            <div className="inline-flex gap-2">
               <Tooltip color="danger" content="Delete user">
                 <span
                   className="text-lg text-danger cursor-pointer active:opacity-50"
@@ -171,6 +174,17 @@ export default function App({ users }: { users: any[] }) {
                 </span>
               </Tooltip>
             </div>
+          );
+        case "createdAt":
+          return new Date(cellValue?.toString() || "").toLocaleDateString(
+            "fr-FR",
+            {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+            }
           );
         default:
           return cellValue;
@@ -272,24 +286,6 @@ export default function App({ users }: { users: any[] }) {
           total={pages}
           onChange={setPage}
         />
-        <div className="hidden sm:flex w-[30%] justify-end gap-2">
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onPreviousPage}
-          >
-            Précédent
-          </Button>
-          <Button
-            isDisabled={pages === 1}
-            size="sm"
-            variant="flat"
-            onPress={onNextPage}
-          >
-            Suivant
-          </Button>
-        </div>
       </div>
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -353,7 +349,18 @@ export default function App({ users }: { users: any[] }) {
               <ModalHeader className="flex flex-col items-center gap-1">
                 Êtes-vous sûr de vouloir supprimer {userModal.fullname} ?
               </ModalHeader>
-              <ModalBody>Compte crée le {userModal.createdAt}</ModalBody>
+              <ModalBody>
+                Compte crée le{" "}
+                {new Date(
+                  userModal.createdAt?.toString() || ""
+                ).toLocaleDateString("fr-FR", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                })}
+              </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Non

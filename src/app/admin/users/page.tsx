@@ -6,6 +6,26 @@ import Table from "./table";
 //   title: "Boujou", //TODO
 // };
 
+type User = {
+  id: number;
+  fullname: string;
+  email: string;
+  password: string | null;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  adress: string | null;
+  zipcode: string | null;
+  city: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  roleId: number;
+  createdAt: Date;
+  role: {
+    name: string;
+  };
+};
+
 const roboto = Roboto({
   subsets: ["latin"],
   weight: ["100", "300", "400", "500", "700", "900"],
@@ -18,7 +38,7 @@ export default async function Home() {
 
   const jsonResponse = await response.json();
 
-  const data = jsonResponse.data;
+  const data: User[] = jsonResponse.data;
 
   return (
     <main className="flex flex-col my-5">
