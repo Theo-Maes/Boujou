@@ -11,11 +11,11 @@ export default function EventGroupCard(): JSX.Element {
   const { theme } = useTheme();
 
   const users = [
-    { avatar: "user-1.png", fullname: "Pierre Paul Jacques" },
-    { avatar: "user-2.png", fullname: "John Doe" },
-    { avatar: "user-3.png", fullname: "Jean-Michel Loremipsum" },
-    { avatar: "user-1.png", fullname: "Pierre-Paul Jacques" },
-    { avatar: "user-2.png", fullname: "John Doe" }
+    { avatar: "../user-1.png", fullname: "Pierre Paul Jacques" },
+    { avatar: "../user-2.png", fullname: "John Doe" },
+    { avatar: "../user-3.png", fullname: "Jean-Michel Loremipsum" },
+    { avatar: "../user-1.png", fullname: "Pierre-Paul Jacques" },
+    { avatar: "../user-2.png", fullname: "John Doe" }
   ];
 
   const filteredUsersCar = users.filter((user, index) => [1, 3, 4].includes(index));
@@ -60,7 +60,7 @@ export default function EventGroupCard(): JSX.Element {
                         <AccordionItem
                             title={
                                 <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
-                                    <UserCard chevron={true} avatar="user-3.png" fullname="Jean-Michel Loremipsum" />
+                                    <UserCard chevron={true} avatar="../user-1.png" fullname="Jean-Michel Loremipsum" />
                                     <PlacesCard reserved={2} available={5} />
                                     <div className="flex flex-row justify-end mr-4">
                                         <Button
@@ -87,7 +87,7 @@ export default function EventGroupCard(): JSX.Element {
                         <AccordionItem
                             title={
                                 <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
-                                    <UserCard chevron={true} avatar="user-3.png" fullname="John Smith" />
+                                    <UserCard chevron={true} avatar="../user-3.png" fullname="John Smith" />
                                     <PlacesCard reserved={3} available={5} />
                                     <div className="flex flex-row justify-end mr-4">
                                         <Button
@@ -123,7 +123,7 @@ export default function EventGroupCard(): JSX.Element {
                         <AccordionItem
                             title={
                                 <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
-                                    <UserCard chevron={true} avatar="user-2.png" fullname="John Doe" />
+                                    <UserCard chevron={true} avatar="../user-2.png" fullname="John Doe" />
                                     <PlacesCard reserved={1} available={4} />
                                     <div className="flex flex-row justify-end mr-4">
                                         <Button

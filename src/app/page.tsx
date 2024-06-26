@@ -14,22 +14,21 @@ import { Event, Group } from "@prisma/client";
 import { format } from "date-fns";
 import { fr } from 'date-fns/locale'
 import { useTheme } from "next-themes";
+import Link from "next/link";
+import { EventWithRelations } from "@/libs/types";
+import Loading from "./loading";
 
 // export const metadata: Metadata = {
 //   title: "Boujou",
 // };
 
-interface EventWithRelations extends Event {
-  groups: { members: Group[] }[];
-}
-
 const roboto = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500", "700", "900"] });
 
 const sortOptions = [
-  { key: "1", label: "Date" },
-  { key: "ti2tle", label: "Nom" },
-  { key: "3", label: "Ville" },
-  { key: "4", label: "Code Postal" }
+  { key: "startingDate", label: "Date" },
+  { key: "title", label: "Evénement" },
+  { key: "city", label: "Ville" },
+  { key: "zipCode", label: "Code Postal" }
 ];
 
 const fetchEvents = async (): Promise<InformationsEventProps[]> => {
@@ -116,6 +115,10 @@ export default function Home() {
     setSearchTerm(event.target.value);
   };
 
+  if (events.length === 0) {
+    return <Loading />;
+  }
+
   return (
     <main className="flex flex-col">
       <section id="top" className="pl-0 md:px-9">
@@ -148,19 +151,21 @@ export default function Home() {
               label="Trier par"
               placeholder="Date"
               color={theme === "dark" ? "secondary" : "primary"}
-              defaultSelectedKeys="1"
+              defaultSelectedKeys="startingDate"
               onChange={(e) => handleSortChange(e.target.value)}
               className="max-w-[30%] md:max-w-[10%] dark:bg-transparent"
             >
-              <SelectItem key="1" value="startingDate">Date</SelectItem>
-              <SelectItem key="2" value="title">Nom</SelectItem>
-              <SelectItem key="3" value="city">Ville</SelectItem>
-              <SelectItem key="4" value="zipCode">Code Postal</SelectItem>
+              <SelectItem key="startingDate" value="startingDate">Date</SelectItem>
+              <SelectItem key="title" value="title">Evénement</SelectItem>
+              <SelectItem key="city" value="city">Ville</SelectItem>
+              <SelectItem key="zipCode" value="zipCode">Code Postal</SelectItem>
             </Select>
           </div>
           <section className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {currentEvents.map((event) => (
-              <CardEvent key={event.id} {...event} />
+              <Link key={event.id} href={`/event/${event.id}`}>
+                <CardEvent key={event.id} {...event} />
+              </Link>            
             ))}
           </section>
           <div className="mt-8">
