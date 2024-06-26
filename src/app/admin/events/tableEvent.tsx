@@ -22,9 +22,14 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
-import Image from "next/image";
 import { DeleteIcon } from "@/components/icons/DeleteIcon";
 import { SearchIcon } from "@/components/icons/SearchIcon";
+import { XMarkIcon } from "@/components";
+import { CheckedMarckIcon } from "@/components/icons/checkedMarckIcon";
+import ModalAcceptEvent from "./modalAcceptEvent";
+import { Event } from "@prisma/client";
+import { EyeIcon } from "@/components/icons/EyeIcon";
+import EventModal from "./ModalDetailEvent";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   attente: "warning",
@@ -32,52 +37,27 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
   annulé: "danger",
 };
 
-// type User = {
-//   id: number;
-//   fullname: string;
-//   email: string;
-//   password: string | null;
-//   avatar: string;
-//   firstName: string;
-//   lastName: string;
-//   adress: string | null;
-//   zipcode: string | null;
-//   city: string | null;
-//   latitude: string | null;
-//   longitude: string | null;
-//   roleId: number;
-//   createdAt: Date;
-//   role: {
-//     name: string;
-//   };
-// };
-
-export default function App({ events }: { events: any[] }) {
+export default function App({ events }: { events: Event[] }) {
   // const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  // const [userModal, setUserModal] = useState<any>();
+  const [openModalDetail, setOpenModalDetail] = useState(false);
+  const [openModalValidation, setOpenModalValidation] = useState(false);
+  const [eventModal, setEventModal] = useState<Event | undefined>(undefined);
+  const [TypeModal, setTypeModal] = useState<"accept" | "refuse">("accept");
 
-  // const openModal = (user: any) => {
-  //   setUserModal(user);
-  //   onOpen();
-  // };
+  const openModal = (event: Event, type: "accept" | "refuse" | "detail") => {
+    setEventModal(event);
+    if (type === "detail") setOpenModalDetail(true);
+    else {
+      setTypeModal(type);
+      setOpenModalValidation(true);
+    }
+  };
 
-  // async function removeUser(user: any) {
-  //   const response = await fetch(
-  //     `http://localhost:3000/api/user/${user.id}/delete`,
-  //     {
-  //       method: "DELETE",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     }
-  //   );
-
-  //   if (!response.ok) {
-  //     alert("Failed to delete user");
-  //   }
-  //   // users = users.filter((u) => u.id !== user.id);
-  //   window.location.reload();
-  // }
+  const onClose = () => {
+    setOpenModalValidation(false);
+    setOpenModalDetail(false);
+    window.location.reload();
+  };
 
   const [filterValue, setFilterValue] = React.useState("");
 
@@ -97,7 +77,7 @@ export default function App({ events }: { events: any[] }) {
 
     if (hasSearchFilter) {
       filteredEvents = filteredEvents.filter((event) =>
-        event.fullname.toLowerCase().includes(filterValue.toLowerCase())
+        event.name.toLowerCase().includes(filterValue.toLowerCase())
       );
     }
 
@@ -127,7 +107,7 @@ export default function App({ events }: { events: any[] }) {
   }, [sortDescriptor, items]);
 
   const renderCell: any = React.useCallback(
-    (event: any, columnKey: React.Key) => {
+    (event: Event, columnKey: React.Key) => {
       const cellValue = event[columnKey as keyof typeof event];
 
       switch (columnKey) {
@@ -135,13 +115,6 @@ export default function App({ events }: { events: any[] }) {
           return (
             <>
               <div className="flex flex-row gap-2">
-                {/* <Image
-                  src={event.avatar}
-                  alt="avatar"
-                  width={45}
-                  height={45}
-                  className="rounded-full"
-                /> */}
                 <div className="flex flex-col gap-1">
                   <span className="text-default-900">{event.name}</span>
                   <span className="text-default-400 text-small">
@@ -153,7 +126,6 @@ export default function App({ events }: { events: any[] }) {
           );
         case "status":
           return (
-            // <span className="capitalize">{event.validatedAt}</span>
             <Chip
               className="capitalize"
               color={
@@ -178,14 +150,45 @@ export default function App({ events }: { events: any[] }) {
         case "actions":
           return (
             <div className="inline-flex gap-2">
-              <Tooltip color="danger" content="Delete event">
+              <Tooltip color="primary" content="Détail">
                 <span
-                  className="text-lg text-danger cursor-pointer active:opacity-50"
-                  // onClick={() => openModal(user)}
+                  className="text-lg cursor-pointer active:opacity-50"
+                  onClick={() => openModal(event, "detail")}
                 >
-                  <DeleteIcon />
+                  <EyeIcon />
                 </span>
               </Tooltip>
+              {event.validatedAt ? (
+                <>
+                  <Tooltip color="danger" content="Annuler">
+                    <span
+                      className="text-lg text-danger cursor-pointer active:opacity-50"
+                      // onClick={() => openModal(user)}
+                    >
+                      <DeleteIcon />
+                    </span>
+                  </Tooltip>
+                </>
+              ) : (
+                <>
+                  <Tooltip color="success" content="Valider">
+                    <span
+                      className="text-lg text-success cursor-pointer active:opacity-50"
+                      onClick={() => openModal(event, "accept")}
+                    >
+                      <CheckedMarckIcon />
+                    </span>
+                  </Tooltip>
+                  <Tooltip color="danger" content="Refuser">
+                    <span
+                      className="text-lg text-danger cursor-pointer active:opacity-50"
+                      onClick={() => openModal(event, "refuse")}
+                    >
+                      <XMarkIcon />
+                    </span>
+                  </Tooltip>
+                </>
+              )}
             </div>
           );
         case "date":
@@ -353,49 +356,17 @@ export default function App({ events }: { events: any[] }) {
         </Table>
       </div>
 
-      {/* <Modal
-        isOpen={isOpen}
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
-        hideCloseButton={true}
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col items-center gap-1">
-                Êtes-vous sûr de vouloir supprimer {userModal.fullname} ?
-              </ModalHeader>
-              <ModalBody>
-                Compte crée le{" "}
-                {new Date(
-                  userModal.createdAt?.toString() || ""
-                ).toLocaleDateString("fr-FR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Non
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    removeUser(userModal);
-                    onClose();
-                  }}
-                >
-                  Oui
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal> */}
+      <ModalAcceptEvent
+        eventModal={eventModal}
+        isOpen={openModalValidation}
+        onClose={onClose}
+        type={TypeModal}
+      />
+      <EventModal
+        eventModal={eventModal}
+        isOpen={openModalDetail}
+        onClose={onClose}
+      />
     </>
   );
 }
