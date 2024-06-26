@@ -8,19 +8,12 @@ import {
   TableRow,
   TableCell,
   Input,
-  Button,
   Chip,
   Pagination,
   Selection,
   ChipProps,
   SortDescriptor,
   Tooltip,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  useDisclosure,
 } from "@nextui-org/react";
 import { DeleteIcon } from "@/components/icons/DeleteIcon";
 import { SearchIcon } from "@/components/icons/SearchIcon";
