@@ -3,6 +3,7 @@ import { Event } from "@prisma/client";
 import { unlink, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
+import sharp from "sharp";
 
 interface EventFormData {
   name: string;
@@ -29,9 +30,12 @@ export async function POST(req: NextRequest) {
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
+  const resizedImageBuffer = await sharp(buffer)
+    .resize(1600, 924)
+    .toBuffer();
 
   const path = join(process.cwd(), "public", "event", Date.now() + file.name).replace(" ", "_");
-  await writeFile(path, buffer);
+  await writeFile(path, resizedImageBuffer);
 
   try {
     const {

@@ -2,20 +2,24 @@ import React from "react";
 import { Card, CardHeader, CardBody, CardFooter, Image, DateInputReturnType } from "@nextui-org/react";
 
 function truncateText(text: string, maxLength: number) {
-  if (text.length <= maxLength) {
+  if (text && text.length <= maxLength) {
     return text;
   }
-  return text.slice(0, maxLength) + '...';
+  return text?.slice(0, maxLength) + '...';
 }
 
 export interface InformationsEventProps {
+  id: number;
   title: string;
+  description: string;
   image: string;
   startingDate: Date;
   endingDate: Date;
   numberOfGroups?: number;
   numberOfPeople?: number;
-  location: string;
+  zipCode: string;
+  city: string;
+  validatedAt: Date | null;
 }
 
 export default function EventCard({
@@ -24,17 +28,18 @@ export default function EventCard({
   endingDate,
   numberOfGroups,
   numberOfPeople,
-  location,
+  city,
   image,
 }: InformationsEventProps): JSX.Element {
   return (
     <Card className="p-1 w-full md:max-w-[300px] dark:bg-transparent transition-transform transform hover:scale-105">
       <CardHeader className="flex-col items-start overflow-visible relative">
         <Image
-          alt="Card background"
-          className="rounded-xl"
-          src={`/${image}`}
+          alt="Event image"
+          className="object-cover w-full rounded-xl"
+          src={`${image}`}
           width={800}
+          height={192}
         />
         <div className="absolute bottom-6 right-3 bg-secondary rounded-tl-lg rounded-bl-lg p-2 shadow-lg flex items-center z-20">
           <div className="flex items-center space-x-1 mr-2">
@@ -66,7 +71,7 @@ export default function EventCard({
               height={18}
             />
             <span className="text-xs text-black dark:text-black">              
-              {truncateText(location, 15)}
+              {truncateText(city, 15)}
             </span>
           </div>
         </div>

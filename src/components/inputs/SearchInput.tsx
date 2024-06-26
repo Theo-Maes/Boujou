@@ -1,17 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "@nextui-org/react";
 import { SearchIcon } from "../icons/SearchIcon";
 
+interface SearchInputProps {
+  placeholder: string;
+  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
 export default function SearchInput({
-  placeholder
-}: {
-  placeholder: string
-}): JSX.Element {
+  placeholder,
+  onChange
+}: SearchInputProps): JSX.Element {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    if (onChange) {
+      onChange(event);
+    }
+  };
+
   return (
     <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4">
       <Input
-        type="email"
+        type="text"
         placeholder={placeholder}
+        value={searchTerm}
+        onChange={handleInputChange}
         endContent={
           <div className="absolute right-0 flex items-center justify-center bg-secondary dark:bg-primary rounded-tr-lg rounded-br-lg p-2 my-2">
             <SearchIcon className="text-neutral-900 dark:text-neutral-200 text-2xl pointer-events-none flex-shrink-0" />
