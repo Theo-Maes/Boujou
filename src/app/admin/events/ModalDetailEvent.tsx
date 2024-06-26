@@ -35,12 +35,14 @@ export default function EventModal({
               {eventModal.name}
             </ModalHeader>
             <ModalBody>
-              <Image
-                src={eventModal.image}
-                alt={eventModal.name}
-                width={200}
-                height={200}
-              />
+              <div className="flex flex-col self-center">
+                <Image
+                  src={eventModal.image}
+                  alt={eventModal.name}
+                  width={200}
+                  height={200}
+                />
+              </div>
               {eventModal.description}
               <div className="text-xs">
                 {eventModal.endingDate ? (
@@ -71,12 +73,9 @@ export default function EventModal({
                     )}
                   </>
                 ) : (
-                  <>
-                    {}
-                    {/* du {eventModal.startingDate} au {eventModal.endingDate} */}
-                  </>
+                  <>le {eventModal.startingDate}</>
                 )}{" "}
-                a {eventModal.city} - {eventModal.address}
+                à {eventModal.city} - {eventModal.address}
               </div>
             </ModalBody>
             <ModalFooter>

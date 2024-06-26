@@ -8,27 +8,25 @@ import {
   TableRow,
   TableCell,
   Input,
-  Button,
   Chip,
   Pagination,
   Selection,
   ChipProps,
   SortDescriptor,
   Tooltip,
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   useDisclosure,
+  Modal,
 } from "@nextui-org/react";
 import Image from "next/image";
 import { DeleteIcon } from "@/components/icons/DeleteIcon";
 import { SearchIcon } from "@/components/icons/SearchIcon";
+import { EditIcon } from "@/components/icons/EditIcon";
+import ModalDeleteUser from "./modalDeleteUser";
+import ModalRoleUser from "./modalRoleUser";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   Utilisateur: "success",
-  Admin: "danger",
+  Administrateur: "danger",
 };
 
 type User = {
@@ -52,31 +50,20 @@ type User = {
 };
 
 export default function App({ users }: { users: User[] }) {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [userModal, setUserModal] = useState<any>();
+  const [openModalDelete, setOpenModalDelete] = useState(false);
+  const [openModalRole, setOpenModalRole] = useState(false);
+  const [userModal, setUserModal] = useState<User>();
 
-  const openModal = (user: any) => {
+  const openModal = (user: User, type: "Role" | "Supprimer") => {
     setUserModal(user);
-    onOpen();
+    if (type === "Role") setOpenModalRole(true);
+    else setOpenModalDelete(true);
   };
 
-  async function removeUser(user: User) {
-    const response = await fetch(
-      `http://localhost:3000/api/user/${user.id}/delete`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      alert("Failed to delete user");
-    }
-    // users = users.filter((u) => u.id !== user.id);
-    window.location.reload();
-  }
+  const closeModal = () => {
+    setOpenModalDelete(false);
+    // window.location.reload();
+  };
 
   const [filterValue, setFilterValue] = React.useState("");
 
@@ -130,7 +117,7 @@ export default function App({ users }: { users: User[] }) {
       const cellValue = user[columnKey as keyof typeof user];
 
       switch (columnKey) {
-        case "identifiant":
+        case "user":
           return (
             <>
               <div className="flex flex-row gap-2">
@@ -164,10 +151,18 @@ export default function App({ users }: { users: User[] }) {
         case "actions":
           return (
             <div className="inline-flex gap-2">
-              <Tooltip color="danger" content="Delete user">
+              <Tooltip color="primary" content="Modifier role">
+                <span
+                  className="text-lg cursor-pointer active:opacity-50"
+                  onClick={() => openModal(user, "Role")}
+                >
+                  <EditIcon />
+                </span>
+              </Tooltip>
+              <Tooltip color="danger" content="Supprimer">
                 <span
                   className="text-lg text-danger cursor-pointer active:opacity-50"
-                  onClick={() => openModal(user)}
+                  onClick={() => openModal(user, "Supprimer")}
                 >
                   <DeleteIcon />
                 </span>
@@ -192,18 +187,6 @@ export default function App({ users }: { users: User[] }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [statusFilter, hasSearchFilter, filterValue, users]
   );
-
-  const onNextPage = React.useCallback(() => {
-    if (page < pages) {
-      setPage(page + 1);
-    }
-  }, [page, pages]);
-
-  const onPreviousPage = React.useCallback(() => {
-    if (page > 1) {
-      setPage(page - 1);
-    }
-  }, [page]);
 
   const onRowsPerPageChange = React.useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -307,23 +290,26 @@ export default function App({ users }: { users: User[] }) {
           onSortChange={setSortDescriptor}
         >
           <TableHeader>
-            <TableColumn key="identifiant" allowsSorting={true}>
-              USER
+            <TableColumn key="user" align="center" allowsSorting={true}>
+              UTILISATEUR
             </TableColumn>
-            <TableColumn key="createdAt" allowsSorting={true}>
-              CREATED AT
+            <TableColumn key="createdAt" align="center" allowsSorting={true}>
+              DATE DE CREATION
             </TableColumn>
-            <TableColumn key="fullname" allowsSorting={true}>
-              FULLNAME
+            <TableColumn key="fullname" align="center" allowsSorting={true}>
+              NOM COMPLET
             </TableColumn>
-            <TableColumn key="role" allowsSorting={true}>
+            <TableColumn key="role" align="center" allowsSorting={true}>
               ROLE
             </TableColumn>
             <TableColumn key="actions" align="center">
               ACTIONS
             </TableColumn>
           </TableHeader>
-          <TableBody emptyContent={"No users found"} items={sortedItems}>
+          <TableBody
+            emptyContent={"il n'y a aucun utilisateur"}
+            items={sortedItems}
+          >
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
@@ -334,50 +320,16 @@ export default function App({ users }: { users: User[] }) {
           </TableBody>
         </Table>
       </div>
-
-      <Modal
-        isOpen={isOpen}
-        isDismissable={false}
-        isKeyboardDismissDisabled={true}
-        hideCloseButton={true}
-        onOpenChange={onOpenChange}
-      >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col items-center gap-1">
-                Êtes-vous sûr de vouloir supprimer {userModal.fullname} ?
-              </ModalHeader>
-              <ModalBody>
-                Compte crée le{" "}
-                {new Date(
-                  userModal.createdAt?.toString() || ""
-                ).toLocaleDateString("fr-FR", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Non
-                </Button>
-                <Button
-                  color="primary"
-                  onPress={() => {
-                    removeUser(userModal);
-                    onClose();
-                  }}
-                >
-                  Oui
-                </Button>
-              </ModalFooter>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
+      <ModalDeleteUser
+        isOpen={openModalDelete}
+        onClose={closeModal}
+        userModal={userModal}
+      />
+      <ModalRoleUser
+        isOpen={openModalRole}
+        onClose={closeModal}
+        userModal={userModal}
+      />
     </>
   );
 }
