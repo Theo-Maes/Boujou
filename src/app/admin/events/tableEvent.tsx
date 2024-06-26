@@ -22,12 +22,13 @@ import { CheckedMarckIcon } from "@/components/icons/checkedMarckIcon";
 import ModalAcceptEvent from "./modalAcceptEvent";
 import { Event } from "@prisma/client";
 import { EyeIcon } from "@/components/icons/EyeIcon";
-import EventModal from "./ModalDetailEvent";
+import ModalDetailEvent from "./ModalDetailEvent";
+import { EditIcon } from "@/components/icons/EditIcon";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
-  attente: "warning",
+  Attente: "warning",
   Validé: "success",
-  annulé: "danger",
+  Annulé: "danger",
 };
 
 export default function App({ events }: { events: Event[] }) {
@@ -133,9 +134,9 @@ export default function App({ events }: { events: Event[] }) {
                 statusColorMap[
                   event.validatedAt
                     ? event.cancelledAt
-                      ? "annulé"
+                      ? "Annulé"
                       : "Validé"
-                    : "attente"
+                    : "Attente"
                 ]
               }
               size="sm"
@@ -143,7 +144,7 @@ export default function App({ events }: { events: Event[] }) {
             >
               {event.validatedAt
                 ? event.cancelledAt
-                  ? "annulé"
+                  ? "Annulé"
                   : "Validé"
                 : "En attente"}
             </Chip>
@@ -164,6 +165,11 @@ export default function App({ events }: { events: Event[] }) {
                   <></>
                 ) : (
                   <>
+                    <Tooltip color="default" content="Modifier">
+                      <span className="text-lg cursor-pointer active:opacity-50">
+                        <EditIcon />
+                      </span>
+                    </Tooltip>
                     <Tooltip color="danger" content="Annuler">
                       <span
                         className="text-lg text-danger cursor-pointer active:opacity-50"
@@ -349,7 +355,10 @@ export default function App({ events }: { events: Event[] }) {
               ACTIONS
             </TableColumn>
           </TableHeader>
-          <TableBody emptyContent={"No users found"} items={sortedItems}>
+          <TableBody
+            emptyContent={"il y a pas d'evenement"}
+            items={sortedItems}
+          >
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
@@ -367,7 +376,7 @@ export default function App({ events }: { events: Event[] }) {
         onClose={onClose}
         type={TypeModal}
       />
-      <EventModal
+      <ModalDetailEvent
         eventModal={eventModal}
         isOpen={openModalDetail}
         onClose={onClose}
