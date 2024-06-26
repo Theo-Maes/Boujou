@@ -1,8 +1,7 @@
 "use client";
 
 import { Roboto } from "next/font/google";
-import Menu from "../menu";
-import Table from "./tableEvent";
+
 import {
   Button,
   Modal,
@@ -27,22 +26,36 @@ export default function ModalAcceptEvent({
   eventModal: Event | undefined;
   isOpen: boolean;
   onClose: () => void;
-  type: "accept" | "refuse";
+  type: "accept" | "refuse" | "cancel";
 }) {
   async function handleAcceptEvent() {
     if (eventModal) {
-      if (type === "accept") {
-        const formData = new FormData();
-        formData.append("validatedAt", String(new Date().getTime()));
-
-        await fetch(`/api/event/${eventModal.id}/update`, {
-          method: "PATCH",
-          body: formData,
-        });
-      } else {
-        await fetch(`/api/event/${eventModal.id}/delete`, {
-          method: "DELETE",
-        });
+      switch (type) {
+        case "accept": {
+          const formData = new FormData();
+          formData.append("validatedAt", String(new Date().getTime()));
+          await fetch(`/api/event/${eventModal.id}/update`, {
+            method: "PATCH",
+            body: formData,
+          });
+          break;
+        }
+        case "refuse":
+          await fetch(`/api/event/${eventModal.id}/delete`, {
+            method: "DELETE",
+          });
+          break;
+        case "cancel": {
+          const formData = new FormData();
+          formData.append("cancelledAt", String(new Date().getTime()));
+          await fetch(`/api/event/${eventModal.id}/update`, {
+            method: "PATCH",
+            body: formData,
+          });
+          break;
+        }
+        default:
+          break;
       }
     }
   }
@@ -123,7 +136,51 @@ export default function ModalAcceptEvent({
     );
   }
 
+  function getModalCancel() {
+    return (
+      <>
+        {eventModal && (
+          <Modal
+            isOpen={isOpen}
+            isDismissable={false}
+            isKeyboardDismissDisabled={true}
+            hideCloseButton={true}
+          >
+            <ModalContent>
+              <ModalHeader className="flex flex-col items-center gap-1">
+                Êtes-vous sûr de vouloir annulé {eventModal.name} ?
+              </ModalHeader>
+              <ModalBody>
+                <div>{eventModal.description}</div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Non
+                </Button>
+                <Button
+                  color="primary"
+                  onPress={() => {
+                    handleAcceptEvent();
+                    onClose();
+                  }}
+                >
+                  Oui
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        )}
+      </>
+    );
+  }
+
   return (
-    <>{eventModal && type === "accept" ? getModalAccept() : getModalRefuse()}</>
+    <>
+      {eventModal && type === "accept"
+        ? getModalAccept()
+        : type === "cancel"
+        ? getModalCancel()
+        : getModalRefuse()}
+    </>
   );
 }
