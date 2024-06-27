@@ -1,3 +1,4 @@
+"use client"
 import React, { useState } from "react";
 import { Input } from "@nextui-org/react";
 import { SearchIcon } from "../icons/SearchIcon";

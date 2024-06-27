@@ -21,7 +21,7 @@ export const InformationsEventCard: React.FC<InformationsEventProps> = ({ iconNa
                 <div className="flex justify-center items-center">
                     <Image
                         className={theme === "dark" ? "ml-2 drop-shadow-lg invert" : "ml-2 drop-shadow-lg"}
-                        src={`${iconName}.svg`}
+                        src={`/${iconName}.svg`}
                         alt={`${iconName} icon`}
                         width={20}
                         height={20}

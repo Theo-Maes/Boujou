@@ -8,7 +8,7 @@ import sharp from "sharp";
 interface EventFormData {
   name: string;
   description: string;
-  endingDate: string;
+  endingDate?: string | undefined | null;
   startingDate: string;
   address: string;
   city: string;
@@ -58,11 +58,25 @@ export async function POST(req: NextRequest) {
       )}&api_key=${process.env.GEOCODE_API}`
     );
 
+    let lat = "0";
+    let long = "0";
     const eventGeoDataJSon = await eventGeoData.json();
-    const lat = eventGeoDataJSon[0].lat;
-    const long = eventGeoDataJSon[0].lon;
 
-    const endingDateDateTime = new Date(Number(endingDate));
+    if (
+      eventGeoDataJSon.length > 0 &&
+      eventGeoDataJSon[0].lat &&
+      eventGeoDataJSon[0].lon
+    ) {
+      lat = eventGeoDataJSon[0].lat;
+      long = eventGeoDataJSon[0].lon;
+    }
+
+    let endingDateDateTime;
+    if (endingDate || endingDate !== "") {
+      endingDateDateTime = new Date(Number(endingDate));
+    } else {
+      endingDateDateTime = "";
+    }
     const startingDateDateTime = new Date(Number(startingDate));
 
     const avatarPath = path
