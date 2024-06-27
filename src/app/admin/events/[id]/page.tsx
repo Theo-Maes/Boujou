@@ -7,8 +7,6 @@ export default async function UpdateEventPage({
 }: {
   params: { id: string };
 }) {
-  console.log(params.id);
-
   const response = await fetch(`http://localhost:3000/api/event/${params.id}`, {
     method: "GET",
     cache: "no-cache",

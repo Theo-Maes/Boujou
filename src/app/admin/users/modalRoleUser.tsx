@@ -77,9 +77,6 @@ export default function ModalRoleUser({
                 </Select>
               </ModalBody>
               <ModalFooter>
-                {/* <Button color="danger" variant="light" onPress={onClose}>
-                  Annuler
-                </Button> */}
                 <Button
                   color="primary"
                   onPress={() => {

@@ -89,7 +89,7 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
     if (!initialValues) {
       const passwordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-  
+
       if (!passwordRegex.test(form.password)) {
         setError(
           "Le mot de passe doit contenir au moins 8 caractères, une minuscule, une majuscule, un chiffre et un symbole."
@@ -97,25 +97,33 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
         setLoading(false);
         return;
       }
-  
+
       if (form.password !== form.confirmPassword) {
         setError("Les mots de passe ne correspondent pas");
         setLoading(false);
         return;
-      }      
+      }
     }
 
     try {
       const formData = new FormData(e.currentTarget);
       formData.append("roleId", "1");
-      if (initialValues.email !== "") formData.set("email", initialValues.email);
-      if (initialValues.firstName !== "") formData.set("firstName", initialValues.firstName);
-      if (initialValues.lastName !== "") formData.set("lastName", initialValues.lastName);
+      if (initialValues.email !== "")
+        formData.set("email", initialValues.email);
+      if (initialValues.firstName !== "")
+        formData.set("firstName", initialValues.firstName);
+      if (initialValues.lastName !== "")
+        formData.set("lastName", initialValues.lastName);
       if (initialValues.firstName !== "" && initialValues.lastName !== "") {
-        formData.set("fullName", `${initialValues.firstName} ${initialValues.lastName}`);
-      } else 
-      {
-        formData.append("fullname", `${formData.get("firstName")} ${formData.get("lastName")}`)
+        formData.set(
+          "fullName",
+          `${initialValues.firstName} ${initialValues.lastName}`
+        );
+      } else {
+        formData.append(
+          "fullname",
+          `${formData.get("firstName")} ${formData.get("lastName")}`
+        );
       }
 
       const res = await fetch("/api/user/create", {
@@ -125,7 +133,6 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
 
       if (res.ok) {
         setSuccess(true);
-        console.log("Inscription réussie : ", form);
       } else {
         const data = await res.json();
         setError(data.message || "Une erreur est survenue");
@@ -374,7 +381,9 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
           {success && (
             <>
               <Spacer y={1} />
-              <div className="text-green-500">Inscription réussie ! Vous pouvez vous connecter.</div>
+              <div className="text-green-500">
+                Inscription réussie ! Vous pouvez vous connecter.
+              </div>
             </>
           )}
           {error && (
