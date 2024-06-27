@@ -57,7 +57,7 @@ export default async function Home() {
       userCountByMonth[month]++;
     });
 
-    console.log(userCountByMonth);
+    // console.log(userCountByMonth);
     return userCountByMonth;
   }
 

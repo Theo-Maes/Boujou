@@ -22,17 +22,19 @@ import { CheckedMarckIcon } from "@/components/icons/checkedMarckIcon";
 import ModalAcceptEvent from "./modalAcceptEvent";
 import { Event } from "@prisma/client";
 import { EyeIcon } from "@/components/icons/EyeIcon";
-import EventModal from "./ModalDetailEvent";
+import ModalDetailEvent from "./ModalDetailEvent";
+import { EditIcon } from "@/components/icons/EditIcon";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
-  attente: "warning",
+  Attente: "warning",
   Validé: "success",
-  annulé: "danger",
+  Annulé: "danger",
 };
 
 export default function App({ events }: { events: Event[] }) {
   const [openModalDetail, setOpenModalDetail] = useState(false);
   const [openModalValidation, setOpenModalValidation] = useState(false);
+  const [openModalUpdate, setOpenModalUpdate] = useState(false);
   const [eventModal, setEventModal] = useState<Event | undefined>(undefined);
   const [TypeModal, setTypeModal] = useState<"accept" | "refuse" | "cancel">(
     "accept"
@@ -40,20 +42,28 @@ export default function App({ events }: { events: Event[] }) {
 
   const openModal = (
     event: Event,
-    type: "accept" | "refuse" | "cancel" | "detail"
+    type: "accept" | "refuse" | "cancel" | "detail" | "update"
   ) => {
     setEventModal(event);
     if (type === "detail") setOpenModalDetail(true);
     else {
-      setTypeModal(type);
+      if (type === "update") setOpenModalUpdate(true);
+      else setTypeModal(type);
       setOpenModalValidation(true);
     }
   };
 
   const onClose = () => {
-    setOpenModalValidation(false);
-    setOpenModalDetail(false);
-    window.location.reload();
+    if (openModalUpdate) {
+      setOpenModalUpdate(false);
+    }
+    if (openModalDetail) {
+      setOpenModalDetail(false);
+    }
+    if (openModalValidation) {
+      setOpenModalValidation(false);
+      window.location.reload();
+    }
   };
 
   const [filterValue, setFilterValue] = React.useState("");
@@ -129,9 +139,9 @@ export default function App({ events }: { events: Event[] }) {
                 statusColorMap[
                   event.validatedAt
                     ? event.cancelledAt
-                      ? "annulé"
+                      ? "Annulé"
                       : "Validé"
-                    : "attente"
+                    : "Attente"
                 ]
               }
               size="sm"
@@ -139,7 +149,7 @@ export default function App({ events }: { events: Event[] }) {
             >
               {event.validatedAt
                 ? event.cancelledAt
-                  ? "annulé"
+                  ? "Annulé"
                   : "Validé"
                 : "En attente"}
             </Chip>
@@ -160,6 +170,16 @@ export default function App({ events }: { events: Event[] }) {
                   <></>
                 ) : (
                   <>
+                    <Tooltip color="default" content="Modifier">
+                      <span
+                        className="text-lg cursor-pointer active:opacity-50"
+                        onClick={() =>
+                          (window.location.href = "/admin/events/" + event.id)
+                        }
+                      >
+                        <EditIcon />
+                      </span>
+                    </Tooltip>
                     <Tooltip color="danger" content="Annuler">
                       <span
                         className="text-lg text-danger cursor-pointer active:opacity-50"
@@ -172,6 +192,16 @@ export default function App({ events }: { events: Event[] }) {
                 )
               ) : (
                 <>
+                  <Tooltip color="default" content="Modifier">
+                    <span
+                      className="text-lg cursor-pointer active:opacity-50"
+                      onClick={() =>
+                        (window.location.href = "/admin/events/" + event.id)
+                      }
+                    >
+                      <EditIcon />
+                    </span>
+                  </Tooltip>
                   <Tooltip color="success" content="Valider">
                     <span
                       className="text-lg text-success cursor-pointer active:opacity-50"
@@ -345,7 +375,10 @@ export default function App({ events }: { events: Event[] }) {
               ACTIONS
             </TableColumn>
           </TableHeader>
-          <TableBody emptyContent={"No users found"} items={sortedItems}>
+          <TableBody
+            emptyContent={"il y a pas d'evenement"}
+            items={sortedItems}
+          >
             {(item) => (
               <TableRow key={item.id}>
                 {(columnKey) => (
@@ -363,7 +396,7 @@ export default function App({ events }: { events: Event[] }) {
         onClose={onClose}
         type={TypeModal}
       />
-      <EventModal
+      <ModalDetailEvent
         eventModal={eventModal}
         isOpen={openModalDetail}
         onClose={onClose}

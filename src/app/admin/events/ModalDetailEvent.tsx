@@ -17,7 +17,7 @@ const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
 });
 
-export default function EventModal({
+export default function ModalDetailEvent({
   eventModal,
   isOpen,
   onClose,
@@ -76,6 +76,9 @@ export default function EventModal({
                   <>le {eventModal.startingDate}</>
                 )}{" "}
                 à {eventModal.city} - {eventModal.address}
+              </div>
+              <div>
+                {eventModal.price === 0 ? "Gratuit" : <>{eventModal.price}€</>}
               </div>
             </ModalBody>
             <ModalFooter>
