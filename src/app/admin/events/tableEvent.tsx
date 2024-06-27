@@ -192,6 +192,16 @@ export default function App({ events }: { events: Event[] }) {
                 )
               ) : (
                 <>
+                  <Tooltip color="default" content="Modifier">
+                    <span
+                      className="text-lg cursor-pointer active:opacity-50"
+                      onClick={() =>
+                        (window.location.href = "/admin/events/" + event.id)
+                      }
+                    >
+                      <EditIcon />
+                    </span>
+                  </Tooltip>
                   <Tooltip color="success" content="Valider">
                     <span
                       className="text-lg text-success cursor-pointer active:opacity-50"
