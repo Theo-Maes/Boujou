@@ -20,6 +20,7 @@ interface Group {
   id: number;
   event: Event;
   drivers: {
+    id: number;
     startingdate: number;
     endingdate: number;
     adress: string;
@@ -32,6 +33,7 @@ interface Group {
     }[];
   }[];
   hosts: {
+    id: number;
     address: string;
     zipcode: string;
     city: string;
@@ -190,7 +192,7 @@ export default function EventGroupCard({
                         />
                         <div className="flex flex-row justify-end mr-4">
                           <Button
-                            onClick={() => joinDriver(driver.user.id)}
+                            onClick={() => joinDriver(driver.id)}
                             color={theme === "dark" ? "secondary" : "primary"}
                             size="sm"
                             className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
@@ -267,7 +269,7 @@ export default function EventGroupCard({
                         />
                         <div className="flex flex-row justify-end mr-4">
                           <Button
-                            onClick={() => joinHost(host.user.id)}
+                            onClick={() => joinHost(host.id)}
                             color={theme === "dark" ? "secondary" : "primary"}
                             size="sm"
                             className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
