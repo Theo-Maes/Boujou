@@ -1,10 +1,8 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import Tooltip from "@mui/material/Tooltip";
 import Stack from "@mui/material/Stack";
 import { useController } from "react-hook-form";
 import dayjs, { Dayjs } from "dayjs";
-import TextField from "@mui/material/TextField";
 import { DatePicker, Image } from "@nextui-org/react";
 import {
   ZonedDateTime,
@@ -22,20 +20,6 @@ interface CustomTextFieldProps {
   placeholder?: string;
   [key: string]: any;
 }
-
-const CustomTextField = styled(TextField)(({ theme }) => ({
-  "& .MuiOutlinedInput-root": {
-    "& fieldset": {
-      borderColor: "blue",
-    },
-    "&:hover fieldset": {
-      borderColor: "blue",
-    },
-    "&.Mui-focused fieldset": {
-      borderColor: "blue",
-    },
-  },
-}));
 
 const DatePickerField = ({
   name,
