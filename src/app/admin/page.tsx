@@ -15,6 +15,59 @@ const roboto = Roboto({
 });
 
 export default async function Home() {
+  async function getNbEvenementsAnnuleParMois() {
+    const response = await fetch("http://localhost:3000/api/event", {
+      cache: "no-store",
+    });
+
+    const jsonResponse = await response.json();
+    const data = jsonResponse.data;
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+
+    const eventCancelledDates = data
+      .filter((event: any) => event.cancelledDate)
+      .map((event: any) => new Date(event.cancelledDate));
+    const eventCancelledMonths = eventCancelledDates
+      .filter((date: any) => date.getFullYear() === currentYear)
+      .map((date: any) => date.getMonth());
+
+    const eventCancelledCountByMonth: number[] = Array(12).fill(0);
+
+    eventCancelledMonths.forEach((month: any) => {
+      eventCancelledCountByMonth[month]++;
+    });
+
+    const eventCountByMonth = eventCancelledCountByMonth;
+
+    return eventCountByMonth;
+  }
+
+  async function getNbEvenementsParMois() {
+    const response = await fetch("http://localhost:3000/api/event", {
+      cache: "no-store",
+    });
+
+    const jsonResponse = await response.json();
+    const data = jsonResponse.data;
+
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+
+    const eventDates = data.map((event: any) => new Date(event.startingDate));
+    const eventMonths = eventDates
+      .filter((date: any) => date.getFullYear() === currentYear)
+      .map((date: any) => date.getMonth());
+
+    const eventCountByMonth: number[] = Array(12).fill(0);
+
+    eventMonths.forEach((month: any) => {
+      eventCountByMonth[month]++;
+    });
+    return eventCountByMonth;
+  }
+
   async function getNbNouveauInscritsParMois() {
     const response = await fetch("http://localhost:3000/api/user", {
       cache: "no-store",
@@ -88,7 +141,7 @@ export default async function Home() {
                   data={await getNbNouveauInscritsParMois()}
                   labels={labels}
                   subTitle=""
-                  title="nombre de nouveau d'inscrits par mois"
+                  title="nombre de nouveau d'inscrits par mois cette année"
                   type="line"
                 />
               </div>
@@ -97,16 +150,31 @@ export default async function Home() {
                   data={await getNbInscritsParMois()}
                   labels={labels}
                   subTitle=""
-                  title="nombre total d'inscrits par mois"
+                  title="nombre total d'inscrits par mois cette année"
                   type="line"
                 />
               </div>
             </div>
             <div className="flex flex-row gap-10 self-center">
-              <div>Graph</div>
-              <div>Graph</div>
+              <div>
+                <GraphCard
+                  data={await getNbEvenementsParMois()}
+                  labels={labels}
+                  subTitle=""
+                  title="nombre d'événement par mois cette année"
+                  type="line"
+                />
+              </div>
+              <div>
+                <GraphCard
+                  data={await getNbEvenementsAnnuleParMois()}
+                  labels={labels}
+                  subTitle=""
+                  title="nombre d'événement annulé par mois cette année"
+                  type="line"
+                />
+              </div>
             </div>
-            <Button>graphique custom</Button>
             <div className="flex flex-col"></div>
           </div>
         </div>
