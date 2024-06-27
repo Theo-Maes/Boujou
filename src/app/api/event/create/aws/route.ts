@@ -18,7 +18,6 @@ export async function POST(req: NextRequest) {
       latitude,
       longitude,
       categoryId,
-      userId,
     } = data as Event;
 
     const newEvent: Event = await prisma.event.create({
@@ -36,11 +35,6 @@ export async function POST(req: NextRequest) {
         category: {
           connect: {
             id: categoryId,
-          },
-        },
-        user: {
-          connect: {
-            id: userId, // Utilisation de user pour établir la relation
           },
         },
       },

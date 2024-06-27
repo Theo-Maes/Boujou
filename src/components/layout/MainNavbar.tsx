@@ -6,12 +6,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle, UserMenu } from "..";
-import { Button } from "..";
 import { useTheme } from "next-themes";
 
-import EventForm from "../forms/ServiceForm";
+import EventForm from "../forms/EventForm";
 import ButtonModal from "../forms/utils/Modal";
-import { useEffect } from "react";
 
 export default function MainNavbar() {
   const { data: session } = useSession();
@@ -47,21 +45,11 @@ export default function MainNavbar() {
               </Link>
             </div>
           </div>
-
           {session && session.user ? (
             <div className="hidden md:flex flex-1 justify-center">
               <ButtonModal title="Proposer un événement" isBlue={true}>
-                <EventForm userId={session.user.id} />
+                <EventForm userId={session.user.id} type={"event"} />
               </ButtonModal>
-              {/* <Link href={"/about"}>
-                <Button
-                  color={theme === "dark" ? "secondary" : "primary"}
-                  size="sm"
-                  className="ml-2 font-medium dark:text-secondaryText"
-                >
-                  Proposer un événement
-                </Button>
-              </Link> */}
             </div>
           ) : (
             <></>

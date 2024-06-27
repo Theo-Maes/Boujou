@@ -1,9 +1,8 @@
 "use client";
-import React, { useState } from "react";
-import { useController, useForm } from "react-hook-form";
-import { Button, Input } from "@nextui-org/react";
-import { Spinner } from "@nextui-org/react";
-import Typography from "../ui/Typography";
+import React from "react";
+import { useController } from "react-hook-form";
+import { Input } from "@nextui-org/react";
+
 import Image from "next/image";
 
 interface CustomTextFieldProps {
@@ -51,8 +50,8 @@ const TextField = ({
             className="drop-shadow-lg"
             src={`/icons/form/${endIcon}.png`}
             alt="Apple Logo"
-            width={24}
-            height={24}
+            width={15}
+            height={15}
           />
         )
       }
@@ -66,6 +65,7 @@ const TextField = ({
         innerWrapper: "bg-transparent",
         inputWrapper: [
           "h-[60px]",
+          // "max-w-[350px]",
           "bg-page",
           //   "dark:bg-default/60",
           "backdrop-blur-xl",

@@ -1,3 +1,4 @@
+import { classNames } from "@/libs";
 import React from "react";
 
 type TypographyProps = {
@@ -13,10 +14,15 @@ type TypographyProps = {
     | "body"
     | "body3";
   children: React.ReactNode;
+  className?: string;
 };
 
-const Typography: React.FC<TypographyProps> = ({ variant, children }) => {
-  const baseClasses = "text-gray-900";
+const Typography: React.FC<TypographyProps> = ({
+  variant,
+  children,
+  className,
+}) => {
+  const baseClasses = `text-gray-900 font-body ${className}`;
 
   const variantClasses: { [key in TypographyProps["variant"]]: string } = {
     h1: "text-4xl font-bold",

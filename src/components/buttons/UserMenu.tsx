@@ -19,6 +19,8 @@ export default function UserMenu({
   currentPath: string;
 }): JSX.Element {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { theme } = useTheme();
 
   const handleSignInClick = () => {
@@ -33,6 +35,24 @@ export default function UserMenu({
     signOut({ callbackUrl: "/" });
   };
 
+  const handleSignIn = async () => {
+    const result = await signIn("credentials", {
+      email,
+      password,
+    });
+    if (result?.error) {
+      console.error(result.error);
+    } else {
+      handleCloseModal();
+
+      if (["/signin", "/signup"].includes(currentPath)) {
+        window.location.href = "/";
+      } else {
+        window.location.href = currentPath;
+      }    
+    }
+  };
+
   if (session && session.user) {
     return (
       <Menu as="div" className="relative ml-3">
@@ -44,8 +64,8 @@ export default function UserMenu({
               width={36}
               height={36}
               className="rounded-full border-1 border-gray-600 p-0.5"
-              src={session.user.image ?? ""}
-              alt={session.user.name ?? "User"}
+              src={session.user.avatar ?? ""}
+              alt={session.user.fullname ?? "User"}
             />
           </MenuButton>
         </div>
@@ -63,7 +83,7 @@ export default function UserMenu({
               {() => (
                 <div className="text-sm mt-2 px-4 pb-2">
                   <p className="font-regular">Connecté en tant que</p>
-                  <p className="font-semibold text-primary dark:text-secondary">{session.user.name}</p>
+                  <p className="font-semibold text-primary dark:text-secondary">{session.user.fullname}</p>
                 </div>
               )}
             </MenuItem>
@@ -77,19 +97,6 @@ export default function UserMenu({
                   )}
                 >
                   Profil
-                </Link>
-              )}
-            </MenuItem>
-            <MenuItem>
-              {({ focus }) => (
-                <Link
-                  href="/about"
-                  className={classNames(
-                    focus ? "bg-gray-200 dark:bg-gray-700" : "",
-                    "block md:hidden px-4 py-2 text-sm"
-                  )}
-                >
-                  Proposer un événement
                 </Link>
               )}
             </MenuItem>
@@ -144,14 +151,18 @@ export default function UserMenu({
               label="Email"
               placeholder="Entrez votre adresse email"
               variant="bordered"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <Input
               label="Mot de passe"
               placeholder="Entrez votre mot de passe"
               type="password"
               variant="bordered"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
-            <div className="flex py-2 px-1 justify-between">
+            <div className="flex py-2 px-1 justify-start">
               <Checkbox
                 color={theme === "dark" ? "secondary" : "primary"}
                 classNames={{
@@ -160,7 +171,7 @@ export default function UserMenu({
               >
                 Se souvenir de moi
               </Checkbox>
-              <Link color={theme === "dark" ? "secondary" : "primary"} href="#" className={classNames(
+              {/* <Link color={theme === "dark" ? "secondary" : "primary"} href="#" className={classNames(
                       "text-[13px]",
                       "md:text-[16px]",
                       "transition",
@@ -171,7 +182,7 @@ export default function UserMenu({
                       "dark:text-neutral-200",
                       "dark:hover:underline-neutral-200")}>
                 Mot de passe oublié ?
-              </Link>
+              </Link> */}
             </div>
             <div className="flex py-2 px-1 justify-center">
               <Button onClick={() => signIn("google", { callbackUrl: "http://localhost:3000" })} color={theme === "dark" ? "secondary" : "primary"} className="w-auto lg:w-2/3 flex justify-center items-center">
@@ -186,13 +197,25 @@ export default function UserMenu({
               </Button>
             </div>
           </ModalBody>
-          <ModalFooter>
-            <Button color="danger" variant="flat" onPress={handleCloseModal} className="dark:text-white">
-              Annuler
-            </Button>
-            <Button color={theme === "dark" ? "secondary" : "primary"} onPress={handleCloseModal} className="text-white dark:text-black">
-              Se connecter
-            </Button>
+          <ModalFooter className="flex justify-between align-center">
+            <div>
+              <Link 
+                color={theme === "dark" ? "secondary" : "primary"} 
+                href="/signup"
+              >
+                <Button color={theme === "dark" ? "primary" : "secondary"} onPress={handleCloseModal} className="text-dark dark:text-white">
+                  S&apos;inscrire
+                </Button>
+              </Link>
+            </div>
+            <div className="flex gap-3">
+              <Button color="danger" variant="flat" onPress={handleCloseModal} className="dark:text-white">
+                Annuler
+              </Button>
+              <Button color={theme === "dark" ? "secondary" : "primary"} onClick={handleSignIn} className="text-white dark:text-black">
+                Se connecter
+              </Button>
+            </div>
           </ModalFooter>
         </ModalContent>
       </Modal>

@@ -10,14 +10,14 @@ export interface UserGroupProps {
 
 export const UserGroup: React.FC<UserGroupProps> = ({ chevron, avatar, fullname }) => {
     const { theme } = useTheme();
-
+    
     return (
         <div className="flex flex-row">
             {chevron ? (
                <div className="hidden md:flex justify-center items-center">
                     <Image
                         className={theme === "dark" ? "md:ml-2 mr-4 drop-shadow-lg invert" : "md:ml-2 mr-4 drop-shadow-lg"}
-                        src="chevron-right.svg"
+                        src="../chevron-right.svg"
                         alt="chevron right icon"
                         width={16}
                         height={16}

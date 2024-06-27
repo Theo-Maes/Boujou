@@ -32,8 +32,6 @@ const ImageField: React.FC<CustomTextFieldProps> = ({
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      console.log(e.target.files[0]);
-
       onChange(e.target.files[0]);
       setImg(URL.createObjectURL(e.target.files[0]));
     }
@@ -44,11 +42,11 @@ const ImageField: React.FC<CustomTextFieldProps> = ({
         accept="image/*"
         onChange={handleOnChange}
         style={{ display: "none" }}
-        id="raised-button-file"
-        multiple
+        id="image"
+        name="image"
         type="file"
       />
-      <label htmlFor="raised-button-file" className="flex flex-1 flex-col">
+      <label htmlFor="image" className="flex flex-1 flex-col">
         <Button
           variant="bordered"
           color="primary"

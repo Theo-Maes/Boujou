@@ -1,9 +1,11 @@
+
 import { GitHubIcon } from "@/components";
 import SearchInput2 from "@/components/inputs/SearchInput2";
 import SearchInput from "@/components/inputs/SearchInput";
 import { Metadata } from "next";
-import MedievalTentIcon from "@/components/icons/MedievalTentIcon";
 import CardEvent from "@/components/cards/EventCard";
+import { Input } from "@nextui-org/react";
+import { SearchIcon } from "@/components/icons/SearchIcon";
 
 export const metadata: Metadata = {
   title: "Test",
@@ -30,10 +32,10 @@ export default function AboutPage() {
           </article>
           <section>
             <div className="mt-3">
-              <SearchInput label="Lieu" placeholder="Rechercher par lieu" />
+              <SearchInput placeholder="Rechercher par lieu" />
             </div>
             <div className="mt-3">
-              <SearchInput label="Evénement" placeholder="Rechercher par événement" />
+              <SearchInput placeholder="Rechercher par événement" />
             </div>
           </section>
           <section className="lg:ml-3">
@@ -49,13 +51,29 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-      <section className="px-3 md:px-0 md:pl-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* <section className="px-3 md:px-0 md:pl-9 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <CardEvent />
         <CardEvent />
         <CardEvent />
         <CardEvent />
         <CardEvent />
 
+      </section> */}
+      <section className="flex justify-center mt-6">
+        <div className="relative flex w-full max-w-lg flex-wrap md:flex-nowrap mb-6 md:mb-0">
+          <Input
+            type="email"
+            placeholder="you@example.com"
+            classNames={{
+              inputWrapper: "m-2", // Add padding-right to make space for the icon
+            }}
+            endContent={
+              <div className="absolute right-0 flex items-center justify-center bg-secondary dark:bg-primary rounded-lg p-2 my-2">
+                <SearchIcon className="text-white text-2xl pointer-events-none flex-shrink-0" />
+              </div>
+            }
+          />
+        </div>
       </section>
     </main>
   );

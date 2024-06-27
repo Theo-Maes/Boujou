@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  //binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -14,45 +14,144 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model DriverPassenger {
+  driverId  Int
+  userId    Int
 
-model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String?
-  access_token      String?
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String?
-  session_state     String?
+  driver    Driver   @relation(fields: [driverId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
+  @@id([driverId, userId])
+  @@index([driverId], name: "idx_driver_passenger_driverId")
+  @@index([userId], name: "idx_driver_passenger_userId")
 }
 
-model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model HostedUser {
+  hostId Int
+  userId Int
+
+  host Host @relation(fields: [hostId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@id([hostId, userId])
+  @@index([hostId], name: "idx_hosted_user_hostId")
+  @@index([userId], name: "idx_hosted_user_userId")
+}
+
+model Host {
+  id           Int      @id @default(autoincrement())
+  quantity     Int
+  city         String
+  adress       String
+  zipcode      String
+  startingdate DateTime
+  endingdate   DateTime
+  longitude    String
+  latitude     String
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  hostedUsers  HostedUser[]
+  groupId      Int
+  group        Group  @relation(fields: [groupId], references: [id])
+}
+
+
+model Driver {
+  id           Int      @id @default(autoincrement())
+  quantity     Int
+  city         String
+  adress       String
+  zipcode      String
+  startingdate DateTime
+  endingdate   DateTime
+  longitude    String
+  latitude     String
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  passengers   DriverPassenger[]
+  groupId      Int
+  group        Group  @relation(fields: [groupId], references: [id])
+}
+
+model Group {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  eventId   Int
+  creator   User      @relation("createdGroups", fields: [userId], references: [id])
+  event     Event     @relation(fields: [eventId], references: [id])
+  members   UserGroup[]
+  drivers   Driver[]
+  hosts     Host[]
+}
+
+model UserGroup {
+  userId  Int
+  groupId Int
+
+  user   User   @relation(fields: [userId], references: [id])
+  group  Group  @relation(fields: [groupId], references: [id])
+
+  @@id([userId, groupId])
+  @@index([userId], name: "idx_user_group_userId")
+  @@index([groupId], name: "idx_user_group_groupId")
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  role          String
-  accounts      Account[]
-  sessions      Session[]
-  events        Event[]
+  id            Int               @id @default(autoincrement())
+  fullname      String  
+  email         String            @unique
+  password      String?
+  avatar        String   
+  firstName     String   
+  lastName      String
+  adress        String?
+  zipcode       String?
+  city          String?
+  latitude      String?
+  longitude     String?
+  role          Role              @relation(fields: [roleId], references: [id])
+  roleId        Int
+  groups        UserGroup[]
+  createdGroups Group[]           @relation("createdGroups")
+  drivers       Driver[]
+  hosts         Host[]
+  HostedUsers   HostedUser[]
+  passengerIn   DriverPassenger[]
+  createdAt     DateTime          @default(now())
 }
+
+model Role {
+  id    Int    @id @default(autoincrement())
+  name  String
+  users User[]
+}
+ 
+// model Account {
+//   id                String  @id @default(cuid())
+//   userId            String
+//   type              String
+//   provider          String
+//   providerAccountId String
+//   refresh_token     String?
+//   access_token      String?
+//   expires_at        Int?
+//   token_type        String?
+//   scope             String?
+//   id_token          String?
+//   session_state     String?
+
+//   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+//   @@unique([provider, providerAccountId])
+// }
+
+// model Session {
+//   id           String   @id @default(cuid())
+//   sessionToken String   @unique
+//   userId       String
+//   expires      DateTime
+//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+// }
 
 model VerificationToken {
   identifier String
@@ -63,27 +162,28 @@ model VerificationToken {
 }
 
 model Category {
-    id Int @id @default(autoincrement())
-    name String
-    events Event[]
+    id      Int @id @default(autoincrement())
+    name    String
+    events  Event[]
 }
 
 model Event {
-    id          Int       @id @default(autoincrement())
-    name        String    @db.VarChar(100)
-    startingDate DateTime
-    endingDate  DateTime
-    latitude    String    @db.VarChar(50)
-    longitude   String    @db.VarChar(100)
-    image       String    @db.VarChar(100)
-    city        String    @db.VarChar(100)
-    address     String    @db.VarChar(100)
-    validatedAt DateTime?
-    cancelledAt DateTime?
-    description String
-    zipCode     String    @db.VarChar(100)
-    category    Category @relation(fields: [categoryId], references: [id])
-    categoryId  Int
-    user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId      String
+    id            Int       @id @default(autoincrement())
+    name          String    @unique @db.VarChar(100)
+    startingDate  DateTime
+    endingDate    DateTime
+    latitude      String    
+    longitude     String    
+    image         String    @db.VarChar(100)
+    city          String    @db.VarChar(100)
+    address       String    @db.VarChar(100)
+    validatedAt   DateTime?
+    cancelledAt   DateTime?
+    description   String
+    zipCode       String    @db.VarChar(5)
+    price         Int
+    category      Category  @relation(fields: [categoryId], references: [id])
+    categoryId    Int
+    url           String?
+    groups        Group[]
 }
