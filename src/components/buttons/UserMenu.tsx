@@ -84,9 +84,6 @@ export default function UserMenu({
                 <div className="text-sm mt-2 px-4 pb-2">
                   <p className="font-regular">Connecté en tant que</p>
                   <p className="font-semibold text-primary dark:text-secondary">{session.user.fullname}</p>
-                  <p>{session.user.roleId} / ROLE</p>
-                  <p>{session.user.id} / ID</p>
-                  <p>img: {session.user.avatar?.toString()}</p>
                 </div>
               )}
             </MenuItem>
@@ -165,7 +162,7 @@ export default function UserMenu({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <div className="flex py-2 px-1 justify-between">
+            <div className="flex py-2 px-1 justify-start">
               <Checkbox
                 color={theme === "dark" ? "secondary" : "primary"}
                 classNames={{
@@ -174,7 +171,7 @@ export default function UserMenu({
               >
                 Se souvenir de moi
               </Checkbox>
-              <Link color={theme === "dark" ? "secondary" : "primary"} href="#" className={classNames(
+              {/* <Link color={theme === "dark" ? "secondary" : "primary"} href="#" className={classNames(
                       "text-[13px]",
                       "md:text-[16px]",
                       "transition",
@@ -185,7 +182,7 @@ export default function UserMenu({
                       "dark:text-neutral-200",
                       "dark:hover:underline-neutral-200")}>
                 Mot de passe oublié ?
-              </Link>
+              </Link> */}
             </div>
             <div className="flex py-2 px-1 justify-center">
               <Button onClick={() => signIn("google", { callbackUrl: "http://localhost:3000" })} color={theme === "dark" ? "secondary" : "primary"} className="w-auto lg:w-2/3 flex justify-center items-center">

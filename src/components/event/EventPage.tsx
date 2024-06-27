@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "..";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { useTheme } from "next-themes";
-import Link from "next/link";
 import { InformationsEventCard } from "../cards/InformationsEventCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EventGroupCard from "../cards/EventGroupCard";
+import ButtonModal from "../forms/utils/Modal";
+import ServiceForm from "../forms/ServiceForm";
+import { useSession } from "next-auth/react";
+import { Group } from "@prisma/client";
 
 export interface EventPageProps {
   id: number;
@@ -24,6 +26,7 @@ export interface EventPageProps {
   cancelledAt: Date | null;
   url?: string;
   category: string;
+  numberOfGroups: number | null,
 }
 
 const formatDate = (timestamp: number) => {
@@ -74,12 +77,29 @@ export default function EventPage({
   category,
   startingDate,
   endingDate,
-  url
-}: EventPageProps): JSX.Element {    
+  url,
+  numberOfGroups
+}: EventPageProps): JSX.Element {  
+  const { data: session } = useSession();  
   const { theme } = useTheme();
-    const [collectifCount, setCollectifCount] = useState(1);
-    const eventDate = generateMessage(startingDate, endingDate);
-    const eventDateWithHour = generateMessageWithHour(startingDate, endingDate);
+  const [collectifCount, setCollectifCount] = useState<number>(numberOfGroups ?? 0);
+  const eventDate = generateMessage(startingDate, endingDate);
+  const eventDateWithHour = generateMessageWithHour(startingDate, endingDate);
+  
+  useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        const eventResponse = await fetch(`/api/event/${id}`);
+        const eventData = await eventResponse.json();
+        console.log(eventData);
+
+      } catch (error) {
+        console.error("Error fetching event or group data:", error);
+      }
+    };
+
+    fetchEventData();
+  }, [id]);
 
     return (
       <main className="flex flex-col">
@@ -98,29 +118,22 @@ export default function EventPage({
               </div>
               <Card className="relative md:right-10 flex flex-col ml-0 md:ml-auto mt-6 md:mt-0 rounded-none w-full md:w-6/12 md:h-1/2 z-20 bg-white dark:bg-gray-800">
                   <CardHeader className="flex flex-row justify-center">
-                      <p className="uppercase text-tertiary font-medium my-2 md:my-5">{category}</p>
+                      <p className="uppercase text-primary dark:text-secondary font-medium my-2 md:my-5">{category}</p>
                   </CardHeader>
                   <CardBody className="flex flex-col items-center justify-center">
                       <p className="uppercase font-extrabold text-2xl text-center mb-2 md:mb-3">{eventName}</p>
                       <p className="mt-2 md:mt-3">{eventDate}</p>
                   </CardBody>
                   <CardFooter className="flex flex-row justify-center">
-                      <Link href={"/about"}>
-                          <Button
-                            color={theme === "dark" ? "secondary" : "primary"}
-                            size="sm"
-                            className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
-                          >
-                            Créez votre collectif
-                            <Image
-                                className={theme === "dark" ? "ml-2 drop-shadow-lg" : "ml-2 drop-shadow-lg invert"}
-                                src="/group.svg"
-                                alt="Group Logo"
-                                width={16}
-                                height={16}
-                            />
-                          </Button>
-                      </Link>
+                  {session && session.user ? (
+                    <div className="hidden md:flex flex-1 justify-center">
+                      <ButtonModal title="Créer votre collectif" isBlue={true}>
+                        <ServiceForm userId={session.user.id} eventId={id}/>
+                      </ButtonModal>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                   </CardFooter>
               </Card>
             </div>
@@ -171,7 +184,7 @@ export default function EventPage({
             </div>
           </article>
           {collectifCount > 0 ? (
-            <EventGroupCard />
+            <EventGroupCard eventId={id} />          
           ) : (
             <></>
           )} 

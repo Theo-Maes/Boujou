@@ -31,12 +31,14 @@ const fetchEvent = async (id: string): Promise<EventPageProps | null> => {
       url: event.url || "",
       categoryId: Number.parseInt(event.categoryId.toString()),
       category: event.category.name,
+      numberOfGroups: event.groups.length || 0,
     };
   } catch (error) {
     console.error('Failed to fetch event:', error);
     return null;
   }
 };
+
 
 export default function EventTestPage ({params}: { params: { id: string }}) {
   const { id } = params;
@@ -70,7 +72,8 @@ export default function EventTestPage ({params}: { params: { id: string }}) {
       url={event.url} 
       id={event.id} 
       description={event.description} 
-      cancelledAt={event.cancelledAt} 
+      cancelledAt={event.cancelledAt}
+      numberOfGroups={event.numberOfGroups} 
     />
   );
 }

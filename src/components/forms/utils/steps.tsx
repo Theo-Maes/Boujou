@@ -6,6 +6,14 @@ import DatePickerField from "../DatePickerField";
 import TextAreaField from "../TextAreaField";
 import ImageField from "../ImageField";
 import Typography from "@/components/ui/Typography";
+import {
+  ZonedDateTime,
+  getLocalTimeZone,
+  DateValue,
+  now,
+  today,
+} from "@internationalized/date";
+
 export const CHOICE_STEPS = [
   {
     transition: true,
@@ -69,7 +77,7 @@ export const CAR_POOL_STEPS = [
         <Image
           className="mx-2 drop-shadow-lg"
           src="/icons/form/arrows.png"
-          alt="Apple Logo"
+          alt="arrow"
           width={24}
           height={24}
         />
@@ -122,6 +130,7 @@ export const CAR_POOL_STEPS = [
     ),
   },
 ];
+
 
 export const EVENT_STEPS = [
   {
@@ -181,6 +190,8 @@ export const EVENT_STEPS = [
           label="Début *"
           name={"startingDate"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
         <Image
           className="mx-2 drop-shadow-lg"
@@ -194,7 +205,9 @@ export const EVENT_STEPS = [
           label="Fin"
           name={"endingDate"}
           className="col-span-2"
-          placeholder="Heure de fin (optionnel)"
+          placeholder="Heure de fin *"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
       </div>
     ),
@@ -281,7 +294,7 @@ export const EVENT_STEPS = [
 
         <TextField
           control={control}
-          name="website"
+          name="url"
           isLoading={false}
           className=""
           label={"Lien url de l'événement (optionnel)"}
@@ -308,7 +321,7 @@ export const SUCCESS_STEPS = [
           width={150}
           height={150}
         />
-        <Typography variant="h1">Votre service a été enregistré</Typography>
+        <Typography variant="h2">Votre événement être prêt à être envoyé</Typography>
       </div>
     ),
   },
