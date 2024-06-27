@@ -141,6 +141,7 @@ export default function UpdateEventForm({
 
     if (response.ok) {
       alert("Event updated successfully");
+      window.location.href = "/admin/events";
     } else {
       alert("An error occured while updating the event");
     }

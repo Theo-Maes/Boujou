@@ -24,7 +24,6 @@ import { Event } from "@prisma/client";
 import { EyeIcon } from "@/components/icons/EyeIcon";
 import ModalDetailEvent from "./ModalDetailEvent";
 import { EditIcon } from "@/components/icons/EditIcon";
-import ModalUpdateEvent from "./modalUpdateEvent";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   Attente: "warning",
@@ -174,7 +173,9 @@ export default function App({ events }: { events: Event[] }) {
                     <Tooltip color="default" content="Modifier">
                       <span
                         className="text-lg cursor-pointer active:opacity-50"
-                        onClick={() => openModal(event, "update")}
+                        onClick={() =>
+                          (window.location.href = "/admin/events/" + event.id)
+                        }
                       >
                         <EditIcon />
                       </span>
@@ -388,11 +389,6 @@ export default function App({ events }: { events: Event[] }) {
       <ModalDetailEvent
         eventModal={eventModal}
         isOpen={openModalDetail}
-        onClose={onClose}
-      />
-      <ModalUpdateEvent
-        eventModal={eventModal}
-        isOpen={openModalUpdate}
         onClose={onClose}
       />
     </>
