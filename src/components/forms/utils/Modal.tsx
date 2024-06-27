@@ -54,14 +54,14 @@ const Modal = ({ children, title, isBlue }: ButtonModal) => {
         classNames={{
           body: "py-6",
           backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: `border-[#292f46] bg-white  text-[#a8b0d3] transition ease-in-out delay-150 ${bgColor} duration-300`,
+          base: `border-[#292f46] text-[#a8b0d3] transition ease-in-out delay-150 ${bgColor} duration-300`,
           header: " border-[#292f46]",
           footer: " border-[#292f46]",
           closeButton: "hover:bg-white/5 active:bg-white/10",
         }}
         closeButton={
           <Button onPress={() => setIsOpen(false)} variant="light">
-            fermer
+            Annuler
           </Button>
         }
       >

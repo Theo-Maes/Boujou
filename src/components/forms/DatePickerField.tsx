@@ -9,17 +9,19 @@ import { DatePicker, Image } from "@nextui-org/react";
 import {
   ZonedDateTime,
   getLocalTimeZone,
+  DateValue,
   now,
-  parseAbsoluteToLocal,
   today,
 } from "@internationalized/date";
+import {I18nProvider} from "@react-aria/i18n";
 
 interface CustomTextFieldProps {
   name: string;
   control?: any;
   label?: string;
-  defaultValue?: string;
+  defaultValue?: DateValue;
   placeholder?: string;
+  minValue?: DateValue;
   [key: string]: any;
 }
 
@@ -43,6 +45,7 @@ const DatePickerField = ({
   label,
   defaultValue,
   placeholder,
+  minValue,
   ...rest
 }: CustomTextFieldProps) => {
   const {
@@ -57,22 +60,27 @@ const DatePickerField = ({
   };
 
   return (
-    <DatePicker
-      label={label}
-      value={parseAbsoluteToLocal(value || new Date().toISOString())}
-      onChange={handleChange}
-      className="max-w-md"
-      granularity="second"
-      selectorIcon={
-        <Image
-          className="drop-shadow-lg"
-          src={`/icons/form/calendar.svg`}
-          alt="Apple Logo"
-          width={24}
-          height={24}
-        />
-      }
-    />
+    <I18nProvider locale="fr-FR">
+      <DatePicker
+        defaultValue={defaultValue ? now(getLocalTimeZone()) : undefined}
+        label={label}
+        minValue={minValue || undefined}
+        onChange={handleChange}
+        className="max-w-md"
+        showMonthAndYearPickers
+        granularity="second"
+        selectorIcon={
+          <Image
+            className="drop-shadow-lg"
+            src={`/icons/form/calendar.svg`}
+            alt="Calendar icon"
+            width={24}
+            height={24}
+          />
+        }
+      />
+    </I18nProvider>
+
   );
 };
 

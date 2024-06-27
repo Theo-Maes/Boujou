@@ -1,7 +1,7 @@
 "use client";
 import { useForm, SubmitHandler } from "react-hook-form";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import React from "react";
@@ -15,12 +15,24 @@ import { variantBox, variantText } from "./utils/variants";
 import {
   CAR_POOL_STEPS,
   CHOICE_STEPS,
+  CAR_AND_HOST_POOL_STEPS,
   EVENT_STEPS,
+  HOST_POOL_STEPS,
   INTRO_CAR_STEPS,
   INTRO_EVENT_STEPS,
   SUCCESS_STEPS,
-} from "./utils/steps";
+} from "./utils/stepsService";
+import {
+  ApiError,
+  createEvent,
+  createGroup,
+  uploadFile,
+} from "./utils/actions";
+import { Category } from "@prisma/client";
+
 interface StepProps {
+  isLast: boolean;
+  isDark: boolean;
   transition: boolean;
   title: string;
   subtitle: string;
@@ -28,41 +40,58 @@ interface StepProps {
   schema: any;
   renderInputFields: (control: any, onChange: any) => any;
   pageHelper?: (options: string[]) => any;
+  onSubmit?: (data: any, userId: number, groupId?: number) => void;
 }
+
 interface IFormInputs {
   name: string;
   image: File;
   start: any;
   end: any;
+  choices: string[];
 }
+
 interface FormProps {
-  type: string;
-  userId: string;
-  currentPage?: number;
+  userId: number;
+  eventId?: number;
+  categories?: Category[];
   children?: React.ReactNode;
+  successCallBack?: () => void;
   [key: string]: any;
 }
 
-const EventForm = ({ type, userId, children, ...props }: FormProps) => {
+const EventForm = ({
+  eventId,
+  userId,
+  children,
+  categories,
+  successCallBack,
+  ...props
+}: FormProps) => {
   const [[currentPage, direction], setPage] = useState([0, 0]);
-  const initialStep = type == "event" ? INTRO_EVENT_STEPS : INTRO_CAR_STEPS;
-  const mainStep = type == "event" ? EVENT_STEPS : CAR_POOL_STEPS;
-  const [pages, setPages] = useState<StepProps[]>([
+  const initialStep = eventId ? CHOICE_STEPS : INTRO_EVENT_STEPS;
+  const mainStep = eventId ? [] : EVENT_STEPS;
+  const successStep = eventId ? [] : SUCCESS_STEPS;
+  function trst() {
+    //si groupId
+  }
+
+  const [pages, setPages] = useState<any[]>([
     ...initialStep,
     ...mainStep,
-    ...SUCCESS_STEPS,
+    ...successStep,
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const { setIsDark, setIsOpen } = useContext(
     ModalContext
   ) as ModalContextProps;
 
   const {
     handleSubmit,
-    formState: { errors },
-    register,
     control,
-    reset,
+    formState: { errors },
+    watch,
   } = useForm<IFormInputs>({
     resolver: yupResolver(
       yup.object(pages[currentPage].schema as any).required()
@@ -72,8 +101,25 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
     },
   });
 
+  const watchedChoices = watch("choices");
+
+  const buttonLabel = useMemo(() => {
+    if (!!error) return "Réesayer";
+    if (eventId) {
+      if (currentPage === pages.length - 1) return "Terminer";
+      return watchedChoices && watchedChoices.length > 0
+        ? "Suivant"
+        : "Terminer";
+    } else {
+      return currentPage === pages.length - 1
+        ? "Retour vers votre événement"
+        : "Suivant";
+    }
+  }, [watchedChoices, pages, error, currentPage]);
+
   useEffect(() => {
     currentPage === 0 && setIsDark(true);
+    currentPage > 0 && setIsDark(false);
   }, [currentPage, setIsDark]);
 
   const paginate = (newDirection: number) => {
@@ -81,72 +127,64 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
   };
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
-    if (currentPage == pages.length - 2) {
-      const filename = data.image.name;
-      const fileType = data.image.type;
+    if (!!error) setIsOpen(false);
 
-      try {
-        const res = await fetch(
-          `/api/presign?file=${filename}&fileType=${fileType}`
-        );
-        const { url } = await res.json();
-        const upload = await fetch(url, {
-          method: "PUT",
-          body: data.image,
-          headers: { "Content-Type": fileType },
-        });
-        setIsLoading(false);
-        if (upload.ok) {
-          const imageUrl = new URL(url);
-
-          console.log(`${imageUrl.origin}${imageUrl.pathname}`);
-          // const eventData = {
-          //   ...data,
-          //   image: `${imageUrl.origin}${imageUrl.pathname}`,
-          //   latitude: "00000000.4444444",
-          //   longitude: "00000000.4444444",
-          //   categoryId: 1,
-          //   userId,
-          // };
-          // const response = await fetch("/api/event/create/aws", {
-          //   method: "POST",
-          //   headers: {
-          //     "Content-Type": "application/json",
-          //   },
-          //   body: JSON.stringify(eventData),
-          // });
-          // if (response.ok) {
-          //   alert("Event created successfully!");
-          // } else {
-          //   const errorData = await response.json();
-          //   console.error(errorData);
-          // }
-        } else {
-          console.error("Upload failed.");
-        }
+    if (eventId) {
+      if (pages.length !== 1 && currentPage !== pages.length - 1) {
         paginate(1);
-      } catch (error) {
-        console.log(error);
       }
-    } else {
-      if (currentPage !== pages.length - 1) paginate(1);
-      setIsDark(false);
+    } else if (currentPage !== pages.length - 1) {
+      paginate(1);
     }
-    if (currentPage === pages.length - 1) setIsOpen(false);
+
+    try {
+      if (eventId) {
+        if (
+          pages[currentPage].transition &&
+          (!watchedChoices || watchedChoices?.length == 0)
+        ) {
+          await pages[currentPage].onSubmit?.(data, userId, eventId, setError);
+          if (currentPage === pages.length - 1) {
+            successCallBack?.();
+            setIsOpen(false);
+          }
+        } else if (!pages[currentPage].transition) {
+          await pages[currentPage].onSubmit?.(data, userId, eventId);
+        }
+
+        if (pages[currentPage].isLast) setIsOpen(false);
+      } else {
+        await pages[currentPage].onSubmit?.(data, userId, eventId);
+        if (currentPage === pages.length - 1) {
+          successCallBack?.();
+          setIsOpen(false);
+        }
+      }
+    } catch (error) {
+      setIsDark(false);
+      setError((error as ApiError).message);
+    }
   };
   const pagesHelper = (choices: string[]) => {
-    switch (true) {
-      case choices.includes("Covoiturage"):
-        setPages([
-          ...CHOICE_STEPS,
-          ...EVENT_STEPS,
-          ...CAR_POOL_STEPS,
-          ...SUCCESS_STEPS,
-        ]);
-        break;
-      default:
-        setPages([...CHOICE_STEPS, ...EVENT_STEPS, ...SUCCESS_STEPS]);
-        break;
+    if (eventId) {
+      switch (true) {
+        case choices.includes("Covoiturage") && choices.includes("Hébergement"):
+          setPages([
+            ...CHOICE_STEPS,
+            ...CAR_AND_HOST_POOL_STEPS,
+            ...SUCCESS_STEPS,
+          ]);
+          break;
+        case choices.includes("Covoiturage"):
+          setPages([...CHOICE_STEPS, ...CAR_POOL_STEPS, ...SUCCESS_STEPS]);
+          break;
+        case choices.includes("Hébergement"):
+          setPages([...CHOICE_STEPS, ...HOST_POOL_STEPS, ...SUCCESS_STEPS]);
+          break;
+        default:
+          setPages([...CHOICE_STEPS]);
+          break;
+      }
     }
   };
   const handleNext = () => {
@@ -163,7 +201,7 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col justify-between items-stretch space-y-6 h-[500px] w-[380px]"
+      className="flex flex-col justify-between items-stretch space-y-6 h-[500px]"
     >
       {currentPage !== pages.length - 1 && currentPage !== 0 && (
         <Loader
@@ -172,55 +210,61 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
           className="flex relative flex-row space-x-4 w-100 h-1"
         />
       )}
-
-      <AnimatePresence initial={false} custom={direction} mode="wait">
-        {pages.map(
-          (step, index) =>
-            currentPage === index && (
-              <motion.div
-                key={currentPage}
-                custom={direction}
-                variants={variantText}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                className="flex  flex-1 flex-col space-y-8  items-center overflow-hidden w-full"
-              >
-                <span className="space-y-5">
-                  <Typography
-                    variant="h3"
-                    className={`${
-                      step.transition ? "text-white" : "text-black"
-                    } tracking-wide`}
-                  >
-                    {step.title}
-                  </Typography>
-                  <Typography
-                    variant="p"
-                    className={`${
-                      step.transition ? "text-white" : "text-black"
-                    } tracking-wide`}
-                  >
-                    {step.subtitle}
-                  </Typography>
-                </span>
-
+      {!!error ? (
+        <Typography variant="h1" className="bg-red mx-auto">
+          {error}
+        </Typography>
+      ) : (
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          {pages.map(
+            (step, index) =>
+              currentPage === index && (
                 <motion.div
                   key={currentPage}
                   custom={direction}
-                  variants={variantBox}
-                  initial="enter"
-                  animate="center"
+                  variants={variantText}
+                  initial="initial"
+                  animate="animate"
                   exit="exit"
-                  className="flex w-full flex-1 justify-center items-center flex-col space-y-4"
+                  className="flex  flex-1 flex-col space-y-8  items-center overflow-hidden w-full"
                 >
-                  {step.renderInputFields &&
-                    step.renderInputFields(control, pagesHelper)}
+                  <span className="space-y-5">
+                    <Typography
+                      variant="h3"
+                      className={`${
+                        step.transition ? "text-white" : "text-black"
+                      } tracking-wide w-full`}
+                    >
+                      {step.title}
+                    </Typography>
+                    <Typography
+                      variant="p"
+                      className={`${
+                        step.transition ? "text-white" : "text-black"
+                      } tracking-wide`}
+                    >
+                      {step.subtitle}
+                    </Typography>
+                  </span>
+
+                  <motion.div
+                    key={currentPage}
+                    custom={direction}
+                    variants={variantBox}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    className="flex w-full flex-1 justify-center items-center flex-col space-y-4"
+                  >
+                    {step.renderInputFields &&
+                      step.renderInputFields(control, pagesHelper, categories)}
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            )
-        )}
-      </AnimatePresence>
+              )
+          )}
+        </AnimatePresence>
+      )}
+
       <footer className="flex  align-middle justify-around ">
         {currentPage > 0 && currentPage < pages.length - 1 && (
           <Button onClick={() => paginate(-1)} size="md" color="outlined">
@@ -228,9 +272,10 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
           </Button>
         )}
         <Button color="contained" onClick={handleNext}>
-          {currentPage === pages.length - 1
+          {buttonLabel}
+          {/* {currentPage === pages.length - 1
             ? "Retour vers votre événement"
-            : "Suivant"}
+            : "Suivant"} */}
         </Button>
       </footer>
     </form>

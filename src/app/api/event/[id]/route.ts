@@ -9,7 +9,21 @@ export async function GET(req: Request, params: { params: { id: string } }) {
       where: {
         id: id,
       },
-      include: { category: true, groups: true },
+      include: {
+        category: true,
+        groups: {
+          include: {
+            drivers: {
+              include: {
+                user: true,
+              },
+            },
+            event: true,
+            hosts: true,
+            members: { include: { user: true } },
+          },
+        },
+      },
     });
     return NextResponse.json({ data: eventFind }, { status: 200 });
   } catch (error) {
