@@ -4,14 +4,13 @@ import Image from "next/image";
 import { Card, CardHeader, CardBody, CardFooter } from "@nextui-org/card";
 import { useTheme } from "next-themes";
 import { InformationsEventCard } from "../cards/InformationsEventCard";
-import { useEffect, useState } from "react";
 import EventGroupCard from "../cards/EventGroupCard";
 import ButtonModal from "../forms/utils/Modal";
 import ServiceForm from "../forms/ServiceForm";
 import { useSession } from "next-auth/react";
-import { Group, Host, User, UserGroup } from "@prisma/client";
+import { Category, Event, Group, User } from "@prisma/client";
 
-export interface Event {
+export interface EventData {
   id: number;
   name: string;
   description: string;
@@ -24,16 +23,8 @@ export interface Event {
   price: number;
   image: string;
   url: string;
-  categoryId: number;
-  category: string;
-  groups: {
-    drivers: {
-      quantity: number;
-      user: User;
-    }[];
-    hosts: Host[];
-    members: UserGroup[];
-  }[];
+  category: Category;
+  groups: Group[];
 }
 
 const formatDate = (timestamp: number) => {
@@ -88,12 +79,16 @@ const generateMessageWithHour = (
   }
 };
 
-export default function EventPage({ event }: { event: Event }): JSX.Element {
+export default function EventPage({
+  event,
+}: {
+  event: EventData;
+}): JSX.Element {
   const { data: session } = useSession();
   const { theme } = useTheme();
-  const [collectifCount, setCollectifCount] = useState<number>(
-    event.groups.length ?? 0
-  );
+  // const [collectifCount, setCollectifCount] = useState<number>(
+  //   event.groups.length ?? 0
+  // );
   const eventDate = generateMessage(event.startingDate, event.endingDate);
   const eventDateWithHour = generateMessageWithHour(
     event.startingDate,
@@ -132,7 +127,7 @@ export default function EventPage({ event }: { event: Event }): JSX.Element {
             <Card className="relative md:right-10 flex flex-col ml-0 md:ml-auto mt-6 md:mt-0 rounded-none w-full md:w-6/12 md:h-1/2 z-20 bg-white dark:bg-gray-800">
               <CardHeader className="flex flex-row justify-center">
                 <p className="uppercase text-primary dark:text-secondary font-medium my-2 md:my-5">
-                  {event.category}
+                  {event.category.name}
                 </p>
               </CardHeader>
               <CardBody className="flex flex-col items-center justify-center">
@@ -183,16 +178,16 @@ export default function EventPage({ event }: { event: Event }): JSX.Element {
               ) : (
                 <></>
               )}
-              {collectifCount > 0 ? (
+              {event.groups.length > 0 ? (
                 <Card className="rounded-none mb-2 bg-secondaryLight dark:bg-gray-800">
                   <CardBody className="mx-2 flex flex-row items-baseline">
                     <p className="text-xl text-tertiary">
-                      {collectifCount}{" "}
-                      {collectifCount > 1 ? "collectifs" : "collectif"}
+                      {event.groups.length}{" "}
+                      {event.groups.length > 1 ? "collectifs" : "collectif"}
                     </p>
                     <p className="ml-1">
-                      {collectifCount > 1 ? "participent" : "participe"} à cet
-                      événement
+                      {event.groups.length > 1 ? "participent" : "participe"} à
+                      cet événement
                     </p>
                   </CardBody>
                 </Card>
@@ -207,7 +202,9 @@ export default function EventPage({ event }: { event: Event }): JSX.Element {
             </Card>
           </div>
         </article>
-        {/* {collectifCount > 0 ? <EventGroupCard eventId={event.id} /> : <></>} */}
+        {event.groups.map((group, index) => (
+          <EventGroupCard key={index} group={group} />
+        ))}
       </section>
     </main>
   );

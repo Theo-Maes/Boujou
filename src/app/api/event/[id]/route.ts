@@ -18,6 +18,7 @@ export async function GET(req: Request, params: { params: { id: string } }) {
                 user: true,
               },
             },
+            event: true,
             hosts: true,
             members: { include: { user: true } },
           },

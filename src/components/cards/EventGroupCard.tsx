@@ -1,121 +1,57 @@
 import React, { useEffect, useState } from "react";
-import { Card, CardHeader, CardBody, Accordion, AccordionItem } from "@nextui-org/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Accordion,
+  AccordionItem,
+} from "@nextui-org/react";
 import Link from "next/link";
 import Button from "../buttons/Button";
 import { useTheme } from "next-themes";
 import { UserCard } from "./UserCard";
 import { PlacesCard } from "./PlacesCard";
 import { ServiceCard } from "./ServiceCard";
-
-// Définir les types pour les données
-interface User {
-  id: number;
-  fullname: string;
-  avatar: string;
-  // Ajouter d'autres propriétés si nécessaire
-}
-
-interface Member {
-  userId: number;
-  groupId: number;
-  user: User;
-}
+import { Event, Host, User, UserGroup } from "@prisma/client";
 
 interface Group {
-  id: number;
-  userId: number;
-  eventId: number;
-  members: Member[];
-  drivers: Driver[];
-  hosts: Host[];
-  creator: User;
   event: Event;
-}
-
-interface Event {
-  id: number;
-  name: string;
-  startingDate: string;
-  endingDate: string;
-  latitude: string;
-  longitude: string;
-  image: string;
-  city: string;
-  address: string;
-  validatedAt: string | null;
-  cancelledAt: string | null;
-  description: string;
-  zipCode: string;
-  price: number;
-  categoryId: number;
-  url: string;
-}
-
-interface Driver {
-  id: number;
-  quantity: number;
-  city: string;
-  adress: string;
-  zipcode: string;
-  startingdate: string;
-  endingdate: string;
-  longitude: string;
-  latitude: string;
-  userId: number;
-  groupId: number;
-}
-
-interface Host {
-    id: number;
-  quantity: number;
-  city: string;
-  adress: string;
-  zipcode: string;
-  startingdate: string;
-  endingdate: string;
-  longitude: string;
-  latitude: string;
-  userId: number;
-  groupId: number;
-}
-
-export interface EventGroupCardProps {
   eventId: number;
+  drivers: {
+    startingdate: number;
+    endingdate: number;
+    adress: string;
+    zipcode: string;
+    city: string;
+    quantity: number;
+    user: User;
+    passengers: {
+      user: User;
+    }[];
+  }[];
+  hosts: {
+    address: string;
+    zipcode: string;
+    city: string;
+    startingdate: number;
+    endingdate: number;
+    quantity: number;
+    user: User;
+    hostedUsers: {
+      user: User;
+    }[];
+  }[];
+  members: {
+    user: User;
+  }[];
 }
 
-export default function EventGroupCard({ eventId }: EventGroupCardProps): JSX.Element {
+export default function EventGroupCard({
+  group,
+}: {
+  group: Group;
+}): JSX.Element {
   const { theme } = useTheme();
-  const [users, setUsers] = useState<User[]>([]);
-  const [groups, setGroups] = useState<Group[]>([]);
-  const [drivers, setDrivers] = useState<Driver[]>([]);
-  const [hosts, setHosts] = useState<Host[]>([]);
-
-  useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        const eventResponse = await fetch(`/api/event/${eventId}`);
-        const eventData = await eventResponse.json();
-        const groupId = eventData.data.groups[0].id;
-
-        const groupResponse = await fetch(`/api/group/${groupId}`);
-        const groupData = await groupResponse.json();
-
-        const group = groupData.data[0];
-        setGroups([group]);
-        setUsers(group.members.map((member: Member) => member.user));
-        setDrivers(group.drivers);
-        setHosts(group.hosts);
-      } catch (error) {
-        console.error("Error fetching event or group data:", error);
-      }
-    };
-
-    fetchEventData();
-  }, [eventId]);
-
-  const filteredUsersCar = users.filter((user, index) => [1, 3, 4].includes(index));
-  const filteredUsersCar2 = users.filter((user, index) => [2, 4].includes(index));
-  const filteredUsersHouse = users.filter((user, index) => [2, 3, 5].includes(index));
 
   return (
     <section className="flex justify-center items-center">
@@ -135,109 +71,153 @@ export default function EventGroupCard({ eventId }: EventGroupCardProps): JSX.El
           <Accordion selectionMode="multiple" defaultExpandedKeys={["1"]}>
             <AccordionItem
               title={
-                <p className="text-sm">{users.length} utilisateur{users.length > 1 ? 's' : ''} dans ce collectif</p>
+                <p className="text-sm">
+                  {group.members.length} utilisateur
+                  {group.members.length > 1 ? "s" : ""} dans ce collectif
+                </p>
               }
               key="1"
             >
               <section className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-2 md:gap-3 p-1 dark:bg-gray-800">
-                {users.map((user, index) => (
-                  <UserCard key={index} avatar={user.avatar} fullname={user.fullname} />
+                {group.members.map((user, index) => (
+                  <UserCard
+                    key={index}
+                    avatar={user.user.avatar}
+                    fullname={user.user.fullname}
+                  />
                 ))}
               </section>
             </AccordionItem>
             <AccordionItem
               title={
-                <p className="text-sm">2 covoiturages disponibles dans ce collectif</p>
+                <p className="text-sm">
+                  {
+                    group.drivers.filter(
+                      (driver) =>
+                        driver.quantity >
+                        (driver.passengers ? driver.passengers.length : 0)
+                    ).length
+                  }{" "}
+                  covoiturages disponibles dans ce collectif
+                </p>
               }
               key="2"
             >
               <Accordion selectionMode="multiple">
-                <AccordionItem
-                  title={
-                    <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
-                      <UserCard chevron={true} avatar="../user-1.png" fullname="Jean-Michel Loremipsum" />
-                      <PlacesCard reserved={2} available={5} />
-                      <div className="flex flex-row justify-end mr-4">
-                        <Button
-                          color={theme === "dark" ? "secondary" : "primary"}
-                          size="xs"
-                          className="font-medium dark:text-secondaryText w-full md:w-1/2"
-                        >
-                          Rejoindre
-                        </Button>
-                      </div>
-                    </section>
-                  }
-                  key="1"
-                >
-                  <ServiceCard 
-                    isCovoiturage={true}
-                    departureTime="12h00" 
-                    departurePlace="Parking Carrefour Evreux"
-                    arrivalTime="13h00"
-                    arrivalPlace="CESI Saint-Etienne du Rouvray"
-                    users={filteredUsersCar}
-                  />
-                </AccordionItem>
-                <AccordionItem
-                  title={
-                    <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
-                      <UserCard chevron={true} avatar="../user-3.png" fullname="John Smith" />
-                      <PlacesCard reserved={3} available={5} />
-                      <div className="flex flex-row justify-end mr-4">
-                        <Button
-                          color={theme === "dark" ? "secondary" : "primary"}
-                          size="xs"
-                          className="font-medium dark:text-secondaryText w-full md:w-1/2"
-                        >
-                          Rejoindre
-                        </Button>
-                      </div>
-                    </section>
-                  }
-                  key="2"
-                >
-                  <ServiceCard 
-                    isCovoiturage={true}
-                    departureTime="12h00" 
-                    departurePlace="Parking Carrefour Evreux"
-                    arrivalTime="13h00"
-                    arrivalPlace="CESI Saint-Etienne du Rouvray"
-                    users={filteredUsersCar2}
-                  />
-                </AccordionItem>            
+                {group.drivers.map((driver, index) => (
+                  <AccordionItem
+                    title={
+                      <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
+                        <UserCard
+                          chevron={true}
+                          avatar={driver.user.avatar}
+                          fullname={driver.user.fullname}
+                        />
+                        <PlacesCard
+                          reserved={
+                            driver.passengers ? driver.passengers.length : 0
+                          }
+                          available={driver.quantity}
+                        />
+                        <div className="flex flex-row justify-end mr-4">
+                          <Button
+                            color={theme === "dark" ? "secondary" : "primary"}
+                            size="xs"
+                            className="font-medium dark:text-secondaryText w-full md:w-1/2"
+                          >
+                            Rejoindre
+                          </Button>
+                        </div>
+                      </section>
+                    }
+                    key={index}
+                  >
+                    <ServiceCard
+                      key={index}
+                      isCovoiturage={true}
+                      departureTime={new Date(
+                        driver.startingdate
+                      ).toLocaleDateString("fr-FR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
+                      departurePlace={`${driver.adress} - ${driver.zipcode} ${driver.city}`}
+                      arrivalTime={new Date(
+                        driver.endingdate
+                      ).toLocaleDateString("fr-FR", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                      })}
+                      arrivalPlace={`${group.event.address} - ${group.event.zipCode} ${group.event.city}`}
+                      users={
+                        driver.passengers?.map((passenger) => passenger.user) ??
+                        []
+                      }
+                    />
+                  </AccordionItem>
+                ))}
               </Accordion>
             </AccordionItem>
             <AccordionItem
               title={
-                <p className="text-sm">1 hébergement disponible dans ce collectif</p>
+                <p className="text-sm">
+                  {
+                    group.hosts.filter(
+                      (host) =>
+                        host.quantity >
+                        (host.hostedUsers ? host.hostedUsers.length : 0)
+                    ).length
+                  }{" "}
+                  hébergement disponible dans ce collectif
+                </p>
               }
               key="3"
             >
               <Accordion selectionMode="multiple">
-                <AccordionItem
-                  title={
-                    <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
-                      <UserCard chevron={true} avatar="../user-2.png" fullname="John Doe" />
-                      <PlacesCard reserved={1} available={4} />
-                      <div className="flex flex-row justify-end mr-4">
-                        <Button
-                          color={theme === "dark" ? "secondary" : "primary"}
-                          size="xs"
-                          className="font-medium dark:text-secondaryText w-full md:w-1/2"
-                        >
-                          Rejoindre
-                        </Button>
-                      </div>
-                    </section>
-                  }
-                  key="1"
-                >
-                  <ServiceCard 
-                    isCovoiturage={false}
-                    users={filteredUsersHouse}
-                  />
-                </AccordionItem>           
+                {group.hosts.map((host, index) => (
+                  <AccordionItem
+                    title={
+                      <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
+                        <UserCard
+                          chevron={true}
+                          avatar={host.user.avatar}
+                          fullname={host.user.fullname}
+                        />
+                        <PlacesCard
+                          reserved={
+                            host.hostedUsers ? host.hostedUsers.length : 0
+                          }
+                          available={host.quantity}
+                        />
+                        <div className="flex flex-row justify-end mr-4">
+                          <Button
+                            color={theme === "dark" ? "secondary" : "primary"}
+                            size="xs"
+                            className="font-medium dark:text-secondaryText w-full md:w-1/2"
+                          >
+                            Rejoindre
+                          </Button>
+                        </div>
+                      </section>
+                    }
+                    key={index}
+                  >
+                    <ServiceCard
+                      isCovoiturage={false}
+                      users={
+                        host.hostedUsers?.map(
+                          (hostedUser) => hostedUser.user
+                        ) ?? []
+                      }
+                    />
+                  </AccordionItem>
+                ))}
               </Accordion>
             </AccordionItem>
           </Accordion>
