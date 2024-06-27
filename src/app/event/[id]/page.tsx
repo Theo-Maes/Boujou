@@ -1,7 +1,7 @@
 "use client";
 
 import { Metadata } from "next";
-import EventPage, { Event } from "@/components/event/EventPage";
+import EventPage from "@/components/event/EventPage";
 import { EventWithRelations } from "@/libs/types";
 import { useEffect, useState } from "react";
 import Loading from "@/app/loading";

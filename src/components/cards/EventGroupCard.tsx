@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React from "react";
 import {
   Card,
   CardHeader,
@@ -6,15 +8,16 @@ import {
   Accordion,
   AccordionItem,
 } from "@nextui-org/react";
-import Link from "next/link";
 import Button from "../buttons/Button";
 import { useTheme } from "next-themes";
 import { UserCard } from "./UserCard";
 import { PlacesCard } from "./PlacesCard";
 import { ServiceCard } from "./ServiceCard";
 import { Event, Host, User, UserGroup } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 interface Group {
+  id: number;
   event: Event;
   drivers: {
     startingdate: number;
@@ -51,20 +54,87 @@ export default function EventGroupCard({
   group: Group;
 }): JSX.Element {
   const { theme } = useTheme();
+  const { data: session } = useSession();
+
+  const joinGroup = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("userId", session?.user?.id ?? "");
+      formData.append("groupId", group.event.id.toString());
+
+      const response = await fetch(`/api/group/${group.id}/join`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to join group:", errorData);
+      } else {
+        const responseData = await response.json();
+        console.log("Successfully joined group:", responseData);
+      }
+    } catch (error) {
+      console.error("Error joining group:", error);
+    }
+  };
+
+  const joinDriver = async (driverId: number) => {
+    try {
+      const formData = new FormData();
+      formData.append("userId", session?.user?.id ?? "");
+
+      const response = await fetch(`/api/driver/${driverId}/join`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to join driver:", errorData);
+      } else {
+        const responseData = await response.json();
+        console.log("Successfully joined driver:", responseData);
+      }
+    } catch (error) {
+      console.error("Error joining driver:", error);
+    }
+  };
+
+  const joinHost = async (hostId: number) => {
+    try {
+      const formData = new FormData();
+      formData.append("userId", session?.user?.id ?? "");
+
+      const response = await fetch(`/api/host/${hostId}/join`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to join host:", errorData);
+      } else {
+        const responseData = await response.json();
+        console.log("Successfully joined host:", responseData);
+      }
+    } catch (error) {
+      console.error("Error joining host:", error);
+    }
+  };
 
   return (
     <section className="flex justify-center items-center">
       <Card className="rounded-none mx-4 md:mx-0 p-1 w-full md:w-8/12 dark:bg-gray-800">
         <CardHeader className="flex justify-center items-center">
-          <Link href={"/about"}>
-            <Button
-              color={theme === "dark" ? "secondary" : "primary"}
-              size="sm"
-              className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
-            >
-              Rejoindre ce collectif
-            </Button>
-          </Link>
+          <Button
+            onClick={() => joinGroup()}
+            color={theme === "dark" ? "secondary" : "primary"}
+            size="sm"
+            className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
+          >
+            Rejoindre ce collectif
+          </Button>
         </CardHeader>
         <CardBody>
           <Accordion selectionMode="multiple" defaultExpandedKeys={["1"]}>
@@ -120,9 +190,10 @@ export default function EventGroupCard({
                         />
                         <div className="flex flex-row justify-end mr-4">
                           <Button
+                            onClick={() => joinDriver(driver.user.id)}
                             color={theme === "dark" ? "secondary" : "primary"}
-                            size="xs"
-                            className="font-medium dark:text-secondaryText w-full md:w-1/2"
+                            size="sm"
+                            className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
                           >
                             Rejoindre
                           </Button>
@@ -196,9 +267,10 @@ export default function EventGroupCard({
                         />
                         <div className="flex flex-row justify-end mr-4">
                           <Button
+                            onClick={() => joinHost(host.user.id)}
                             color={theme === "dark" ? "secondary" : "primary"}
-                            size="xs"
-                            className="font-medium dark:text-secondaryText w-full md:w-1/2"
+                            size="sm"
+                            className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
                           >
                             Rejoindre
                           </Button>
