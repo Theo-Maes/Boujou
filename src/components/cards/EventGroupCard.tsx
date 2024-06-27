@@ -16,7 +16,6 @@ import { Event, Host, User, UserGroup } from "@prisma/client";
 
 interface Group {
   event: Event;
-  eventId: number;
   drivers: {
     startingdate: number;
     endingdate: number;

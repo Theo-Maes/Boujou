@@ -24,7 +24,36 @@ export interface EventData {
   image: string;
   url: string;
   category: Category;
-  groups: Group[];
+  groups: {
+    event: Event;
+    drivers: {
+      startingdate: number;
+      endingdate: number;
+      adress: string;
+      zipcode: string;
+      city: string;
+      quantity: number;
+      user: User;
+      passengers: {
+        user: User;
+      }[];
+    }[];
+    hosts: {
+      address: string;
+      zipcode: string;
+      city: string;
+      startingdate: number;
+      endingdate: number;
+      quantity: number;
+      user: User;
+      hostedUsers: {
+        user: User;
+      }[];
+    }[];
+    members: {
+      user: User;
+    }[];
+  }[];
 }
 
 const formatDate = (timestamp: number) => {
