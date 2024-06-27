@@ -43,7 +43,8 @@ const fetchEvents = async (): Promise<InformationsEventProps[]> => {
     const numberOfPeople = groups.reduce((acc: number, group) => {
       const members = group.members ?? [];
       return acc + members.length;
-    }, 0);    return {
+    }, 0);
+    return {
       id: event.id,
       title: event.name,
       image: event.image,
@@ -153,7 +154,7 @@ export default function Home() {
           {session && session.user ? (
             <div className="flex md:hidden flex-1 justify-center mt-5">
               <ButtonModal title="Proposer un événement">
-                <EventForm userId={session.user.id} type="event"/>
+                <EventForm userId={session.user.id} type="event" />
               </ButtonModal>
             </div>
           ) : (

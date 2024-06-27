@@ -32,8 +32,6 @@ const ImageField: React.FC<CustomTextFieldProps> = ({
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      console.log(e.target.files[0]);
-
       onChange(e.target.files[0]);
       setImg(URL.createObjectURL(e.target.files[0]));
     }

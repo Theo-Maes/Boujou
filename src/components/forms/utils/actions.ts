@@ -1,11 +1,11 @@
 import { Category, Group } from "@prisma/client";
 
 interface GroupData extends Group {
-  data : {
+  data: {
     id: number;
     eventId: number;
     userId: number;
-  }
+  };
 }
 
 export type ApiError = {
@@ -55,8 +55,7 @@ export async function createGroup(userId: number, eventId: number) {
     }
 
     const data: GroupData = await response.json();
-    console.log("Data returned from API:", data);
-    
+
     return data;
   } catch (error) {
     console.error("Error creating group:", error);
@@ -148,7 +147,6 @@ export async function joinGroup(
 
     const data = await response.json();
     if (!response.ok) {
-      console.log(response);
       throw { message: data.erreur };
     }
     return data;
@@ -158,7 +156,6 @@ export async function joinGroup(
 }
 
 export async function createDriver(data: any, userId: number, groupId: number) {
-
   const url = `/api/driver/create/`;
   const formData = new FormData();
 
@@ -190,7 +187,6 @@ export async function createDriver(data: any, userId: number, groupId: number) {
 }
 
 export async function createHost(data: any, userId: number, groupId: number) {
-
   const url = `/api/host/create/`;
   const formData = new FormData();
 
@@ -221,8 +217,11 @@ export async function createHost(data: any, userId: number, groupId: number) {
   }
 }
 
-export async function createDoubleHost(data: any, userId: number, groupId: number) {
-
+export async function createDoubleHost(
+  data: any,
+  userId: number,
+  groupId: number
+) {
   const url = `/api/host/create/`;
   const formData = new FormData();
 

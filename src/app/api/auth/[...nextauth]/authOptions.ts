@@ -20,7 +20,7 @@ const authOptions: AuthOptions = {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Mot de passe", type: "password" }
+        password: { label: "Mot de passe", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials) {
@@ -37,20 +37,22 @@ const authOptions: AuthOptions = {
           throw new Error("No user found with the provided email");
         }
 
-        const isValidPassword = await bcrypt.compare(password, user.password || "");
+        const isValidPassword = await bcrypt.compare(
+          password,
+          user.password || ""
+        );
         if (!isValidPassword) {
           throw new Error("Invalid password");
         }
 
         return {
-            id: user.id.toString(),
-            fullname: user.fullname,
-            email: user.email,
-            avatar: user.avatar,
-            roleId: user.roleId,
-          
+          id: user.id.toString(),
+          fullname: user.fullname,
+          email: user.email,
+          avatar: user.avatar,
+          roleId: user.roleId,
         };
-      }
+      },
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -69,8 +71,6 @@ const authOptions: AuthOptions = {
 
   callbacks: {
     async signIn({ user, account, profile }) {
-      console.log(account?.provider.toString());
-      
       if (account?.provider === "credentials") {
         const credentialUser = user as CustomUser;
         const existingCredentialUser = await prisma.user.findUnique({
@@ -101,11 +101,11 @@ const authOptions: AuthOptions = {
       return true;
     },
     async jwt({ token, user }) {
-      if (user) {      
-        const customUser = user as CustomUser; 
+      if (user) {
+        const customUser = user as CustomUser;
         const userConnected = await prisma.user.findUnique({
-          where: { email: customUser.email}
-        })
+          where: { email: customUser.email },
+        });
         token.id = userConnected?.id;
         token.username = customUser.fullname ?? "";
         token.email = customUser.email ?? "";

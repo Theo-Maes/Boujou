@@ -143,9 +143,9 @@ export const CAR_POOL_STEPS = [
     onSubmit: async (data: any, userId: number, eventId: number) => {
       try {
         const group = await createGroup(userId, eventId);
-        console.log("Group created:", group);
+
         const groupId = group.data.id;
-    
+
         if (groupId === undefined) {
           throw new Error("Group ID is undefined");
         }
@@ -188,404 +188,405 @@ export const CAR_POOL_STEPS = [
 ];
 
 export const HOST_POOL_STEPS = [
-    {
-      isLast: false,
-      isDark: false,
-      transition: false,
-      title: "Adresse",
-      subtitle: "Veuillez renseignez le lieu du rendez-vous",
-      schema: {
-        address: yup.string().required("L'adresse de l'hébergement est requis"),
-        zipCode: yup
-          .string()
-          .matches(/^\d{5}$/, "Le code postal est requis")
-          .required("Le code postal est requis"),
-        city: yup.string().required("La ville est requise"),
-      },
-      renderInputFields: (control: any) => (
-        <div className="grid grid-cols-4 gap-4 justify-center items-center ">
-          <TextField
-            control={control}
-            name="address"
-            label={"Adresse *"}
-            className="col-span-4"
-          />
-          <TextField
-            control={control}
-            name="zipCode"
-            label={"Code postal *"}
-            className="col-span-2"
-            maxLength={5}
-          />
-          <TextField
-            control={control}
-            name="city"
-            label={"Ville *"}
-            className="col-span-2"
-          />
-        </div>
-      ),
+  {
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Adresse",
+    subtitle: "Veuillez renseignez le lieu du rendez-vous",
+    schema: {
+      address: yup.string().required("L'adresse de l'hébergement est requis"),
+      zipCode: yup
+        .string()
+        .matches(/^\d{5}$/, "Le code postal est requis")
+        .required("Le code postal est requis"),
+      city: yup.string().required("La ville est requise"),
     },
-    {
-      isSubmit: true,
-      isDark: false,
-      transition: false,
-      title: "Vos horaires",
-      subtitle: "Veuillez renseignez vos dates de début et de fin",
-      schema: {
-        startingDate: yup.string().required(),
-        endingDate: yup.string().required(),
-      },
-      renderInputFields: (control: any) => (
-        <div className="flex flex-col gap-y-5 justify-center items-center">
-          <DatePickerField
-            control={control}
-            label="Départ"
-            name={"startingDate"}
-            className="col-span-2"
-          />
-          <Image
-            className="mx-2 drop-shadow-lg"
-            src="/icons/form/arrows.png"
-            alt="Apple Logo"
-            width={24}
-            height={24}
-          />
-          <DatePickerField
-            control={control}
-            label="Retour"
-            name={"endingDate"}
-            className="col-span-2"
-          />
-        </div>
-      ),
+    renderInputFields: (control: any) => (
+      <div className="grid grid-cols-4 gap-4 justify-center items-center ">
+        <TextField
+          control={control}
+          name="address"
+          label={"Adresse *"}
+          className="col-span-4"
+        />
+        <TextField
+          control={control}
+          name="zipCode"
+          label={"Code postal *"}
+          className="col-span-2"
+          maxLength={5}
+        />
+        <TextField
+          control={control}
+          name="city"
+          label={"Ville *"}
+          className="col-span-2"
+        />
+      </div>
+    ),
+  },
+  {
+    isSubmit: true,
+    isDark: false,
+    transition: false,
+    title: "Vos horaires",
+    subtitle: "Veuillez renseignez vos dates de début et de fin",
+    schema: {
+      startingDate: yup.string().required(),
+      endingDate: yup.string().required(),
     },
-    {
-      isLast: false,
-      isDark: false,
-      transition: false,
-      title: "Places disponibles",
-      subtitle: "Renseignez le nombre de place dans le champ ci-dessous",
-      schema: {
-        quantity: yup.number().required(),
-      },
-      renderInputFields: (control: any) => (
-        <div className="grid grid-cols-4 gap-4 justify-center items-center ">
-          <TextField
-            control={control}
-            name="quantity"
-            placeholder="3 places"
-            className="col-span-4 text-black border-blue-500 hover:border-blue-500"
-            endIcon="car"
-          />
-        </div>
-      ),
+    renderInputFields: (control: any) => (
+      <div className="flex flex-col gap-y-5 justify-center items-center">
+        <DatePickerField
+          control={control}
+          label="Départ"
+          name={"startingDate"}
+          className="col-span-2"
+        />
+        <Image
+          className="mx-2 drop-shadow-lg"
+          src="/icons/form/arrows.png"
+          alt="Apple Logo"
+          width={24}
+          height={24}
+        />
+        <DatePickerField
+          control={control}
+          label="Retour"
+          name={"endingDate"}
+          className="col-span-2"
+        />
+      </div>
+    ),
+  },
+  {
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Places disponibles",
+    subtitle: "Renseignez le nombre de place dans le champ ci-dessous",
+    schema: {
+      quantity: yup.number().required(),
     },
-    {
-      onSubmit: async (data: any, userId: number, eventId: number) => {
-        try {
-          const group = await createGroup(userId, eventId);
-          console.log("Group created:", group);
-          const groupId = group.data.id;
-      
-          if (groupId === undefined) {
-            throw new Error("Group ID is undefined");
-          }
-          await joinGroup(userId, groupId);
-          await createHost(data, userId, groupId);
-        } catch (error) {
-          throw error;
-        }
-  
-        // const { image, ...rest } = data;
-        // try {
-        //   const imageUrl = await uploadFile(data);
-        //   const eventId = await createEvent(rest, imageUrl);
-        //   await createGroup(userId, eventId);
-        // } catch (error) {
-        //   console.log(error);
-        // }
-      },
-      isLast: false,
-      isDark: false,
-      transition: false,
-      title: "Description",
-      subtitle:
-        "Ce message sera lu par vos futurs utilisateurs. Veuillez fournir une brève description.",
-      schema: {
-        description: yup.string().required(),
-      },
-      renderInputFields: (control: any) => (
-        <div className="flex w-full flex-col justify-start items-center space-y-4">
-          <TextAreaField
-            control={control}
-            name="description"
-            placeholder="J'ai 3 places disponibles vous êtes les bienvenus."
-            isLoading={false}
-            label={"Description *"}
-          />
-        </div>
-      ),
-    },
-  ];
+    renderInputFields: (control: any) => (
+      <div className="grid grid-cols-4 gap-4 justify-center items-center ">
+        <TextField
+          control={control}
+          name="quantity"
+          placeholder="3 places"
+          className="col-span-4 text-black border-blue-500 hover:border-blue-500"
+          endIcon="car"
+        />
+      </div>
+    ),
+  },
+  {
+    onSubmit: async (data: any, userId: number, eventId: number) => {
+      try {
+        const group = await createGroup(userId, eventId);
+        console.log("Group created:", group);
+        const groupId = group.data.id;
 
-  export const CAR_AND_HOST_POOL_STEPS = [
-    {
-        isLast: false,
-        isDark: false,
-        transition: false,
-        title: "Adresse",
-        subtitle: "Veuillez renseignez le lieu du rendez vous pour le covoiturage",
-        schema: {
-          address: yup.string().required("Une adresse est requise"),
-          zipCode: yup
-            .string()
-            .matches(/^\d{5}$/, "Le code postal est requis")
-            .required("Le code postal est requis"),
-          city: yup.string().required("La ville est requise"),
-        },
-        renderInputFields: (control: any) => (
-          <div className="grid grid-cols-4 gap-4 justify-center items-center ">
-            <TextField
-              control={control}
-              name="address"
-              label={"Adresse *"}
-              className="col-span-4"
-            />
-            <TextField
-              control={control}
-              name="zipCode"
-              label={"Code postal *"}
-              className="col-span-2"
-              maxLength={5}
-            />
-            <TextField
-              control={control}
-              name="city"
-              label={"Ville *"}
-              className="col-span-2"
-            />
-          </div>
-        ),
-      },
-      {
-        isSubmit: true,
-        isDark: false,
-        transition: false,
-        title: "Vos horaires",
-        subtitle: "Veuillez renseignez vos dates de départ et retour pour le covoiturage",
-        schema: {
-          startingDate: yup.string().required(),
-          endingDate: yup.string().required(),
-        },
-        renderInputFields: (control: any) => (
-          <div className="flex flex-col gap-y-5 justify-center items-center">
-            <DatePickerField
-              control={control}
-              label="Départ"
-              name={"startingDate"}
-              className="col-span-2"
-            />
-            <Image
-              className="mx-2 drop-shadow-lg"
-              src="/icons/form/arrows.png"
-              alt="Apple Logo"
-              width={24}
-              height={24}
-            />
-            <DatePickerField
-              control={control}
-              label="Retour"
-              name={"endingDate"}
-              className="col-span-2"
-            />
-          </div>
-        ),
-      },
-      {
-        isLast: false,
-        isDark: false,
-        transition: false,
-        title: "Places disponibles",
-        subtitle: "Renseignez le nombre de place dans le champ ci-dessous",
-        schema: {
-          quantity: yup.number().required(),
-        },
-        renderInputFields: (control: any) => (
-          <div className="grid grid-cols-4 gap-4 justify-center items-center ">
-            <TextField
-              control={control}
-              name="quantity"
-              placeholder="3 places"
-              className="col-span-4 text-black border-blue-500 hover:border-blue-500"
-              endIcon="car"
-            />
-          </div>
-        ),
-      },
-      {
-        isLast: false,
-        isDark: false,
-        transition: false,
-        title: "Description",
-        subtitle:
-          "Ce message sera lu par vos futurs utilisateurs. Veuillez fournir une bref description.",
-        schema: {
-          description: yup.string().required(),
-        },
-        renderInputFields: (control: any) => (
-          <div className="flex w-full flex-col justify-start items-center space-y-4">
-            <TextAreaField
-              control={control}
-              name="description"
-              placeholder="J'ai 3 places disponibles vous êtes les bienvenus."
-              isLoading={false}
-              label={"Description *"}
-            />
-          </div>
-        ),
-      },
-    {
-      isLast: false,
-      isDark: false,
-      transition: false,
-      title: "Adresse",
-      subtitle: "Veuillez renseignez l'adresse de l'hébergement",
-      schema: {
-        address: yup.string().required("L'adresse de l'hébergement est requis"),
-        zipCode: yup
-          .string()
-          .matches(/^\d{5}$/, "Le code postal est requis")
-          .required("Le code postal est requis"),
-        city: yup.string().required("La ville est requise"),
-      },
-      renderInputFields: (control: any) => (
-        <div className="grid grid-cols-4 gap-4 justify-center items-center ">
-          <TextField
-            control={control}
-            name="addressHost"
-            label={"Adresse *"}
-            className="col-span-4"
-          />
-          <TextField
-            control={control}
-            name="zipCodeHost"
-            label={"Code postal *"}
-            className="col-span-2"
-            maxLength={5}
-          />
-          <TextField
-            control={control}
-            name="cityHost"
-            label={"Ville *"}
-            className="col-span-2"
-          />
-        </div>
-      ),
-    },
-    {
-      isSubmit: true,
-      isDark: false,
-      transition: false,
-      title: "Vos horaires",
-      subtitle: "Veuillez renseignez les horaires d'arrivées et de départ",
-      schema: {
-        startingDate: yup.string().required(),
-        endingDate: yup.string().required(),
-      },
-      renderInputFields: (control: any) => (
-        <div className="flex flex-col gap-y-5 justify-center items-center">
-          <DatePickerField
-            control={control}
-            label="Départ"
-            name={"startingDateHost"}
-            className="col-span-2"
-          />
-          <Image
-            className="mx-2 drop-shadow-lg"
-            src="/icons/form/arrows.png"
-            alt="Apple Logo"
-            width={24}
-            height={24}
-          />
-          <DatePickerField
-            control={control}
-            label="Retour"
-            name={"endingDateHost"}
-            className="col-span-2"
-          />
-        </div>
-      ),
-    },
-    {
-      isLast: false,
-      isDark: false,
-      transition: false,
-      title: "Places disponibles",
-      subtitle: "Renseignez le nombre de place dans le champ ci-dessous",
-      schema: {
-        quantity: yup.number().required(),
-      },
-      renderInputFields: (control: any) => (
-        <div className="grid grid-cols-4 gap-4 justify-center items-center ">
-          <TextField
-            control={control}
-            name="quantityHost"
-            placeholder="3 places"
-            className="col-span-4 text-black border-blue-500 hover:border-blue-500"
-            endIcon="car"
-          />
-        </div>
-      ),
-    },
-    {
-      onSubmit: async (data: any, userId: number, eventId: number) => {
-        try {
-          const group = await createGroup(userId, eventId);
-          console.log("Group created:", group);
-          const groupId = group.data.id;
-      
-          if (groupId === undefined) {
-            throw new Error("Group ID is undefined");
-          }
-          await joinGroup(userId, groupId);
-          await createDriver(data, userId, groupId);
-          await createHost(data, userId, groupId);
-        } catch (error) {
-          throw error;
+        if (groupId === undefined) {
+          throw new Error("Group ID is undefined");
         }
-  
-        // const { image, ...rest } = data;
-        // try {
-        //   const imageUrl = await uploadFile(data);
-        //   const eventId = await createEvent(rest, imageUrl);
-        //   await createGroup(userId, eventId);
-        // } catch (error) {
-        //   console.log(error);
-        // }
-      },
-      isLast: false,
-      isDark: false,
-      transition: false,
-      title: "Description",
-      subtitle:
-        "Ce message sera lu par vos futurs utilisateurs. Veuillez fournir une brève description.",
-      schema: {
-        description: yup.string().required(),
-      },
-      renderInputFields: (control: any) => (
-        <div className="flex w-full flex-col justify-start items-center space-y-4">
-          <TextAreaField
-            control={control}
-            name="descriptionHost"
-            placeholder="J'ai 3 places disponibles vous êtes les bienvenus."
-            isLoading={false}
-            label={"Description *"}
-          />
-        </div>
-      ),
+        await joinGroup(userId, groupId);
+        await createHost(data, userId, groupId);
+      } catch (error) {
+        throw error;
+      }
+
+      // const { image, ...rest } = data;
+      // try {
+      //   const imageUrl = await uploadFile(data);
+      //   const eventId = await createEvent(rest, imageUrl);
+      //   await createGroup(userId, eventId);
+      // } catch (error) {
+      //   console.log(error);
+      // }
     },
-  ];
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Description",
+    subtitle:
+      "Ce message sera lu par vos futurs utilisateurs. Veuillez fournir une brève description.",
+    schema: {
+      description: yup.string().required(),
+    },
+    renderInputFields: (control: any) => (
+      <div className="flex w-full flex-col justify-start items-center space-y-4">
+        <TextAreaField
+          control={control}
+          name="description"
+          placeholder="J'ai 3 places disponibles vous êtes les bienvenus."
+          isLoading={false}
+          label={"Description *"}
+        />
+      </div>
+    ),
+  },
+];
+
+export const CAR_AND_HOST_POOL_STEPS = [
+  {
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Adresse",
+    subtitle: "Veuillez renseignez le lieu du rendez vous pour le covoiturage",
+    schema: {
+      address: yup.string().required("Une adresse est requise"),
+      zipCode: yup
+        .string()
+        .matches(/^\d{5}$/, "Le code postal est requis")
+        .required("Le code postal est requis"),
+      city: yup.string().required("La ville est requise"),
+    },
+    renderInputFields: (control: any) => (
+      <div className="grid grid-cols-4 gap-4 justify-center items-center ">
+        <TextField
+          control={control}
+          name="address"
+          label={"Adresse *"}
+          className="col-span-4"
+        />
+        <TextField
+          control={control}
+          name="zipCode"
+          label={"Code postal *"}
+          className="col-span-2"
+          maxLength={5}
+        />
+        <TextField
+          control={control}
+          name="city"
+          label={"Ville *"}
+          className="col-span-2"
+        />
+      </div>
+    ),
+  },
+  {
+    isSubmit: true,
+    isDark: false,
+    transition: false,
+    title: "Vos horaires",
+    subtitle:
+      "Veuillez renseignez vos dates de départ et retour pour le covoiturage",
+    schema: {
+      startingDate: yup.string().required(),
+      endingDate: yup.string().required(),
+    },
+    renderInputFields: (control: any) => (
+      <div className="flex flex-col gap-y-5 justify-center items-center">
+        <DatePickerField
+          control={control}
+          label="Départ"
+          name={"startingDate"}
+          className="col-span-2"
+        />
+        <Image
+          className="mx-2 drop-shadow-lg"
+          src="/icons/form/arrows.png"
+          alt="Apple Logo"
+          width={24}
+          height={24}
+        />
+        <DatePickerField
+          control={control}
+          label="Retour"
+          name={"endingDate"}
+          className="col-span-2"
+        />
+      </div>
+    ),
+  },
+  {
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Places disponibles",
+    subtitle: "Renseignez le nombre de place dans le champ ci-dessous",
+    schema: {
+      quantity: yup.number().required(),
+    },
+    renderInputFields: (control: any) => (
+      <div className="grid grid-cols-4 gap-4 justify-center items-center ">
+        <TextField
+          control={control}
+          name="quantity"
+          placeholder="3 places"
+          className="col-span-4 text-black border-blue-500 hover:border-blue-500"
+          endIcon="car"
+        />
+      </div>
+    ),
+  },
+  {
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Description",
+    subtitle:
+      "Ce message sera lu par vos futurs utilisateurs. Veuillez fournir une bref description.",
+    schema: {
+      description: yup.string().required(),
+    },
+    renderInputFields: (control: any) => (
+      <div className="flex w-full flex-col justify-start items-center space-y-4">
+        <TextAreaField
+          control={control}
+          name="description"
+          placeholder="J'ai 3 places disponibles vous êtes les bienvenus."
+          isLoading={false}
+          label={"Description *"}
+        />
+      </div>
+    ),
+  },
+  {
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Adresse",
+    subtitle: "Veuillez renseignez l'adresse de l'hébergement",
+    schema: {
+      address: yup.string().required("L'adresse de l'hébergement est requis"),
+      zipCode: yup
+        .string()
+        .matches(/^\d{5}$/, "Le code postal est requis")
+        .required("Le code postal est requis"),
+      city: yup.string().required("La ville est requise"),
+    },
+    renderInputFields: (control: any) => (
+      <div className="grid grid-cols-4 gap-4 justify-center items-center ">
+        <TextField
+          control={control}
+          name="addressHost"
+          label={"Adresse *"}
+          className="col-span-4"
+        />
+        <TextField
+          control={control}
+          name="zipCodeHost"
+          label={"Code postal *"}
+          className="col-span-2"
+          maxLength={5}
+        />
+        <TextField
+          control={control}
+          name="cityHost"
+          label={"Ville *"}
+          className="col-span-2"
+        />
+      </div>
+    ),
+  },
+  {
+    isSubmit: true,
+    isDark: false,
+    transition: false,
+    title: "Vos horaires",
+    subtitle: "Veuillez renseignez les horaires d'arrivées et de départ",
+    schema: {
+      startingDate: yup.string().required(),
+      endingDate: yup.string().required(),
+    },
+    renderInputFields: (control: any) => (
+      <div className="flex flex-col gap-y-5 justify-center items-center">
+        <DatePickerField
+          control={control}
+          label="Départ"
+          name={"startingDateHost"}
+          className="col-span-2"
+        />
+        <Image
+          className="mx-2 drop-shadow-lg"
+          src="/icons/form/arrows.png"
+          alt="Apple Logo"
+          width={24}
+          height={24}
+        />
+        <DatePickerField
+          control={control}
+          label="Retour"
+          name={"endingDateHost"}
+          className="col-span-2"
+        />
+      </div>
+    ),
+  },
+  {
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Places disponibles",
+    subtitle: "Renseignez le nombre de place dans le champ ci-dessous",
+    schema: {
+      quantity: yup.number().required(),
+    },
+    renderInputFields: (control: any) => (
+      <div className="grid grid-cols-4 gap-4 justify-center items-center ">
+        <TextField
+          control={control}
+          name="quantityHost"
+          placeholder="3 places"
+          className="col-span-4 text-black border-blue-500 hover:border-blue-500"
+          endIcon="car"
+        />
+      </div>
+    ),
+  },
+  {
+    onSubmit: async (data: any, userId: number, eventId: number) => {
+      try {
+        const group = await createGroup(userId, eventId);
+        console.log("Group created:", group);
+        const groupId = group.data.id;
+
+        if (groupId === undefined) {
+          throw new Error("Group ID is undefined");
+        }
+        await joinGroup(userId, groupId);
+        await createDriver(data, userId, groupId);
+        await createHost(data, userId, groupId);
+      } catch (error) {
+        throw error;
+      }
+
+      // const { image, ...rest } = data;
+      // try {
+      //   const imageUrl = await uploadFile(data);
+      //   const eventId = await createEvent(rest, imageUrl);
+      //   await createGroup(userId, eventId);
+      // } catch (error) {
+      //   console.log(error);
+      // }
+    },
+    isLast: false,
+    isDark: false,
+    transition: false,
+    title: "Description",
+    subtitle:
+      "Ce message sera lu par vos futurs utilisateurs. Veuillez fournir une brève description.",
+    schema: {
+      description: yup.string().required(),
+    },
+    renderInputFields: (control: any) => (
+      <div className="flex w-full flex-col justify-start items-center space-y-4">
+        <TextAreaField
+          control={control}
+          name="descriptionHost"
+          placeholder="J'ai 3 places disponibles vous êtes les bienvenus."
+          isLoading={false}
+          label={"Description *"}
+        />
+      </div>
+    ),
+  },
+];
 
 export const EVENT_STEPS = [
   {

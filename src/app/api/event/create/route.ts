@@ -20,8 +20,7 @@ interface EventFormData {
 
 export async function POST(req: NextRequest) {
   const data = await req.formData();
-  console.log(data);
-  
+
   const file: File | null = data.get("image") as unknown as File;
   if (!file) {
     return NextResponse.json({ erreur: "No file" }, { status: 400 });
@@ -63,13 +62,17 @@ export async function POST(req: NextRequest) {
     let long = "0";
     const eventGeoDataJSon = await eventGeoData.json();
 
-    if (eventGeoDataJSon.length > 0 && eventGeoDataJSon[0].lat && eventGeoDataJSon[0].lon) {
+    if (
+      eventGeoDataJSon.length > 0 &&
+      eventGeoDataJSon[0].lat &&
+      eventGeoDataJSon[0].lon
+    ) {
       lat = eventGeoDataJSon[0].lat;
       long = eventGeoDataJSon[0].lon;
     }
 
     let endingDateDateTime;
-    if (endingDate || endingDate !== "") { 
+    if (endingDate || endingDate !== "") {
       endingDateDateTime = new Date(Number(endingDate));
     } else {
       endingDateDateTime = "";

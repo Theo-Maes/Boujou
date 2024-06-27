@@ -28,26 +28,6 @@ export default function ModalRoleUser({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  // async function removeUser() {
-  //   if (userModal) {
-  //     const response = await fetch(
-  //       `http://localhost:3000/api/user/${userModal.id}/delete`,
-  //       {
-  //         method: "DELETE",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       alert("Failed to delete user");
-  //     }
-
-  //     window.location.reload();
-  //   }
-  // }
-
   const [selectedRole, setSelectedRole] = useState<number>(1);
 
   async function updateUser() {
@@ -97,9 +77,6 @@ export default function ModalRoleUser({
                 </Select>
               </ModalBody>
               <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Annuler
-                </Button>
                 <Button
                   color="primary"
                   onPress={() => {
