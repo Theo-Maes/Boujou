@@ -13,7 +13,7 @@ import {
   now,
   today,
 } from "@internationalized/date";
-import {I18nProvider} from "@react-aria/i18n";
+import { I18nProvider } from "@react-aria/i18n";
 
 interface CustomTextFieldProps {
   name: string;
@@ -80,7 +80,6 @@ const DatePickerField = ({
         }
       />
     </I18nProvider>
-
   );
 };
 

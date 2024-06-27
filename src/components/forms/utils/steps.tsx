@@ -131,7 +131,6 @@ export const CAR_POOL_STEPS = [
   },
 ];
 
-
 export const EVENT_STEPS = [
   {
     transition: false,
@@ -321,7 +320,9 @@ export const SUCCESS_STEPS = [
           width={150}
           height={150}
         />
-        <Typography variant="h2">Votre événement être prêt à être envoyé</Typography>
+        <Typography variant="h2">
+          Votre événement être prêt à être envoyé
+        </Typography>
       </div>
     ),
   },

@@ -41,7 +41,6 @@ interface IFormInputs {
   categoryId: string;
   price: string;
   url?: string;
-
 }
 
 interface FormProps {
@@ -94,61 +93,60 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
     try {
       if (currentPage === pages.length - 1) {
-        const startingDateDateTime = new Date(data.startingDate).getTime(); 
+        const startingDateDateTime = new Date(data.startingDate).getTime();
         const endingDateDateTime = new Date(data.endingDate).getTime();
-  
+
         setIsOpen(false);
         const formData = new FormData();
         formData.append("image", data.image);
         formData.append("name", data.name);
         formData.append("description", data.description);
         formData.append("startingDate", startingDateDateTime.toString());
-        formData.append("endingDate", endingDateDateTime.toString())
+        formData.append("endingDate", endingDateDateTime.toString());
         formData.append("address", data.address);
         formData.append("city", data.city);
         formData.append("zipCode", data.zipCode);
         formData.append("categoryId", "1");
         formData.append("price", data.price);
         formData.append("url", data.url || "");
-    
+
         setIsLoading(true);
-    
+
         const res = await fetch("/api/event/create", {
           method: "POST",
           body: formData,
         });
-    
+
         setIsLoading(false);
-    
+
         if (res.ok) {
           const { newEvent } = await res.json();
           console.log("Event created successfully:", newEvent);
-          setErrorMessage(null); 
+          setErrorMessage(null);
           paginate(1);
         } else {
           const errorData = await res.json();
-          setErrorMessage(errorData.error || "An error occurred. Please try again.");
+          setErrorMessage(
+            errorData.error || "An error occurred. Please try again."
+          );
         }
-      }  else {
+      } else {
         if (currentPage !== pages.length - 1) paginate(1);
         setIsDark(false);
       }
-      if (currentPage === pages.length - 1)  {
+      if (currentPage === pages.length - 1) {
         setIsOpen(false);
       }
     } catch (error) {
       console.error("Error creating event:", error);
       setErrorMessage("An error occurred. Please try again.");
-    }  
+    }
   };
-  
-  
 
   // const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
   //   console.dir("DATA : " + data);
   //   console.log("DATA2 :", JSON.stringify(data, null, 2));
 
-    
   //   if (currentPage == pages.length - 2) {
   //     const filename = data.image.name;
   //     const fileType = data.image.type;
@@ -241,7 +239,7 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
           className="flex relative flex-row space-x-4 w-100 h-1"
         />
       )}
-  
+
       <AnimatePresence initial={false} custom={direction} mode="wait">
         {pages.map(
           (step, index) =>
@@ -273,7 +271,7 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
                     {step.subtitle}
                   </Typography>
                 </span>
-  
+
                 <motion.div
                   key={currentPage}
                   custom={direction}
@@ -290,13 +288,9 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
             )
         )}
       </AnimatePresence>
-  
-      {errorMessage && (
-        <div className="text-red-500">
-          {errorMessage}
-        </div>
-      )}
-  
+
+      {errorMessage && <div className="text-red-500">{errorMessage}</div>}
+
       <footer className="flex align-middle justify-around">
         {currentPage > 0 && currentPage <= pages.length - 1 && (
           <Button onClick={() => paginate(-1)} size="md" color="outlined">
@@ -304,13 +298,11 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
           </Button>
         )}
         <Button color="contained" onClick={handleNext}>
-          {currentPage === pages.length - 1
-            ? "Envoyer l'événement"
-            : "Suivant"}
+          {currentPage === pages.length - 1 ? "Envoyer l'événement" : "Suivant"}
         </Button>
       </footer>
     </form>
   );
-}
+};
 
 export default EventForm;
