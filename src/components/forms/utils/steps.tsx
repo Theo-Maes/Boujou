@@ -6,8 +6,20 @@ import DatePickerField from "../DatePickerField";
 import TextAreaField from "../TextAreaField";
 import ImageField from "../ImageField";
 import Typography from "@/components/ui/Typography";
+import {
+  createDriver,
+  createEvent,
+  createGroup,
+  joinGroup,
+  uploadFile,
+} from "./actions";
+import SelectField from "../SelectField";
 export const CHOICE_STEPS = [
   {
+    onSubmit: async (data: any, userId: number, groupId: number) =>
+      joinGroup(userId, groupId),
+
+    isDark: true,
     transition: true,
     title: "Partager Un Service ?",
     subtitle:
@@ -33,30 +45,52 @@ export const CHOICE_STEPS = [
 ];
 export const CAR_POOL_STEPS = [
   {
+    isLast: false,
+    isDark: false,
     transition: false,
     title: "Adresse",
     subtitle: "Veuillez renseignez le lieu du rendez vous",
     schema: {
-      adresse: yup.string().required(),
+      address: yup.string().required("L'adresse de l'événement est requis"),
+      zipCode: yup
+        .string()
+        .matches(/^\d{5}$/, "Le code postal est requis")
+        .required("Le code postal est requis"),
+      city: yup.string().required("La ville est requise"),
     },
     renderInputFields: (control: any) => (
       <div className="grid grid-cols-4 gap-4 justify-center items-center ">
         <TextField
           control={control}
-          name="adresse"
-          placeholder="35 rue gessard, rouen"
-          className="col-span-4 text-black border-blue-500 hover:border-blue-500"
-          endIcon="location"
+          name="address"
+          label={"Adresse *"}
+          className="col-span-4"
+        />
+        <TextField
+          control={control}
+          name="zipCode"
+          label={"Code postal *"}
+          className="col-span-2"
+          maxLength={5}
+        />
+        <TextField
+          control={control}
+          name="city"
+          label={"Ville *"}
+          className="col-span-2"
         />
       </div>
     ),
   },
   {
+    isSubmit: true,
+    isDark: false,
     transition: false,
     title: "Vos horaires",
     subtitle: "Veuillez renseignez vos dates de départ et retour",
     schema: {
       startingDate: yup.string().required(),
+      endingDate: yup.string().required(),
     },
     renderInputFields: (control: any) => (
       <div className="flex flex-col gap-y-5 justify-center items-center">
@@ -83,6 +117,8 @@ export const CAR_POOL_STEPS = [
     ),
   },
   {
+    isLast: false,
+    isDark: false,
     transition: false,
     title: "Places disponibles",
     subtitle: "Renseignez le nombre de place dans le champ ci-dessous",
@@ -102,6 +138,25 @@ export const CAR_POOL_STEPS = [
     ),
   },
   {
+    onSubmit: async (data: any, userId: number, groupId: number) => {
+      try {
+        await joinGroup(userId, groupId);
+        await createDriver(data, userId, groupId);
+      } catch (error) {
+        throw error;
+      }
+
+      // const { image, ...rest } = data;
+      // try {
+      //   const imageUrl = await uploadFile(data);
+      //   const eventId = await createEvent(rest, imageUrl);
+      //   await createGroup(userId, eventId);
+      // } catch (error) {
+      //   console.log(error);
+      // }
+    },
+    isLast: false,
+    isDark: false,
     transition: false,
     title: "Description",
     subtitle:
@@ -125,6 +180,8 @@ export const CAR_POOL_STEPS = [
 
 export const EVENT_STEPS = [
   {
+    isLast: false,
+    isDark: false,
     transition: false,
     title: "Informations générales de l'événement",
     subtitle: "Veuillez renseignez les informations ci-dessous",
@@ -168,6 +225,8 @@ export const EVENT_STEPS = [
     ),
   },
   {
+    isLast: false,
+    isDark: false,
     transition: false,
     title: "Dates de l'événement",
     subtitle: "Choisir les dates et heures de début et de fin de l'événement",
@@ -200,6 +259,8 @@ export const EVENT_STEPS = [
     ),
   },
   {
+    isLast: false,
+    isDark: false,
     transition: false,
     title: "Affiche de l'événement",
     subtitle: "Choisir un visuel *",
@@ -233,6 +294,8 @@ export const EVENT_STEPS = [
     ),
   },
   {
+    isLast: false,
+    isDark: false,
     transition: false,
     title: "Tarif de l'événement",
     subtitle: "Veuillez renseigner un tarif, 0 si l'événement est gratuit",
@@ -250,8 +313,16 @@ export const EVENT_STEPS = [
         .typeError("Un tarif est obligatoire, mettre 0 si gratuit")
         .required(),
     },
-    renderInputFields: (control: any) => (
-      <div className="flex flex-row justify-center items-center">
+    renderInputFields: (control: any, onChange?: any, options?: any) => (
+      <div className="flex flex-col space-y-4 justify-center items-center">
+        <SelectField
+          control={control}
+          name="category"
+          isLoading={false}
+          className="col-span-2"
+          label={"Tarif *"}
+          options={options}
+        />
         <TextField
           control={control}
           name="price"
@@ -264,6 +335,18 @@ export const EVENT_STEPS = [
     ),
   },
   {
+    onSubmit: async (data: any, userId: number, groupId?: number) => {
+      const { image, ...rest } = data;
+      try {
+        const imageUrl = await uploadFile(image);
+        const eventId = await createEvent(rest, imageUrl);
+        await createGroup(userId, eventId);
+      } catch (error) {
+        throw error;
+      }
+    },
+    isLast: false,
+    isDark: false,
     transition: false,
     title: "Description et lien url",
     subtitle: "Veullez fournir une brève description et un lien url d'un site",
@@ -293,12 +376,12 @@ export const EVENT_STEPS = [
 
 export const SUCCESS_STEPS = [
   {
+    isLast: true,
+    isDark: false,
     transition: true,
     title: "",
     subtitle: "",
-    schema: {
-      name: yup.string().required(),
-    },
+    schema: {},
     renderInputFields: (control: any) => (
       <div className="flex w-full flex-col justify-center items-center">
         <Image
@@ -315,6 +398,7 @@ export const SUCCESS_STEPS = [
 ];
 export const INTRO_EVENT_STEPS = [
   {
+    isDark: true,
     transition: true,
     title: "",
     subtitle: "",
@@ -336,6 +420,8 @@ export const INTRO_EVENT_STEPS = [
 
 export const INTRO_CAR_STEPS = [
   {
+    isLast: false,
+    isDark: false,
     transition: true,
     title: "",
     subtitle: "",

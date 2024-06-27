@@ -46,10 +46,16 @@ export default function MainNavbar() {
               </Link>
             </div>
           </div>
+
           {session && session.user ? (
             <div className="hidden md:flex flex-1 justify-center">
               <ButtonModal title="Proposer un événement" isBlue={true}>
-                <ServiceForm userId={session.user.id} type={"event"} />
+                <ServiceForm
+                  userId={session.user.id}
+                  //groupId={} join et maybe more
+                  categories={[{ id: 34, name: "Musique" }]}
+                  successCallBack={() => console.log("refetch")}
+                />
                 {/* <EventForm userId={session.user.id} /> */}
               </ButtonModal>
             </div>
