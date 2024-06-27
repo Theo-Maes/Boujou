@@ -13,7 +13,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { Event } from "@prisma/client";
-import { useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
   ZonedDateTime,
@@ -23,7 +23,7 @@ import {
   today,
 } from "@internationalized/date";
 import { I18nProvider } from "@react-aria/i18n";
-import { getTime } from "date-fns";
+import { getTime, toDate } from "date-fns";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -133,6 +133,14 @@ export default function ModalUpdateEvent({
     }
   };
 
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setPage(1);
+    e.preventDefault();
+    onClose();
+    console.log(form);
+    console.log("submit");
+  };
+
   const validateZipcode = (value: string) => /^\d{5}$/.test(value);
   const isvalidZipcode = useMemo(
     () =>
@@ -145,9 +153,9 @@ export default function ModalUpdateEvent({
 
   return (
     <>
-      <form encType="multipart/form-data">
-        {eventModal && (
-          <>
+      {eventModal && (
+        <>
+          <form onSubmit={handleSubmit} encType="multipart/form-data">
             <Modal isOpen={isOpen && page == 1} hideCloseButton={true}>
               <ModalContent>
                 <ModalHeader className="flex flex-col items-center gap-1">
@@ -161,7 +169,7 @@ export default function ModalUpdateEvent({
                     variant="bordered"
                     value={form.name}
                     onChange={handleChange}
-                    required
+                    // required
                   />
 
                   <Textarea
@@ -171,7 +179,7 @@ export default function ModalUpdateEvent({
                     variant="bordered"
                     value={form.description}
                     onChange={handleChange}
-                    required
+                    // required
                   />
                   <Input
                     label="url"
@@ -198,7 +206,7 @@ export default function ModalUpdateEvent({
                         ? "Le prix doit être supérieur a zero ( zero si gratuit)"
                         : ""
                     }
-                    required
+                    // required
                   />
                 </ModalBody>
                 <ModalFooter>
@@ -234,7 +242,7 @@ export default function ModalUpdateEvent({
                     variant="bordered"
                     value={form.address}
                     onChange={handleChange}
-                    required
+                    // required
                   />
                   <div className="flex flex-row gap-5">
                     <Input
@@ -251,7 +259,7 @@ export default function ModalUpdateEvent({
                           ? "Le code postal doit être composé de 5 chiffres"
                           : ""
                       }
-                      required
+                      // required
                     />
                     <Input
                       label="Ville"
@@ -260,7 +268,7 @@ export default function ModalUpdateEvent({
                       variant="bordered"
                       value={form.city}
                       onChange={handleChange}
-                      required
+                      // required
                     />
                   </div>
                 </ModalBody>
@@ -359,47 +367,78 @@ export default function ModalUpdateEvent({
                 <ModalHeader className="flex flex-col items-center gap-1">
                   Modification de {eventModal.name}
                 </ModalHeader>
-                <ModalBody>
-                  <I18nProvider locale="fr-FR">
-                    <DatePicker
-                      label={"a partir de"}
-                      minValue={now(getLocalTimeZone())}
-                      name="startingDate"
-                      onChange={handleStratingDateChange}
-                      className="max-w-md"
-                      showMonthAndYearPickers
-                      granularity="second"
-                      selectorIcon={
-                        <Image
-                          className="drop-shadow-lg"
-                          src={"/icons/form/calendar.svg"}
-                          alt="Calendar icon"
-                          width={24}
-                          height={24}
+                <ModalBody className="flex flex-col gap-5 items-center">
+                  <div>
+                    <span>
+                      du{" "}
+                      {new Date(eventModal.startingDate).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                        }
+                      )}{" "}
+                      au{" "}
+                      {new Date(eventModal.endingDate).toLocaleDateString(
+                        "fr-FR",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                        }
+                      )}
+                    </span>
+                    <div className="flex flex-col gap-2">
+                      <span className="text-xs">
+                        laisser vide pour ne pas changer la date
+                      </span>
+                      <I18nProvider locale="fr-FR">
+                        <DatePicker
+                          label={"a partir de"}
+                          minValue={now(getLocalTimeZone())}
+                          name="startingDate"
+                          onChange={handleStratingDateChange}
+                          className="max-w-md"
+                          showMonthAndYearPickers
+                          granularity="second"
+                          selectorIcon={
+                            <Image
+                              className="drop-shadow-lg"
+                              src={"/icons/form/calendar.svg"}
+                              alt="Calendar icon"
+                              width={24}
+                              height={24}
+                            />
+                          }
                         />
-                      }
-                    />
-                  </I18nProvider>
-                  <I18nProvider locale="fr-FR">
-                    <DatePicker
-                      label={"jusqu'a"}
-                      minValue={now(getLocalTimeZone())}
-                      name="endingDate"
-                      onChange={handleEndingDateChange}
-                      className="max-w-md"
-                      showMonthAndYearPickers
-                      granularity="second"
-                      selectorIcon={
-                        <Image
-                          className="drop-shadow-lg"
-                          src={"/icons/form/calendar.svg"}
-                          alt="Calendar icon"
-                          width={24}
-                          height={24}
+                      </I18nProvider>
+                      <I18nProvider locale="fr-FR">
+                        <DatePicker
+                          label={"jusqu'a"}
+                          minValue={now(getLocalTimeZone())}
+                          name="endingDate"
+                          onChange={handleEndingDateChange}
+                          className="max-w-md"
+                          showMonthAndYearPickers
+                          granularity="second"
+                          selectorIcon={
+                            <Image
+                              className="drop-shadow-lg"
+                              src={"/icons/form/calendar.svg"}
+                              alt="Calendar icon"
+                              width={24}
+                              height={24}
+                            />
+                          }
                         />
-                      }
-                    />
-                  </I18nProvider>
+                      </I18nProvider>
+                    </div>
+                  </div>
                 </ModalBody>
                 <ModalFooter>
                   <Button
@@ -410,20 +449,15 @@ export default function ModalUpdateEvent({
                   >
                     Annuler
                   </Button>
-                  <Button
-                    color="primary"
-                    onPress={() => {
-                      onClose();
-                    }}
-                  >
+                  <Button color="primary" type="submit">
                     ok
                   </Button>
                 </ModalFooter>
               </ModalContent>
             </Modal>
-          </>
-        )}
-      </form>
+          </form>
+        </>
+      )}
     </>
   );
 }
