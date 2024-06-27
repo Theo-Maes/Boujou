@@ -10,7 +10,6 @@ import { Pagination, Select, SelectItem } from "@nextui-org/react";
 import ButtonModal from "@/components/forms/ButtonModal";
 import EventForm from "@/components/forms/EventForm";
 import { useSession } from "next-auth/react";
-import { Event, Group } from "@prisma/client";
 import { format } from "date-fns";
 import { fr } from 'date-fns/locale'
 import { useTheme } from "next-themes";
@@ -34,8 +33,12 @@ const sortOptions = [
 const fetchEvents = async (): Promise<InformationsEventProps[]> => {
   const response = await fetch('/api/event');
   const data = await response.json();
-  return data.data
-    .map((event: EventWithRelations) => ({
+  return data.data.map((event: EventWithRelations) => {
+    const groups = event.groups ?? [];
+    const numberOfPeople = groups.reduce((acc: number, group) => {
+      const members = group.members ?? [];
+      return acc + members.length;
+    }, 0);    return {
       id: event.id,
       title: event.name,
       image: event.image,
@@ -43,11 +46,12 @@ const fetchEvents = async (): Promise<InformationsEventProps[]> => {
       startingDate: new Date(event.startingDate),
       endingDate: new Date(event.endingDate),
       numberOfGroups: event.groups.length,
-      numberOfPeople: event.groups.reduce((acc: number, group) => acc + group.members.length, 0),
+      numberOfPeople,
       city: event.city,
       validatedAt: event.validatedAt ? new Date(event.validatedAt) : null,
       zipCode: event.zipCode,
-    }));
+    };
+  });
 };
 
 export default function Home() {
@@ -134,7 +138,7 @@ export default function Home() {
           {session && session.user ? (
             <div className="flex md:hidden flex-1 justify-center mt-5">
               <ButtonModal title="Proposer un événement">
-                <EventForm userId={session.user.id} />
+                <EventForm userId={session.user.id} type="event"/>
               </ButtonModal>
             </div>  
           ) : (
@@ -153,7 +157,7 @@ export default function Home() {
               color={theme === "dark" ? "secondary" : "primary"}
               defaultSelectedKeys="startingDate"
               onChange={(e) => handleSortChange(e.target.value)}
-              className="max-w-[30%] md:max-w-[10%] dark:bg-transparent"
+              className="max-w-[40%] md:max-w-[10%] dark:bg-transparent"
             >
               <SelectItem key="startingDate" value="startingDate">Date</SelectItem>
               <SelectItem key="title" value="title">Evénement</SelectItem>

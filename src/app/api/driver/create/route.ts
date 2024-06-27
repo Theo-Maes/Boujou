@@ -69,14 +69,29 @@ export async function POST(req: Request) {
     );
   }
 
+  const eventGeoData = await fetch(
+    `https://geocode.maps.co/search?q=${encodeURIComponent(
+      adress + "," + zipcode + "," + city
+    )}&api_key=${process.env.GEOCODE_API}`
+  );
+
+  let lat = "0";
+  let long = "0";
+  const eventGeoDataJSon = await eventGeoData.json();
+
+  if (eventGeoDataJSon.length > 0 && eventGeoDataJSon[0].lat && eventGeoDataJSon[0].lon) {
+    lat = eventGeoDataJSon[0].lat;
+    long = eventGeoDataJSon[0].lon;
+  }
+
   try {
     const newDriver: Driver = await prisma.driver.create({
       data: {
         adress,
         city,
         endingdate,
-        latitude,
-        longitude,
+        latitude: lat,
+        longitude: long,
         quantity: Number.parseInt(quantity),
         startingdate,
         zipcode,

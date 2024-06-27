@@ -1,3 +1,4 @@
+
 import { GitHubIcon } from "@/components";
 import SearchInput2 from "@/components/inputs/SearchInput2";
 import SearchInput from "@/components/inputs/SearchInput";

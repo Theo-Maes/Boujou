@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardHeader, CardBody, CardFooter, Image, DateInputReturnType } from "@nextui-org/react";
+import { Card, CardHeader, CardBody, CardFooter, Image } from "@nextui-org/react";
 
 function truncateText(text: string, maxLength: number) {
   if (text && text.length <= maxLength) {
@@ -32,7 +32,7 @@ export default function EventCard({
   image,
 }: InformationsEventProps): JSX.Element {
   return (
-    <Card className="p-1 w-full md:max-w-[300px] dark:bg-transparent transition-transform transform hover:scale-105">
+    <Card className="p-1 w-full md:max-w-[300px] h-[350px] dark:bg-transparent transition-transform transform hover:scale-105">
       <CardHeader className="flex-col items-start overflow-visible relative">
         <Image
           alt="Event image"

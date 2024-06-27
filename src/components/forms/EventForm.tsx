@@ -1,245 +1,72 @@
 "use client";
 import { useForm, SubmitHandler } from "react-hook-form";
 
-import { Children, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import TextField from "./TextField";
 import React from "react";
-import ImageField from "./ImageField";
-import DatePickerField from "./DatePickerField";
-import Loader from "./Loader";
+
+import Loader from "./utils/Loader";
 import { AnimatePresence, motion } from "framer-motion";
 import Typography from "../ui/Typography";
-import Button from "./Button";
-import Image from "next/image";
-import TextAreaField from "./TextAreaField";
-
-const variants = {
-  enter: (direction: number) => {
-    return {
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0,
-    };
-  },
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1,
-  },
-  exit: (direction: number) => {
-    return {
-      zIndex: 0,
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0,
-    };
-  },
-};
-
-const variantText = {
-  initial: {
-    opacity: 0,
-    transition: {
-      duration: 0.5,
-      when: "beforeChildren",
-      delayChildren: 1,
-    },
-  },
-  animate: {
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      when: "beforeChildren",
-      delayChildren: 1,
-    },
-  },
-  exit: {
-    opacity: 0,
-  },
-};
-
-const STEPS = [
-  {
-    title: "Informations générales de l'événement",
-    subtitle: "Veuillez renseignez les informations ci-dessous",
-    schema: {
-      name: yup.string().required("Le nom de l'événement est requis"),
-      address: yup.string().required("L'adresse de l'événement est requis"),
-      zipCode: yup
-        .string()
-        .matches(/^\d{5}$/, "Le code postal est requis")
-        .required("Le code postal est requis"),
-      city: yup.string().required("La ville est requise"),
-    },
-    renderInputFields: (control: any) => (
-      <div className="grid grid-cols-4 gap-4 justify-center items-center ">
-        <TextField
-          control={control}
-          name="name"
-          label={"Nom de l'événement *"}          
-          className="col-span-4 text-black border-blue-500 hover:border-blue-500"
-        />
-        <TextField
-          control={control}
-          name="address"
-          label={"Adresse *"}
-          className="col-span-4"
-        />
-        <TextField
-          control={control}
-          name="zipCode"
-          label={"Code postal *"}
-          className="col-span-2"
-          maxLength={5}
-        />
-        <TextField
-          control={control}
-          name="city"
-          label={"Ville *"}
-          className="col-span-2"
-        />
-      </div>
-    ),
-  },
-  {
-    title: "Dates de l'événement",
-    subtitle: "Choisir les dates et heures de début et de fin de l'événement",
-    schema: {
-      startingDate: yup.string().required("Une date de début est requise"),
-    },
-    renderInputFields: (control: any) => (
-      <div className="flex flex-row justify-center items-center">
-        <DatePickerField
-          control={control}
-          label="Début *"
-          name={"startingDate"}
-          className="col-span-2"
-        />
-        <Image
-          className="mx-2 drop-shadow-lg"
-          src="/icons/form/arrows.png"
-          alt="Arrow"
-          width={24}
-          height={24}
-        />
-        <DatePickerField
-          control={control}
-          label="Fin"
-          name={"endingDate"}
-          className="col-span-2"
-          placeholder="Heure de fin (optionnel)"
-        />
-      </div>
-    ),
-  },
-  {
-    title: "Affiche de l'événement",
-    subtitle: "Choisir un visuel *",
-    schema: {
-      image: yup
-        .mixed()
-        .required("Un visuel est requis")
-        .test("is-file", "L'image n'est pas valide", (value) => {
-          return value instanceof File;
-        })
-        .test(
-          "file-type",
-          "Le fichier sélectionné n'est pas une image",
-          (value: any) => {
-            if (!value) return true;
-            const allowedTypes = ["image/jpeg", "image/png"];
-            return allowedTypes.includes(value.type);
-          }
-        ),
-    },
-    renderInputFields: (control: any) => (
-      <div className="flex flex-1 flex-col justify-center items-center">
-        <ImageField
-          control={control}
-          label="Visuel"
-          name="image"
-          isLoading={false}
-          className="flex flex-1 flex-col justify-center"
-        />
-      </div>
-    ),
-  },
-  {
-    title: "Tarif de l'événement",
-    subtitle: "Veuillez renseigner un tarif, 0 si l'événement est gratuit",
-    schema: {
-      price: yup
-        .number()
-        .transform((value, originalValue) => {
-          if (typeof originalValue === 'string') {
-            const normalizedValue = originalValue.replace(',', '.');
-            return parseFloat(normalizedValue);
-          }
-          return value;
-        })
-        .min(0, "Le tarif doit être positif")
-        .typeError("Un tarif est obligatoire, mettre 0 si gratuit")
-        .required(),
-    },
-    renderInputFields: (control: any) => (
-      <div className="flex flex-row justify-center items-center">
-        <TextField
-          control={control}
-          name="price"
-          isLoading={false}
-          className="col-span-2"
-          label={"Tarif *"}
-          endIcon="euro"
-        />
-      </div>
-    ),
-  },
-  {
-    title: "Description et lien url",
-    subtitle: "Veullez fournir une brève description et un lien url d'un site",
-    schema: {
-      description: yup.string().required("Une description est requise"),
-    },
-    renderInputFields: (control: any) => (
-      <div className="flex flex-col justify-center items-center">
-        <TextAreaField
-          control={control}
-          name="description"
-          isLoading={false}
-          className="w-full"
-          label={"Description *"}
-        />
-
-        <TextField
-          control={control}
-          name="website"
-          isLoading={false}
-          className="col-span-2 mt-3"
-          label={"Lien url de l'événement (optionnel)"}
-        />
-      </div>
-    ),
-  },  
-];
-
+import Button from "./utils/Button";
+import { ModalContext, ModalContextProps } from "./utils/Modal";
+import { variantBox, variantText } from "./utils/variants";
+import {
+  CAR_POOL_STEPS,
+  CHOICE_STEPS,
+  EVENT_STEPS,
+  INTRO_CAR_STEPS,
+  INTRO_EVENT_STEPS,
+  SUCCESS_STEPS,
+} from "./utils/steps";
+interface StepProps {
+  transition: boolean;
+  title: string;
+  subtitle: string;
+  isTransition?: boolean;
+  schema: any;
+  renderInputFields: (control: any, onChange: any) => any;
+  pageHelper?: (options: string[]) => any;
+}
 interface IFormInputs {
   name: string;
+  startingDate: string;
+  endingDate: string;
   image: File;
-  start: any;
-  end: any;
-}
-interface FormProps {
-  userId: string;
-  page?: number;
-  children?: React.ReactNode; // Typage pour les enfants
-  // Ajouter d'autres props si nécessaire
-  [key: string]: any; // Pour les autres props optionnelles
+  description: string;
+  address: string;
+  zipCode: string;
+  city: string;
+  categoryId: string;
+  price: string;
+  url?: string;
+
 }
 
-const EventForm = ({ userId, children, ...props }: FormProps) => {
-  const [[page, direction], setPage] = useState([0, 0]);
-  const pages = Children.toArray(children);
+interface FormProps {
+  type: string;
+  userId: string;
+  currentPage?: number;
+  children?: React.ReactNode;
+  [key: string]: any;
+}
+
+const EventForm = ({ type, userId, children, ...props }: FormProps) => {
+  const [[currentPage, direction], setPage] = useState([0, 0]);
+  const initialStep = type == "event" ? INTRO_EVENT_STEPS : INTRO_CAR_STEPS;
+  const mainStep = type == "event" ? EVENT_STEPS : CAR_POOL_STEPS;
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const [pages, setPages] = useState<StepProps[]>([
+    ...initialStep,
+    ...mainStep,
+    ...SUCCESS_STEPS,
+  ]);
   const [isLoading, setIsLoading] = useState(false);
+  const { setIsDark, setIsOpen } = useContext(
+    ModalContext
+  ) as ModalContextProps;
 
   const {
     handleSubmit,
@@ -249,130 +76,241 @@ const EventForm = ({ userId, children, ...props }: FormProps) => {
     reset,
   } = useForm<IFormInputs>({
     resolver: yupResolver(
-      yup.object(STEPS[page].schema as any).required()
+      yup.object(pages[currentPage].schema as any).required()
     ) as any,
     defaultValues: {
       //start: "2022-04-17" /* now(getLocalTimeZone())*/,
-      end: "2022-05-17",
     },
   });
 
+  useEffect(() => {
+    currentPage === 0 && setIsDark(true);
+  }, [currentPage, setIsDark]);
+
   const paginate = (newDirection: number) => {
-    setPage([page + newDirection, newDirection]);
+    setPage([currentPage + newDirection, newDirection]);
   };
 
   const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
-    if (page == STEPS.length - 1) {
-      const filename = data.image.name;
-      const fileType = data.image.type;
-
-      const res = await fetch(
-        `/api/presign?file=${filename}&fileType=${fileType}`
-      );
-      try {
-        const { url } = await res.json();
-
-        const upload = await fetch(url, {
-          method: "PUT",
-          body: data.image,
-          headers: { "Content-Type": fileType },
+    try {
+      if (currentPage === pages.length - 1) {
+        const startingDateDateTime = new Date(data.startingDate).getTime(); 
+        const endingDateDateTime = new Date(data.endingDate).getTime();
+  
+        setIsOpen(false);
+        const formData = new FormData();
+        formData.append("image", data.image);
+        formData.append("name", data.name);
+        formData.append("description", data.description);
+        formData.append("startingDate", startingDateDateTime.toString());
+        formData.append("endingDate", endingDateDateTime.toString())
+        formData.append("address", data.address);
+        formData.append("city", data.city);
+        formData.append("zipCode", data.zipCode);
+        formData.append("categoryId", "1");
+        formData.append("price", data.price);
+        formData.append("url", data.url || "");
+    
+        setIsLoading(true);
+    
+        const res = await fetch("/api/event/create", {
+          method: "POST",
+          body: formData,
         });
+    
         setIsLoading(false);
-        if (upload.ok) {
-          const imageUrl = new URL(url);
-
-          const eventData = {
-            ...data,
-            image: `${imageUrl.origin}${imageUrl.pathname}`,
-            latitude: "00000000.4444444",
-            longitude: "00000000.4444444",
-            categoryId: 1,
-            userId,
-          };
-          const response = await fetch("/api/event/create/aws", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(eventData),
-          });
-
-          if (response.ok) {
-            alert("Event created successfully!");
-          } else {
-            const errorData = await response.json();
-
-            console.error(errorData);
-          }
+    
+        if (res.ok) {
+          const { newEvent } = await res.json();
+          console.log("Event created successfully:", newEvent);
+          setErrorMessage(null); 
+          paginate(1);
         } else {
-          console.error("Upload failed.");
+          const errorData = await res.json();
+          setErrorMessage(errorData.error || "An error occurred. Please try again.");
         }
-      } catch (error) {
-        console.log(error);
+      }  else {
+        if (currentPage !== pages.length - 1) paginate(1);
+        setIsDark(false);
       }
-    } else {
-      paginate(1);
+      if (currentPage === pages.length - 1)  {
+        setIsOpen(false);
+      }
+    } catch (error) {
+      console.error("Error creating event:", error);
+      setErrorMessage("An error occurred. Please try again.");
+    }  
+  };
+  
+  
+
+  // const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
+  //   console.dir("DATA : " + data);
+  //   console.log("DATA2 :", JSON.stringify(data, null, 2));
+
+    
+  //   if (currentPage == pages.length - 2) {
+  //     const filename = data.image.name;
+  //     const fileType = data.image.type;
+
+  //     try {
+  //       const res = await fetch(
+  //         `/api/presign?file=${filename}&fileType=${fileType}`
+  //       );
+  //       const { url } = await res.json();
+  //       const upload = await fetch(url, {
+  //         method: "PUT",
+  //         body: data.image,
+  //         headers: { "Content-Type": fileType },
+  //       });
+  //       setIsLoading(false);
+  //       if (upload.ok) {
+  //         const imageUrl = new URL(url);
+
+  //         console.log(`${imageUrl.origin}${imageUrl.pathname}`);
+  //         // const eventData = {
+  //         //   ...data,
+  //         //   image: `${imageUrl.origin}${imageUrl.pathname}`,
+  //         //   latitude: "00000000.4444444",
+  //         //   longitude: "00000000.4444444",
+  //         //   categoryId: 1,
+  //         //   userId,
+  //         // };
+  //         // const response = await fetch("/api/event/create/aws", {
+  //         //   method: "POST",
+  //         //   headers: {
+  //         //     "Content-Type": "application/json",
+  //         //   },
+  //         //   body: JSON.stringify(eventData),
+  //         // });
+  //         // if (response.ok) {
+  //         //   alert("Event created successfully!");
+  //         // } else {
+  //         //   const errorData = await response.json();
+  //         //   console.error(errorData);
+  //         // }
+  //       } else {
+  //         console.error("Upload failed.");
+  //       }
+  //       paginate(1);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   } else {
+  //     if (currentPage !== pages.length - 1) paginate(1);
+  //     setIsDark(false);
+  //   }
+  //   if (currentPage === pages.length - 1) setIsOpen(false);
+  // };
+
+  const pagesHelper = (choices: string[]) => {
+    switch (true) {
+      case choices.includes("Covoiturage"):
+        setPages([
+          ...CHOICE_STEPS,
+          ...EVENT_STEPS,
+          ...CAR_POOL_STEPS,
+          ...SUCCESS_STEPS,
+        ]);
+        break;
+      default:
+        setPages([...CHOICE_STEPS, ...EVENT_STEPS, ...SUCCESS_STEPS]);
+        break;
     }
   };
   const handleNext = () => {
     handleSubmit(onSubmit)();
   };
 
+  //size of step in loader page success et transition
+  const getStepLength = () => pages.length - 2;
+  //current step for loader is currentpage minus 2 step for succes and transition
+  const getSCurrentStep = () => {
+    if (currentPage === 0) return 0;
+    return currentPage - 1;
+  };
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col justify-between space-y-6 h-[500px]"
+      className="flex flex-col justify-between items-stretch space-y-6 h-[500px] w-[380px]"
     >
-      <Loader
-        currentStep={page}
-        totalSteps={STEPS.length}
-        className="flex relative flex-row space-x-4 w-100 h-1"
-      />
+      {currentPage !== pages.length - 1 && currentPage !== 0 && (
+        <Loader
+          currentStep={getSCurrentStep()}
+          totalSteps={getStepLength()}
+          className="flex relative flex-row space-x-4 w-100 h-1"
+        />
+      )}
+  
       <AnimatePresence initial={false} custom={direction} mode="wait">
-        {STEPS.map(
+        {pages.map(
           (step, index) =>
-            page === index && (
+            currentPage === index && (
               <motion.div
-                key={page}
+                key={currentPage}
                 custom={direction}
                 variants={variantText}
                 initial="initial"
                 animate="animate"
                 exit="exit"
-                className="flex flex-1 flex-col space-y-8 overflow-hidden"
+                className="flex flex-1 flex-col space-y-8 items-center overflow-hidden w-full"
               >
-                <span className="space-y-2">
-                  <Typography variant="h4">{STEPS[page].title}</Typography>
-                  <Typography variant="body">{STEPS[page].subtitle}</Typography>
+                <span className="space-y-5">
+                  <Typography
+                    variant="h3"
+                    className={`${
+                      step.transition ? "text-white" : "text-black"
+                    } tracking-wide`}
+                  >
+                    {step.title}
+                  </Typography>
+                  <Typography
+                    variant="p"
+                    className={`${
+                      step.transition ? "text-white" : "text-black"
+                    } tracking-wide`}
+                  >
+                    {step.subtitle}
+                  </Typography>
                 </span>
-
+  
                 <motion.div
-                  key={page}
+                  key={currentPage}
                   custom={direction}
-                  variants={variants}
+                  variants={variantBox}
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  className="flex flex-1 justify-center flex-col space-y-4"
+                  className="flex w-full flex-1 justify-center items-center flex-col space-y-4"
                 >
-                  {STEPS[page].renderInputFields &&
-                    STEPS[page].renderInputFields(control)}
+                  {step.renderInputFields &&
+                    step.renderInputFields(control, pagesHelper)}
                 </motion.div>
               </motion.div>
             )
         )}
       </AnimatePresence>
-      <footer className="flex  align-middle justify-around ">
-        {page > 0 && (
+  
+      {errorMessage && (
+        <div className="text-red-500">
+          {errorMessage}
+        </div>
+      )}
+  
+      <footer className="flex align-middle justify-around">
+        {currentPage > 0 && currentPage <= pages.length - 1 && (
           <Button onClick={() => paginate(-1)} size="md" color="outlined">
             Retour
           </Button>
         )}
         <Button color="contained" onClick={handleNext}>
-          Suivant
+          {currentPage === pages.length - 1
+            ? "Envoyer l'événement"
+            : "Suivant"}
         </Button>
       </footer>
     </form>
   );
-};
+}
+
 export default EventForm;

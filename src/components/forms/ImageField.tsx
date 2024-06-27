@@ -44,11 +44,11 @@ const ImageField: React.FC<CustomTextFieldProps> = ({
         accept="image/*"
         onChange={handleOnChange}
         style={{ display: "none" }}
-        id="raised-button-file"
-        multiple
+        id="image"
+        name="image"
         type="file"
       />
-      <label htmlFor="raised-button-file" className="flex flex-1 flex-col">
+      <label htmlFor="image" className="flex flex-1 flex-col">
         <Button
           variant="bordered"
           color="primary"
