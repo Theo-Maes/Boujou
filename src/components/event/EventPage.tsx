@@ -25,8 +25,10 @@ export interface EventData {
   url: string;
   category: Category;
   groups: {
+    id: number;
     event: Event;
     drivers: {
+      id: number;
       startingdate: number;
       endingdate: number;
       adress: string;
@@ -39,6 +41,7 @@ export interface EventData {
       }[];
     }[];
     hosts: {
+      id: number;
       address: string;
       zipcode: string;
       city: string;

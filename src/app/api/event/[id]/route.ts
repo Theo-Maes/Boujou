@@ -16,10 +16,13 @@ export async function GET(req: Request, params: { params: { id: string } }) {
             drivers: {
               include: {
                 user: true,
+                passengers: { include: { user: true } },
               },
             },
             event: true,
-            hosts: true,
+            hosts: {
+              include: { user: true, hostedUsers: { include: { user: true } } },
+            },
             members: { include: { user: true } },
           },
         },
