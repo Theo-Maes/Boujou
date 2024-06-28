@@ -63,7 +63,6 @@ const authOptions: AuthOptions = {
           fullname: `${profile.given_name} ${profile.family_name}`,
           email: profile.email,
           avatar: profile.picture,
-          roleId: 1,
         };
       },
     }),
@@ -106,11 +105,12 @@ const authOptions: AuthOptions = {
         const userConnected = await prisma.user.findUnique({
           where: { email: customUser.email },
         });
+        console.log(userConnected);
         token.id = userConnected?.id;
         token.username = customUser.fullname ?? "";
         token.email = customUser.email ?? "";
         token.avatar = customUser.avatar ?? "";
-        token.roleId = customUser.roleId ?? 1;
+        token.roleId = userConnected?.roleId ?? 1;
         token.adress = customUser.adress ?? "";
         token.latitude = customUser.latitude ?? "";
         token.longitude = customUser.longitude ?? "";

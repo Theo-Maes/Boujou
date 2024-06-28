@@ -74,7 +74,10 @@ export default function Home() {
   useEffect(() => {
     const getEvents = async () => {
       const eventsData = await fetchEvents();
-      setEvents(eventsData);
+      const filteredEvents = eventsData.filter(
+        (event) => event.validatedAt !== null
+      );
+      setEvents(filteredEvents);
     };
     getEvents();
   }, []);

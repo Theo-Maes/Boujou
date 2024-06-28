@@ -13,16 +13,22 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-      remotePatterns: [
-        {
-          protocol: 'https',
-          hostname: 'via.placeholder.com',
-        },
-        {
-          protocol: 'https',
-          hostname: 'jsonplaceholder.typicode.com',
-        },
-      ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "via.placeholder.com",
+      },
+      {
+        protocol: "https",
+        hostname: "jsonplaceholder.typicode.com",
+      },
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
   },
 };
 
