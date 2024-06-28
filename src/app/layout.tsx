@@ -18,6 +18,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
+      <head>
+          <link rel="manifest" href="/manifest.json" />
+          <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+      </head>
       <body className={roboto.className}>
         <Providers>
           <div className="flex flex-col min-h-screen">
