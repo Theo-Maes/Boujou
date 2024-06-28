@@ -129,14 +129,20 @@ export default function EventGroupCard({
     <section className="flex justify-center items-center">
       <Card className="rounded-none mx-4 md:mx-0 p-1 w-full md:w-8/12 dark:bg-gray-800">
         <CardHeader className="flex justify-center items-center">
-          <Button
-            onClick={() => joinGroup()}
-            color={theme === "dark" ? "secondary" : "primary"}
-            size="sm"
-            className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
-          >
-            Rejoindre ce collectif
-          </Button>
+          {session && session.user ? (
+            <>
+              <Button
+                onClick={() => joinGroup()}
+                color={theme === "dark" ? "secondary" : "primary"}
+                size="sm"
+                className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
+              >
+                Rejoindre ce collectif
+              </Button>
+            </>
+          ) : (
+            <></>
+          )}
         </CardHeader>
         <CardBody>
           <Accordion selectionMode="multiple" defaultExpandedKeys={["1"]}>

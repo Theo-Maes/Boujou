@@ -104,7 +104,7 @@ export default function UserMenu({
                 </div>
               )}
             </MenuItem>
-            <MenuItem>
+            {/* <MenuItem>
               {({ focus }) => (
                 <Link
                   href="/profile"
@@ -116,7 +116,7 @@ export default function UserMenu({
                   Profil
                 </Link>
               )}
-            </MenuItem>
+            </MenuItem> */}
             {session.user.roleId == 2 && (
               <MenuItem>
                 {({ focus }) => (
