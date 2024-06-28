@@ -1,7 +1,7 @@
 "use client";
 
 import { Metadata } from "next";
-import EventPage from "@/components/event/EventPage";
+import EventPage, { EventData } from "@/components/event/EventPage";
 import { EventWithRelations } from "@/libs/types";
 import { useEffect, useState } from "react";
 import Loading from "@/app/loading";
@@ -10,11 +10,11 @@ import Loading from "@/app/loading";
 //   title: "Test",
 // };
 
-const fetchEvent = async (id: string): Promise<Event | null> => {
+const fetchEvent = async (id: string): Promise<EventData | null> => {
   try {
     const response = await fetch(`/api/event/${id}`);
     const data = await response.json();
-    const event: Event = data.data;
+    const event: EventData = data.data;
 
     return event;
   } catch (error) {
@@ -25,7 +25,7 @@ const fetchEvent = async (id: string): Promise<Event | null> => {
 
 export default function EventTestPage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const [event, setEvent] = useState<Event | null>(null);
+  const [event, setEvent] = useState<EventData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
