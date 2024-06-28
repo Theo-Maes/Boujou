@@ -118,28 +118,12 @@ export default function EventPage({
 }): JSX.Element {
   const { data: session } = useSession();
   const { theme } = useTheme();
-  // const [collectifCount, setCollectifCount] = useState<number>(
-  //   event.groups.length ?? 0
-  // );
+
   const eventDate = generateMessage(event.startingDate, event.endingDate);
   const eventDateWithHour = generateMessageWithHour(
     event.startingDate,
     event.endingDate
   );
-
-  // useEffect(() => {
-  //   const fetchEventData = async () => {
-  //     try {
-  //       const eventResponse = await fetch(`/api/event/${event.id}`);
-  //       const eventData = await eventResponse.json();
-  //       console.log(eventData);
-  //     } catch (error) {
-  //       console.error("Error fetching event or group data:", error);
-  //     }
-  //   };
-
-  //   fetchEventData();
-  // }, [event]);
 
   return (
     <main className="flex flex-col">
