@@ -59,11 +59,11 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL("/", req.url));
     }
   } else {
-    if (isProtectedRoute(req)) {
-      if (token) {
-        return NextResponse.redirect(new URL("/signin", req.url));
-      }
-    }
+    // if (isProtectedRoute(req)) {
+    //   if (token) {
+    //     return NextResponse.redirect(new URL("/signin", req.url));
+    //   }
+    // }
   }
 
   return NextResponse.next();
