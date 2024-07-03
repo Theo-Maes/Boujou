@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -16,39 +16,44 @@ import { ServiceCard } from "./ServiceCard";
 import { Event, Host, User, UserGroup } from "@prisma/client";
 import { useSession } from "next-auth/react";
 
-interface Group {
-  id: number;
-  event: Event;
-  drivers: {
+interface CustomUser extends User {
+    avatar: string;
+    fullname: string;
+  }
+  
+  interface Group {
     id: number;
-    startingdate: number;
-    endingdate: number;
-    adress: string;
-    zipcode: string;
-    city: string;
-    quantity: number;
-    user: User;
-    passengers: {
-      user: User;
+    event: Event;
+    drivers: {
+      id: number;
+      startingdate: number;
+      endingdate: number;
+      adress: string;
+      zipcode: string;
+      city: string;
+      quantity: number;
+      user: CustomUser;
+      passengers: {
+        user: CustomUser;
+      }[];
     }[];
-  }[];
-  hosts: {
-    id: number;
-    address: string;
-    zipcode: string;
-    city: string;
-    startingdate: number;
-    endingdate: number;
-    quantity: number;
-    user: User;
-    hostedUsers: {
-      user: User;
+    hosts: {
+      id: number;
+      address: string;
+      zipcode: string;
+      city: string;
+      startingdate: number;
+      endingdate: number;
+      quantity: number;
+      user: CustomUser;
+      hostedUsers: {
+        user: CustomUser;
+      }[];
     }[];
-  }[];
-  members: {
-    user: User;
-  }[];
-}
+    members: {
+      user: CustomUser;
+    }[];
+  }
 
 export default function EventGroupCard({
   group,
@@ -57,8 +62,37 @@ export default function EventGroupCard({
 }): JSX.Element {
   const { theme } = useTheme();
   const { data: session } = useSession();
+  const [members, setMembers] = useState(group.members);
+  const [isMember, setIsMember] = useState(false);
+  const [usersHosted, setUsersHosted] = useState(group.hosts);
+  const [isUserHosted, setIsUserHosted] = useState(false);
+  const [drivers, setDrivers] = useState(group.drivers);
+  const [isPassenger, setIsPassenger] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (session?.user) {
+      setIsMember(members.some(member => member.user.id === session.user.id));
+      setIsUserHosted(
+        usersHosted.some(host =>
+          host.hostedUsers.some(hostedUser => hostedUser.user.id === session.user.id)
+        )
+      );
+      setIsPassenger(
+        drivers.some(driver =>
+          driver.passengers.some(passenger => passenger.user.id === session.user.id)
+        )
+      );
+    }
+  }, [session, members, drivers, usersHosted]);
 
   const joinGroup = async () => {
+    if (!session || !session.user) {
+        console.error("User is not logged in.");
+        return;
+    }
+
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("userId", session?.user?.id ?? "");
@@ -75,82 +109,258 @@ export default function EventGroupCard({
       } else {
         const responseData = await response.json();
         console.log("Successfully joined group:", responseData);
+        setMembers([...members, { user: session.user as CustomUser }]);
       }
     } catch (error) {
       console.error("Error joining group:", error);
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  const leaveGroup = async () => {
+    if (!session || !session.user) {
+      console.error("User is not logged in.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("userId", session.user.id.toString());
+      formData.append("groupId", group.id.toString());
+
+      const response = await fetch(
+        members.length === 1 ? `/api/group/${group.id}/delete` : `/api/group/${group.id}/leave`,
+        {
+          method: "DELETE",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to leave group:", errorData);
+      } else {
+        const responseData = await response.json();
+        setMembers(members.filter(member => member.user.id !== session.user.id));
+        setIsMember(false);
+        console.log("Successfully left group:", responseData);
+      }
+    } catch (error) {
+      console.error("Error leaving group:", error);
+    } finally {
+        setLoading(false);
     }
   };
 
   const joinDriver = async (driverId: number) => {
+    if (!session || !session.user) {
+      console.error("User is not logged in.");
+      return;
+    }
+  
+    setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("userId", session?.user?.id ?? "");
-
+      formData.append("userId", session.user.id.toString());
+  
       const response = await fetch(`/api/driver/${driverId}/join`, {
         method: "POST",
         body: formData,
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Failed to join driver:", errorData);
       } else {
         const responseData = await response.json();
+        const updatedDrivers = drivers.map(driver => {
+          if (driver.id === driverId) {
+            return {
+              ...driver,
+              passengers: [...driver.passengers, { user: session.user as CustomUser }]
+            };
+          }
+          return driver;
+        });
+        setDrivers(updatedDrivers);
+        setIsPassenger(true);
         console.log("Successfully joined driver:", responseData);
       }
     } catch (error) {
       console.error("Error joining driver:", error);
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  const leaveDriver = async (driverId: number) => {
+    if (!session || !session.user) {
+      console.error("User is not logged in.");
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("userId", session.user.id.toString());
+  
+      const response = await fetch(`/api/driver/${driverId}/leave`, {
+        method: "DELETE",
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to leave driver:", errorData);
+      } else {
+        const responseData = await response.json();
+        const updatedDrivers = drivers.map(driver => {
+          if (driver.id === driverId) {
+            return {
+              ...driver,
+              passengers: driver.passengers.filter(passenger => passenger.user.id !== session.user.id)
+            };
+          }
+          return driver;
+        });
+        setDrivers(updatedDrivers);
+        setIsPassenger(false);
+        console.log("Successfully left driver:", responseData);
+      }
+    } catch (error) {
+      console.error("Error leaving driver:", error);
+    } finally {
+        setLoading(false);
     }
   };
 
   const joinHost = async (hostId: number) => {
+    if (!session || !session.user) {
+      console.error("User is not logged in.");
+      return;
+    }
+  
+    setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("userId", session?.user?.id ?? "");
-
+      formData.append("userId", session.user.id.toString());
+  
       const response = await fetch(`/api/host/${hostId}/join`, {
         method: "POST",
         body: formData,
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Failed to join host:", errorData);
       } else {
         const responseData = await response.json();
+        const updatedHosts = usersHosted.map(host => {
+          if (host.id === hostId) { 
+            return {
+              ...host,
+              hostedUsers: [...host.hostedUsers, { user: session.user as CustomUser }]
+            };
+          }
+          return host;
+        });
+        setUsersHosted(updatedHosts);
+        setIsUserHosted(true);
         console.log("Successfully joined host:", responseData);
       }
     } catch (error) {
       console.error("Error joining host:", error);
+    } finally {
+        setLoading(false);
     }
   };
+
+  const leaveHost = async (hostId: number) => {
+    if (!session || !session.user) {
+      console.error("User is not logged in.");
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("userId", session.user.id.toString());
+  
+      const response = await fetch(`/api/host/${hostId}/leave`, {
+        method: "DELETE",
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Failed to leave host:", errorData);
+      } else {
+        const responseData = await response.json();
+        const updatedHosts = usersHosted.map(host => {
+          if (host.id === hostId) {
+            return {
+              ...host,
+              hostedUsers: host.hostedUsers.filter(hostedUser => hostedUser.user.id !== session.user.id)
+            };
+          }
+          return host;
+        });
+        setUsersHosted(updatedHosts);
+        setIsUserHosted(false);
+        console.log("Successfully left host:", responseData);
+      }
+    } catch (error) {
+      console.error("Error leaving host:", error);
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  if (members.length === 0) {
+    return <></>;
+  }
 
   return (
     <section className="flex justify-center items-center">
       <Card className="rounded-none mx-4 md:mx-0 p-1 w-full md:w-8/12 dark:bg-gray-800">
         <CardHeader className="flex justify-center items-center">
-          <Button
-            onClick={() => joinGroup()}
-            color={theme === "dark" ? "secondary" : "primary"}
-            size="sm"
-            className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
-          >
-            Rejoindre ce collectif
-          </Button>
+        {isMember ? (
+            <Button
+              onClick={leaveGroup}
+              color={theme === "dark" ? "primary" : "secondary"}
+              size="sm"
+              className="mx-2 my-2 md:my-5 font-medium text-secondaryText dark:text-white"
+              isLoading={loading}
+            >
+              Quitter le collectif
+            </Button>
+          ) : (
+            <Button
+              onClick={joinGroup}
+              color={theme === "dark" ? "secondary" : "primary"}
+              size="sm"
+              className="mx-2 my-2 md:my-5 font-medium text-white dark:text-secondaryText"
+              isLoading={loading}
+            >
+              Rejoindre ce collectif
+            </Button>
+          )}
         </CardHeader>
         <CardBody>
           <Accordion selectionMode="multiple" defaultExpandedKeys={["1"]}>
             <AccordionItem
               title={
                 <p className="text-sm">
-                  {group.members.length} utilisateur
-                  {group.members.length > 1 ? "s" : ""} dans ce collectif
+                  {members.length} utilisateur
+                  {members.length > 1 ? "s" : ""} dans ce collectif
                 </p>
               }
               key="1"
             >
               <section className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-2 md:gap-3 p-1 dark:bg-gray-800">
-                {group.members.map((user, index) => (
+                {members.map((user, index) => (
                   <UserCard
                     key={index}
                     avatar={user.user.avatar}
@@ -162,20 +372,14 @@ export default function EventGroupCard({
             <AccordionItem
               title={
                 <p className="text-sm">
-                  {
-                    group.drivers.filter(
-                      (driver) =>
-                        driver.quantity >
-                        (driver.passengers ? driver.passengers.length : 0)
-                    ).length
-                  }{" "}
-                  covoiturages disponibles dans ce collectif
+                  {drivers.length} covoiturage
+                  {drivers.length > 1 ? "s" : ""} dans ce collectif
                 </p>
               }
               key="2"
             >
               <Accordion selectionMode="multiple">
-                {group.drivers.map((driver, index) => (
+                {drivers.map((driver, index) => (
                   <AccordionItem
                     title={
                       <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
@@ -191,14 +395,28 @@ export default function EventGroupCard({
                           available={driver.quantity}
                         />
                         <div className="flex flex-row justify-end mr-4">
+                          {session && isMember && isPassenger && (
+                          <Button
+                            onClick={() => leaveDriver(driver.id)}
+                            color={theme === "dark" ? "primary" : "secondary"}
+                            size="sm"
+                            className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
+                            isLoading={loading}
+                          >
+                            Quitter
+                          </Button>
+                        )}
+                        {session && isMember && !isPassenger && (
                           <Button
                             onClick={() => joinDriver(driver.id)}
                             color={theme === "dark" ? "secondary" : "primary"}
                             size="sm"
                             className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
+                            isLoading={loading}
                           >
                             Rejoindre
                           </Button>
+                        )}
                         </div>
                       </section>
                     }
@@ -239,20 +457,14 @@ export default function EventGroupCard({
             <AccordionItem
               title={
                 <p className="text-sm">
-                  {
-                    group.hosts.filter(
-                      (host) =>
-                        host.quantity >
-                        (host.hostedUsers ? host.hostedUsers.length : 0)
-                    ).length
-                  }{" "}
-                  hébergement disponible dans ce collectif
+                  {usersHosted.length} hébergement
+                  {usersHosted.length > 1 ? "s" : ""} dans ce collectif
                 </p>
               }
               key="3"
             >
               <Accordion selectionMode="multiple">
-                {group.hosts.map((host, index) => (
+                {usersHosted.map((host, index) => (
                   <AccordionItem
                     title={
                       <section className="w-full dark:bg-gray-800 grid grid-flow-col auto-cols-auto items-center gap-2 md:gap-3">
@@ -268,14 +480,28 @@ export default function EventGroupCard({
                           available={host.quantity}
                         />
                         <div className="flex flex-row justify-end mr-4">
+                        {session && isUserHosted && (
+                          <Button
+                            onClick={() => leaveHost(host.id)}
+                            color={theme === "dark" ? "primary" : "secondary"}
+                            size="sm"
+                            className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
+                            isLoading={loading}
+                          >
+                            Quitter
+                          </Button>
+                        )} 
+                        {session && !isUserHosted && (
                           <Button
                             onClick={() => joinHost(host.id)}
                             color={theme === "dark" ? "secondary" : "primary"}
                             size="sm"
                             className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
+                            isLoading={loading}
                           >
                             Rejoindre
                           </Button>
+                        )}
                         </div>
                       </section>
                     }
