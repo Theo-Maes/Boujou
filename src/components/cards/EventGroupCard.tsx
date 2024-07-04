@@ -68,7 +68,9 @@ export default function EventGroupCard({
   const [isUserHosted, setIsUserHosted] = useState(false);
   const [drivers, setDrivers] = useState(group.drivers);
   const [isPassenger, setIsPassenger] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loadingGroup, setLoadingGroup] = useState(false);
+  const [loadingDriver, setLoadingDriver] = useState(false);
+  const [loadingHost, setLoadingHost] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -92,7 +94,7 @@ export default function EventGroupCard({
         return;
     }
 
-    setLoading(true);
+    setLoadingGroup(true);
     try {
       const formData = new FormData();
       formData.append("userId", session?.user?.id ?? "");
@@ -114,7 +116,7 @@ export default function EventGroupCard({
     } catch (error) {
       console.error("Error joining group:", error);
     } finally {
-        setLoading(false);
+        setLoadingGroup(false);
     }
   };
 
@@ -124,11 +126,23 @@ export default function EventGroupCard({
       return;
     }
 
-    setLoading(true);
+    setLoadingGroup(true);
     try {
       const formData = new FormData();
       formData.append("userId", session.user.id.toString());
       formData.append("groupId", group.id.toString());
+
+      drivers.map(driver => {
+        if (driver.passengers.some(passenger => passenger.user.id === session.user.id)) {
+          return leaveDriver(driver.id);
+        }
+      });
+
+      usersHosted.map(host => {
+        if (host.hostedUsers.some(hostedUser => hostedUser.user.id === session.user.id)) {
+          return leaveHost(host.id);
+        }
+      });
 
       const response = await fetch(
         members.length === 1 ? `/api/group/${group.id}/delete` : `/api/group/${group.id}/leave`,
@@ -143,14 +157,16 @@ export default function EventGroupCard({
         console.error("Failed to leave group:", errorData);
       } else {
         const responseData = await response.json();
-        setMembers(members.filter(member => member.user.id !== session.user.id));
-        setIsMember(false);
         console.log("Successfully left group:", responseData);
-      }
+
+      setMembers(members.filter(member => member.user.id !== session.user.id));
+      setIsMember(false);
+      console.log("Successfully left group and any associated drivers/hosts:", responseData);
+    }
     } catch (error) {
       console.error("Error leaving group:", error);
     } finally {
-        setLoading(false);
+      setLoadingGroup(false);
     }
   };
 
@@ -160,7 +176,7 @@ export default function EventGroupCard({
       return;
     }
   
-    setLoading(true);
+    setLoadingDriver(true);
     try {
       const formData = new FormData();
       formData.append("userId", session.user.id.toString());
@@ -191,7 +207,7 @@ export default function EventGroupCard({
     } catch (error) {
       console.error("Error joining driver:", error);
     } finally {
-        setLoading(false);
+        setLoadingDriver(false);
     }
   };
 
@@ -201,7 +217,7 @@ export default function EventGroupCard({
       return;
     }
   
-    setLoading(true);
+    setLoadingDriver(true);
     try {
       const formData = new FormData();
       formData.append("userId", session.user.id.toString());
@@ -232,7 +248,7 @@ export default function EventGroupCard({
     } catch (error) {
       console.error("Error leaving driver:", error);
     } finally {
-        setLoading(false);
+        setLoadingDriver(false);
     }
   };
 
@@ -242,7 +258,7 @@ export default function EventGroupCard({
       return;
     }
   
-    setLoading(true);
+    setLoadingHost(true);
     try {
       const formData = new FormData();
       formData.append("userId", session.user.id.toString());
@@ -273,7 +289,7 @@ export default function EventGroupCard({
     } catch (error) {
       console.error("Error joining host:", error);
     } finally {
-        setLoading(false);
+        setLoadingHost(false);
     }
   };
 
@@ -283,7 +299,7 @@ export default function EventGroupCard({
       return;
     }
   
-    setLoading(true);
+    setLoadingHost(true);
     try {
       const formData = new FormData();
       formData.append("userId", session.user.id.toString());
@@ -314,7 +330,7 @@ export default function EventGroupCard({
     } catch (error) {
       console.error("Error leaving host:", error);
     } finally {
-        setLoading(false);
+        setLoadingHost(false);
     }
   };
 
@@ -332,7 +348,7 @@ export default function EventGroupCard({
               color={theme === "dark" ? "primary" : "secondary"}
               size="sm"
               className="mx-2 my-2 md:my-5 font-medium text-secondaryText dark:text-white"
-              isLoading={loading}
+              isLoading={loadingGroup}
             >
               Quitter le collectif
             </Button>
@@ -342,7 +358,7 @@ export default function EventGroupCard({
               color={theme === "dark" ? "secondary" : "primary"}
               size="sm"
               className="mx-2 my-2 md:my-5 font-medium text-white dark:text-secondaryText"
-              isLoading={loading}
+              isLoading={loadingGroup}
             >
               Rejoindre ce collectif
             </Button>
@@ -401,7 +417,7 @@ export default function EventGroupCard({
                             color={theme === "dark" ? "primary" : "secondary"}
                             size="sm"
                             className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
-                            isLoading={loading}
+                            isLoading={loadingDriver}
                           >
                             Quitter
                           </Button>
@@ -412,7 +428,7 @@ export default function EventGroupCard({
                             color={theme === "dark" ? "secondary" : "primary"}
                             size="sm"
                             className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
-                            isLoading={loading}
+                            isLoading={loadingDriver}
                           >
                             Rejoindre
                           </Button>
@@ -486,7 +502,7 @@ export default function EventGroupCard({
                             color={theme === "dark" ? "primary" : "secondary"}
                             size="sm"
                             className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
-                            isLoading={loading}
+                            isLoading={loadingHost}
                           >
                             Quitter
                           </Button>
@@ -497,7 +513,7 @@ export default function EventGroupCard({
                             color={theme === "dark" ? "secondary" : "primary"}
                             size="sm"
                             className="mx-2 my-2 md:my-5 font-medium dark:text-secondaryText"
-                            isLoading={loading}
+                            isLoading={loadingHost}
                           >
                             Rejoindre
                           </Button>
