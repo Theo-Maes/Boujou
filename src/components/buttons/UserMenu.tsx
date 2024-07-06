@@ -2,13 +2,28 @@
 
 import { useState } from "react";
 import { classNames } from "@/libs";
-import { Menu, MenuButton, MenuItems, MenuItem, Transition } from "@headlessui/react";
+import {
+  Menu,
+  MenuButton,
+  MenuItems,
+  MenuItem,
+  Transition,
+} from "@headlessui/react";
 import { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment } from "react";
-import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, Checkbox } from "@nextui-org/react";
+import {
+  Button,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  Checkbox,
+} from "@nextui-org/react";
 import { useTheme } from "next-themes";
 
 export default function UserMenu({
@@ -49,11 +64,11 @@ export default function UserMenu({
         window.location.href = "/";
       } else {
         window.location.href = currentPath;
-      }    
+      }
     }
   };
-
   if (session && session.user) {
+    console.log(session);
     return (
       <Menu as="div" className="relative ml-3">
         <div>
@@ -83,11 +98,13 @@ export default function UserMenu({
               {() => (
                 <div className="text-sm mt-2 px-4 pb-2">
                   <p className="font-regular">Connecté en tant que</p>
-                  <p className="font-semibold text-primary dark:text-secondary">{session.user.fullname}</p>
+                  <p className="font-semibold text-primary dark:text-secondary">
+                    {session.user.fullname}
+                  </p>
                 </div>
               )}
             </MenuItem>
-            <MenuItem>
+            {/* <MenuItem>
               {({ focus }) => (
                 <Link
                   href="/profile"
@@ -99,25 +116,32 @@ export default function UserMenu({
                   Profil
                 </Link>
               )}
-            </MenuItem>
-            <MenuItem>
-              {({ focus }) => (
-                <Link
-                  href="/admin"
-                  className={classNames(
-                    focus ? "bg-blue-100 dark:bg-primary text-primary dark:text-blue-100" : "",
-                    "block px-4 py-2 text-sm cursor-pointer"
-                  )}
-                >
-                  Accès admin
-                </Link>
-              )}
-            </MenuItem>
+            </MenuItem> */}
+            {session.user.roleId == 2 && (
+              <MenuItem>
+                {({ focus }) => (
+                  <Link
+                    href="/admin"
+                    className={classNames(
+                      focus
+                        ? "bg-blue-100 dark:bg-primary text-primary dark:text-blue-100"
+                        : "",
+                      "block px-4 py-2 text-sm cursor-pointer"
+                    )}
+                  >
+                    Accès admin
+                  </Link>
+                )}
+              </MenuItem>
+            )}
+
             <MenuItem>
               {({ focus }) => (
                 <div
                   className={classNames(
-                    focus ? "bg-red-100 dark:bg-red-500 text-red-500 dark:text-red-100" : "",
+                    focus
+                      ? "bg-red-100 dark:bg-red-500 text-red-500 dark:text-red-100"
+                      : "",
                     "block px-4 py-2 text-sm cursor-pointer"
                   )}
                   onClick={handleSignOutClick}
@@ -143,9 +167,15 @@ export default function UserMenu({
         Connexion
       </Button>
 
-      <Modal isOpen={isModalOpen} onOpenChange={setModalOpen} placement="top-center">
+      <Modal
+        isOpen={isModalOpen}
+        onOpenChange={setModalOpen}
+        placement="top-center"
+      >
         <ModalContent>
-          <ModalHeader className="flex flex-col gap-1 text-black dark:text-white">Connexion</ModalHeader>
+          <ModalHeader className="flex flex-col gap-1 text-black dark:text-white">
+            Connexion
+          </ModalHeader>
           <ModalBody>
             <Input
               label="Email"
@@ -185,7 +215,13 @@ export default function UserMenu({
               </Link> */}
             </div>
             <div className="flex py-2 px-1 justify-center">
-              <Button onClick={() => signIn("google", { callbackUrl: "http://localhost:3000" })} color={theme === "dark" ? "secondary" : "primary"} className="w-auto lg:w-2/3 flex justify-center items-center">
+              <Button
+                onClick={() =>
+                  signIn("google", { callbackUrl: "http://localhost:3000" })
+                }
+                color={theme === "dark" ? "secondary" : "primary"}
+                className="w-auto lg:w-2/3 flex justify-center items-center"
+              >
                 <Image
                   className="mx-2 drop-shadow-lg"
                   src="/google.svg"
@@ -193,26 +229,41 @@ export default function UserMenu({
                   width={24}
                   height={24}
                 />
-                <span className="ml-2 text-white dark:text-black">Connexion avec Google</span>
+                <span className="ml-2 text-white dark:text-black">
+                  Connexion avec Google
+                </span>
               </Button>
             </div>
           </ModalBody>
           <ModalFooter className="flex justify-between align-center">
             <div>
-              <Link 
-                color={theme === "dark" ? "secondary" : "primary"} 
+              <Link
+                color={theme === "dark" ? "secondary" : "primary"}
                 href="/signup"
               >
-                <Button color={theme === "dark" ? "primary" : "secondary"} onPress={handleCloseModal} className="text-dark dark:text-white">
+                <Button
+                  color={theme === "dark" ? "primary" : "secondary"}
+                  onPress={handleCloseModal}
+                  className="text-dark dark:text-white"
+                >
                   S&apos;inscrire
                 </Button>
               </Link>
             </div>
             <div className="flex gap-3">
-              <Button color="danger" variant="flat" onPress={handleCloseModal} className="dark:text-white">
+              <Button
+                color="danger"
+                variant="flat"
+                onPress={handleCloseModal}
+                className="dark:text-white"
+              >
                 Annuler
               </Button>
-              <Button color={theme === "dark" ? "secondary" : "primary"} onClick={handleSignIn} className="text-white dark:text-black">
+              <Button
+                color={theme === "dark" ? "secondary" : "primary"}
+                onClick={handleSignIn}
+                className="text-white dark:text-black"
+              >
                 Se connecter
               </Button>
             </div>

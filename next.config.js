@@ -16,6 +16,14 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "via.placeholder.com",
+      },
+      {
+        protocol: "https",
+        hostname: "jsonplaceholder.typicode.com",
+      },
+      {
+        protocol: "https",
         hostname: "lh3.googleusercontent.com",
         port: "",
         pathname: "/**",
