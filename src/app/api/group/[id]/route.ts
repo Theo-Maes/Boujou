@@ -10,16 +10,37 @@ export async function GET(req: Request, params: { params: { id: string } }) {
         id: id,
       },
       include: {
-        creator: true,
         event: true,
         members: {
           include: {
             user: true,
           },
         },
-        drivers: true,
+        drivers: {
+          include: {
+            user: true,
+            passengers: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
+        hosts: {
+          include: {
+            user: true,
+            hostedUsers: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        },
       },
     });
+    if (!groupFind) {
+      return NextResponse.json({ error: "Group not found" }, { status: 404 });
+    }
     return NextResponse.json({ data: groupFind }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ erreur: error }, { status: 500 });
