@@ -9,6 +9,7 @@ import ButtonModal from "../forms/utils/Modal";
 import ServiceForm from "../forms/ServiceForm";
 import { useSession } from "next-auth/react";
 import { Category, Event, Group, User } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 export interface EventData {
   id: number;
@@ -26,6 +27,7 @@ export interface EventData {
   category: Category;
   groups: {
     id: number;
+    userId: number;
     event: Event;
     drivers: {
       id: number;
@@ -57,6 +59,51 @@ export interface EventData {
       user: User;
     }[];
   }[];
+}
+
+export interface GroupData {
+  id: number;
+  userId: number;
+  event: Event;
+  drivers: DriverData[];
+  hosts: HostData[];
+  members: MemberData[];
+}
+
+export interface DriverData {
+  id: number;
+  startingdate: number;
+  endingdate: number;
+  adress: string;
+  zipcode: string;
+  city: string;
+  quantity: number;
+  user: User;
+  passengers: PassengerData[];
+}
+
+export interface HostData {
+  id: number;
+  address: string;
+  zipcode: string;
+  city: string;
+  startingdate: number;
+  endingdate: number;
+  quantity: number;
+  user: User;
+  hostedUsers: HostedUserData[];
+}
+
+export interface MemberData {
+  user: User;
+}
+
+export interface PassengerData {
+  user: User;
+}
+
+export interface HostedUserData {
+  user: User;
 }
 
 const formatDate = (timestamp: number) => {
@@ -118,12 +165,32 @@ export default function EventPage({
 }): JSX.Element {
   const { data: session } = useSession();
   const { theme } = useTheme();
+  const [groups, setGroups] = useState(event.groups);
+
+  useEffect(() => {
+    setGroups(event.groups);
+  }, [event.groups]);
 
   const eventDate = generateMessage(event.startingDate, event.endingDate);
+
   const eventDateWithHour = generateMessageWithHour(
     event.startingDate,
     event.endingDate
   );
+
+  const isUserEverGroupCreator = (userId: number) => {
+    return event.groups.some((group) =>
+      group.userId === userId 
+    );
+  };
+
+  const handleGroupCreation = (newGroup: GroupData) => {
+    setGroups((prevGroups) => [...prevGroups, newGroup]);
+  };
+
+  const reloadEventPage = () => {
+    window.location.reload();
+  };
 
   return (
     <main className="flex flex-col">
@@ -153,12 +220,14 @@ export default function EventPage({
                 <p className="mt-2 md:mt-3">{eventDate}</p>
               </CardBody>
               <CardFooter className="flex flex-row justify-center">
-                {session && session.user ? (
+                {session && session.user && !isUserEverGroupCreator(session.user.id) ? (
                   <div className="hidden md:flex flex-1 justify-center">
                     <ButtonModal title="Créer votre collectif" isBlue={true}>
                       <ServiceForm
                         userId={session.user.id}
                         eventId={event.id}
+                        onGroupCreation={handleGroupCreation}
+                        successCallBack={reloadEventPage}
                       />
                     </ButtonModal>
                   </div>
@@ -194,15 +263,15 @@ export default function EventPage({
               ) : (
                 <></>
               )}
-              {event.groups.length > 0 ? (
+              {groups.length > 0 ? (
                 <Card className="rounded-none mb-2 bg-secondaryLight dark:bg-gray-800">
                   <CardBody className="mx-2 flex flex-row items-baseline">
-                    <p className="text-xl text-tertiary">
-                      {event.groups.length}{" "}
-                      {event.groups.length > 1 ? "collectifs" : "collectif"}
+                    <p className="text-xl text-[#A80000] dark:text-secondary">
+                      {groups.length}{" "}
+                      {groups.length > 1 ? "collectifs" : "collectif"}
                     </p>
                     <p className="ml-1">
-                      {event.groups.length > 1 ? "participent" : "participe"} à
+                      {groups.length > 1 ? "participent" : "participe"} à
                       cet événement
                     </p>
                   </CardBody>
@@ -218,8 +287,8 @@ export default function EventPage({
             </Card>
           </div>
         </article>
-        {event.groups.map((group, index) => (
-          <EventGroupCard key={index} group={group} />
+        {groups.map((group, index) => (
+          <EventGroupCard key={index} group={group} onGroupLeave={reloadEventPage} />
         ))}
       </section>
     </main>

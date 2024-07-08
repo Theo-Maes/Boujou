@@ -170,10 +170,11 @@ export default function Home() {
             <Select
               label="Trier par"
               placeholder="Date"
-              color={theme === "dark" ? "secondary" : "primary"}
+              color={theme === "dark" ? "secondary" : "default"}
+              variant="bordered"
               defaultSelectedKeys="startingDate"
               onChange={(e) => handleSortChange(e.target.value)}
-              className="max-w-[40%] md:max-w-[10%] dark:bg-transparent"
+              className="max-w-[40%] md:max-w-[10%] bg-transparent"
             >
               <SelectItem key="startingDate" value="startingDate">
                 Date
@@ -207,8 +208,8 @@ export default function Home() {
                   events.length > 0
                     ? "bg-secondary dark:bg-primary"
                     : "bg-gray-200 dark:bg-gray-700",
-                prev: "text- font-bold",
-                next: "text-secondary",
+                prev: "text-black dark:text-white dark:bg-gray-600 font-bold",
+                next: "text-black dark:text-white dark:bg-gray-600 font-bold",
               }}
               showControls
             />

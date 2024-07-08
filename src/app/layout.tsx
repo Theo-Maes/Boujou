@@ -8,6 +8,7 @@ import { Roboto } from "next/font/google";
 const roboto = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500", "700", "900"] });
 
 export const metadata: Metadata = {
+  title: "Boujou Normandie",
   description: "lorem ipsum dolor sit amec", //TODO
 };
 
@@ -19,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
-          <link rel="manifest" href="/manifest.json" />
+          <link rel="manifest" href="../../public/manifest.json" />
           <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className={roboto.className}>

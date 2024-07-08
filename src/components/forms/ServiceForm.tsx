@@ -56,7 +56,7 @@ interface FormProps {
   eventId?: number;
   categories?: Category[];
   children?: React.ReactNode;
-  successCallBack?: () => void;
+  successCallBack: () => void;
   [key: string]: any;
 }
 
@@ -145,18 +145,21 @@ const EventForm = ({
         ) {
           await pages[currentPage].onSubmit?.(data, userId, eventId, setError);
           if (currentPage === pages.length - 1) {
-            successCallBack?.();
+            successCallBack();
             setIsOpen(false);
           }
         } else if (!pages[currentPage].transition) {
           await pages[currentPage].onSubmit?.(data, userId, eventId);
         }
 
-        if (pages[currentPage].isLast) setIsOpen(false);
+        if (pages[currentPage].isLast) {
+          setIsOpen(false);
+          successCallBack();
+        }
       } else {
         await pages[currentPage].onSubmit?.(data, userId, eventId);
         if (currentPage === pages.length - 1) {
-          successCallBack?.();
+          successCallBack();
           setIsOpen(false);
         }
       }
@@ -271,7 +274,8 @@ const EventForm = ({
             Retour
           </Button>
         )}
-        <Button color="contained" onClick={handleNext}>
+        <Button color={currentPage === pages.length - pages.length ? "outlined" : "contained"} onClick={handleNext}>
+          
           {buttonLabel}
           {/* {currentPage === pages.length - 1
             ? "Retour vers votre événement"
