@@ -74,8 +74,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           color === "transparent" ? "shadow-none" : "shadow-md"
         } cursor-pointer select-none hover:brightness-125 active:brightness-150 active:scale-95 transition-filter duration-300 ease-in-out ${
           color === "transparent"
-            ? "text-gray-900 dark:text-white"
-            : "text-white"
+            ? ""
+            : ""
         } disabled:text-gray-300 disabled:shadow-sm disabled:cursor-default disabled:pointer-events-none text-${size} ${className}`}
         onClick={handleButtonClick}
         ref={ref}

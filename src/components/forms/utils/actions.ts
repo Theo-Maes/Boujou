@@ -1,4 +1,5 @@
 import { Category, Group } from "@prisma/client";
+import { onGroupCreation } from "./stepsService";
 
 interface GroupData extends Group {
   data: {
@@ -55,7 +56,6 @@ export async function createGroup(userId: number, eventId: number) {
     }
 
     const data: GroupData = await response.json();
-
     return data;
   } catch (error) {
     console.error("Error creating group:", error);
@@ -86,7 +86,7 @@ export async function createEvent(
 
     if (response.ok) {
       const responseData = await response.json();
-      return responseData.newEvent.id; // Assurez-vous que l'ID est dans la réponse
+      return responseData.newEvent.id;
     } else {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to create event");

@@ -16,35 +16,52 @@ import {
 } from "./actions";
 import SelectField from "../SelectField";
 
+export const onGroupCreation = async (userId: number, eventId: number) => {
+    try {
+      const group = await createGroup(userId, eventId);
+      console.log("Group created:", group);
+      const groupId = group.data.id;
+  
+      if (groupId === undefined) {
+        throw new Error("Group ID is undefined");
+      }
+      await joinGroup(userId, groupId);
+      return groupId;
+    } catch (error) {
+      throw error;
+    }
+  };
+
 export const CHOICE_STEPS = [
   {
-    onSubmit: async (data: any, userId: number, groupId: number) =>
-      joinGroup(userId, groupId),
+    onSubmit: async (data: any, userId: number, eventId: number) =>
+        await onGroupCreation(userId, eventId),
+        isDark: true,
+        transition: true,
+        title: "Partager Un Service ?",
+        subtitle:
+        "Souhaitez vous mettre à disposition du collectif un covoiturage et/ou un hébergement ?",
+        schema: {
+        choices: yup.mixed().notRequired(),
+        },
+        type: "checkbox",
+        options: ["Covoiturage"],
 
-    isDark: true,
-    transition: true,
-    title: "Partager Un Service ?",
-    subtitle:
-      "Souhaitez vous mettre à disposition du collectif un covoiturage et/ou un hébergement ?",
-    schema: {
-      choices: yup.mixed().notRequired(),
-    },
-    type: "checkbox",
-    options: ["Covoiturage"],
-
-    renderInputFields: (control: any, onChange?: any) => (
-      <div className="flex flex-1 flex-col justify-center items-center">
-        <CheckBoxField
-          control={control}
-          name="choices"
-          className="col-span-4 text-black border-blue-500 hover:border-blue-500"
-          options={["Covoiturage", "Hébergement"]}
-          onChange={onChange}
-        />
-      </div>
-    ),
+        renderInputFields: (control: any, onChange?: any) => (
+        <div className="flex flex-1 flex-col justify-center items-center">
+            <CheckBoxField
+            control={control}
+            name="choices"
+            className="col-span-4 text-black border-blue-500 hover:border-blue-500"
+            options={["Covoiturage", "Hébergement"]}
+            onChange={onChange}
+            />
+        </div>
+        )
+    ,
   },
 ];
+
 export const CAR_POOL_STEPS = [
   {
     isLast: false,
@@ -142,14 +159,7 @@ export const CAR_POOL_STEPS = [
   {
     onSubmit: async (data: any, userId: number, eventId: number) => {
       try {
-        const group = await createGroup(userId, eventId);
-
-        const groupId = group.data.id;
-
-        if (groupId === undefined) {
-          throw new Error("Group ID is undefined");
-        }
-        await joinGroup(userId, groupId);
+        const groupId = await onGroupCreation(userId, eventId);
         await createDriver(data, userId, groupId);
       } catch (error) {
         throw error;
@@ -284,14 +294,7 @@ export const HOST_POOL_STEPS = [
   {
     onSubmit: async (data: any, userId: number, eventId: number) => {
       try {
-        const group = await createGroup(userId, eventId);
-        console.log("Group created:", group);
-        const groupId = group.data.id;
-
-        if (groupId === undefined) {
-          throw new Error("Group ID is undefined");
-        }
-        await joinGroup(userId, groupId);
+        const groupId = await onGroupCreation(userId, eventId);
         await createHost(data, userId, groupId);
       } catch (error) {
         throw error;
@@ -542,14 +545,8 @@ export const CAR_AND_HOST_POOL_STEPS = [
   {
     onSubmit: async (data: any, userId: number, eventId: number) => {
       try {
-        const group = await createGroup(userId, eventId);
-        console.log("Group created:", group);
-        const groupId = group.data.id;
+        const groupId = await onGroupCreation(userId, eventId);
 
-        if (groupId === undefined) {
-          throw new Error("Group ID is undefined");
-        }
-        await joinGroup(userId, groupId);
         await createDriver(data, userId, groupId);
         await createHost(data, userId, groupId);
       } catch (error) {
