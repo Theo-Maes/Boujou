@@ -54,13 +54,11 @@ interface FormProps {
 
 const EventForm = ({ type, userId, children, ...props }: FormProps) => {
   const [[currentPage, direction], setPage] = useState([0, 0]);
-  const initialStep = type == "event" ? INTRO_EVENT_STEPS : INTRO_CAR_STEPS;
-  const mainStep = type == "event" ? EVENT_STEPS : CAR_POOL_STEPS;
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [pages, setPages] = useState<StepProps[]>([
-    ...initialStep,
-    ...mainStep,
+    ...INTRO_EVENT_STEPS,
+    ...EVENT_STEPS,
     ...SUCCESS_STEPS,
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -303,10 +301,13 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
             Retour
           </Button>
         )}
-        <Button color="contained" onClick={handleNext}>
-          {currentPage === pages.length - 1
-            ? "Envoyer l'événement"
-            : "Suivant"}
+        <Button 
+          color={currentPage === pages.length - pages.length ? "outlined" : "contained"}
+          onClick={handleNext}>
+            {currentPage === pages.length - 1
+              ? "Envoyer l'événement"
+              : "Suivant"
+            }
         </Button>
       </footer>
     </form>

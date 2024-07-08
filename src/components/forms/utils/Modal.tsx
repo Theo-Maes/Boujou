@@ -52,15 +52,15 @@ const Modal = ({ children, title, isBlue }: ButtonModal) => {
         isOpen={isOpen}
         radius="lg"
         classNames={{
-          body: "py-6",
-          backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          base: `border-[#292f46] text-[#a8b0d3] transition ease-in-out delay-150 ${bgColor} duration-300`,
+          body: " py-6",
+          backdrop: " bg-[#292f46]/50 backdrop-opacity-40",
+          base: ` border-[#292f46] transition ease-in-out delay-150 ${bgColor} duration-300`,
           header: " border-[#292f46]",
           footer: " border-[#292f46]",
-          closeButton: "hover:bg-white/5 active:bg-white/10",
+          closeButton: " hover:bg-primary/2 active:bg-white/10 text-white bg-primary",
         }}
         closeButton={
-          <Button onPress={() => setIsOpen(false)} variant="light">
+          <Button onPress={() => setIsOpen(false)} variant="light" color="primary">
             Annuler
           </Button>
         }
