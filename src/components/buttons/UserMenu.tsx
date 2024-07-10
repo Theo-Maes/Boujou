@@ -67,8 +67,8 @@ export default function UserMenu({
       }
     }
   };
+  
   if (session && session.user) {
-    console.log(session);
     return (
       <Menu as="div" className="relative ml-3">
         <div>

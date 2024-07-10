@@ -25,6 +25,7 @@ export interface EventData {
   image: string;
   url: string;
   category: Category;
+  validatedAt: Date | null;
   groups: {
     id: number;
     userId: number;

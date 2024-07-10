@@ -18,6 +18,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { EventWithRelations } from "@/libs/types";
 import Loading from "./loading";
+import { EventData } from "@/components/event/EventPage";
 
 // export const metadata: Metadata = {
 //   title: "Boujou",
@@ -35,29 +36,56 @@ const sortOptions = [
   { key: "zipCode", label: "Code Postal" },
 ];
 
+const fetchGroupMembers = async (groupId: number): Promise<number> => {
+  try {
+    const response = await fetch(`/api/group/${groupId}`);
+    const data = await response.json();
+    return data.data.members.length;
+  } catch (error) {
+    console.error(`Error fetching group with ID ${groupId}:`, error);
+    return 0;
+  }
+};
+
 const fetchEvents = async (): Promise<InformationsEventProps[]> => {
-  const response = await fetch("/api/event");
-  const data = await response.json();
-  return data.data.map((event: EventWithRelations) => {
-    const groups = event.groups ?? [];
-    const numberOfPeople = groups.reduce((acc: number, group) => {
-      const members = group.members ?? [];
-      return acc + members.length;
-    }, 0);
-    return {
-      id: event.id,
-      title: event.name,
-      image: event.image,
-      description: event.description,
-      startingDate: new Date(event.startingDate),
-      endingDate: new Date(event.endingDate),
-      numberOfGroups: event.groups.length,
-      numberOfPeople,
-      city: event.city,
-      validatedAt: event.validatedAt ? new Date(event.validatedAt) : null,
-      zipCode: event.zipCode,
-    };
-  });
+  try {
+    const response = await fetch("/api/event");
+    const data = await response.json();
+
+    return Promise.all(data.data.map(async (event: EventData) => {
+      const groups = event?.groups ?? [];
+      let numberOfPeople = 0;
+
+      for (const group of groups) {
+        const groupId = group?.id;
+        if (groupId) {
+          const numberOfMembers = await fetchGroupMembers(groupId);
+          numberOfPeople += numberOfMembers;
+        }
+      }
+
+      console.log(`Event ID: ${event.id}`);
+      console.log(`Number of Groups: ${groups.length}`);
+      console.log(`Total Number of People for Event ID ${event.id}: ${numberOfPeople}`);
+
+      return {
+        id: event.id,
+        title: event.name,
+        image: event.image,
+        description: event.description,
+        startingDate: new Date(event.startingDate),
+        endingDate: event.endingDate ? new Date(event.endingDate) : null,
+        numberOfGroups: groups.length,
+        numberOfPeople: numberOfPeople,
+        city: event.city,
+        validatedAt: event.validatedAt ? new Date(event.validatedAt) : null,
+        zipCode: event.zipCode,
+      };
+    }));
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return [];
+  }
 };
 
 export default function Home() {
