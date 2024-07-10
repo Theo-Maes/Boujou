@@ -1,3 +1,4 @@
+import { GroupData } from "@/components/event/EventPage";
 import { Event, User } from "@prisma/client";
 import "next-auth";
 import "next-auth/jwt";
@@ -26,6 +27,6 @@ declare module "next-auth/jwt" {
 }
 
 interface EventWithRelations extends Event {
-  groups: { members: Group[] }[];
+  groups: { members: GroupData[] }[];
   category: { name: Categories };
 }

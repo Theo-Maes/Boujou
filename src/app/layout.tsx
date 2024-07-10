@@ -10,6 +10,8 @@ const roboto = Roboto({ subsets: ["latin"], weight: ["100", "300", "400", "500",
 export const metadata: Metadata = {
   title: "Boujou Normandie",
   description: "lorem ipsum dolor sit amec", //TODO
+  manifest: "/manifest.json",
+  icons: "/favicon.ico",
 };
 
 export default function RootLayout({
@@ -20,7 +22,8 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
-          <link rel="manifest" href="../../public/manifest.json" />
+          <link rel="manifest" href="/manifest.json" />
+          <link rel="icon" href="/favicon.ico" />
           <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
       </head>
       <body className={roboto.className}>
