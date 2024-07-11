@@ -120,7 +120,6 @@ const EventForm = ({ type, userId, children, ...props }: FormProps) => {
     
         if (res.ok) {
           const { newEvent } = await res.json();
-          console.log("Event created successfully:", newEvent);
           setErrorMessage(null); 
           paginate(1);
         } else {

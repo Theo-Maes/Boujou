@@ -64,10 +64,6 @@ const fetchEvents = async (): Promise<InformationsEventProps[]> => {
         }
       }
 
-      console.log(`Event ID: ${event.id}`);
-      console.log(`Number of Groups: ${groups.length}`);
-      console.log(`Total Number of People for Event ID ${event.id}: ${numberOfPeople}`);
-
       return {
         id: event.id,
         title: event.name,

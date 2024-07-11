@@ -203,7 +203,7 @@ export default function EventPage({
               <Image
                 alt="Event image"
                 className="relative w-full z-10 !rounded-none"
-                src={`${event.image}`}
+                src={`/api/event/image/${event.image.substring(7)}`}
                 width={1200}
                 height={800}
               />
