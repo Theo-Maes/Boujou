@@ -68,7 +68,7 @@ export default function UserMenu({
     }
   };
   
-  if (session && session.user) {
+  if (session && session.user) {    
     return (
       <Menu as="div" className="relative ml-3">
         <div>
@@ -79,7 +79,7 @@ export default function UserMenu({
               width={36}
               height={36}
               className="rounded-full border-1 border-gray-600 p-0.5"
-              src={session.user.avatar ?? ""}
+              src={`/api/avatar/${session.user.avatar?.substring(8)}`}
               alt={session.user.fullname ?? "User"}
             />
           </MenuButton>

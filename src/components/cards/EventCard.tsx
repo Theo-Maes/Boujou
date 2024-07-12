@@ -37,7 +37,7 @@ export default function EventCard({
         <Image
           alt="Event image"
           className="object-cover w-full rounded-xl"
-          src={`${image}`}
+          src={`/api/event/image/${image.substring(7)}`}
           width={800}
           height={192}
         />

@@ -375,6 +375,7 @@ export default function SignupForm({ initialValues }: SignupFormProps) {
             color={theme === "dark" ? "secondary" : "primary"}
             className="text-white dark:text-black"
             isLoading={loading}
+            disabled={loading}
           >
             {loading ? "Inscription en cours..." : "S'inscrire"}
           </Button>

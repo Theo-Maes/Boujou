@@ -7,6 +7,13 @@ import TextAreaField from "../TextAreaField";
 import ImageField from "../ImageField";
 import Typography from "@/components/ui/Typography";
 import {
+    ZonedDateTime,
+    getLocalTimeZone,
+    DateValue,
+    now,
+    today,
+  } from "@internationalized/date";
+import {
   createDriver,
   createEvent,
   createGroup,
@@ -118,11 +125,13 @@ export const CAR_POOL_STEPS = [
           label="Départ"
           name={"startingDate"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
         <Image
           className="mx-2 drop-shadow-lg"
           src="/icons/form/arrows.png"
-          alt="Apple Logo"
+          alt="arrow"
           width={24}
           height={24}
         />
@@ -131,6 +140,8 @@ export const CAR_POOL_STEPS = [
           label="Retour"
           name={"endingDate"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
       </div>
     ),
@@ -253,6 +264,8 @@ export const HOST_POOL_STEPS = [
           label="Départ"
           name={"startingDate"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
         <Image
           className="mx-2 drop-shadow-lg"
@@ -266,6 +279,8 @@ export const HOST_POOL_STEPS = [
           label="Retour"
           name={"endingDate"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
       </div>
     ),
@@ -389,6 +404,8 @@ export const CAR_AND_HOST_POOL_STEPS = [
           label="Départ"
           name={"startingDate"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
         <Image
           className="mx-2 drop-shadow-lg"
@@ -402,6 +419,8 @@ export const CAR_AND_HOST_POOL_STEPS = [
           label="Retour"
           name={"endingDate"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
       </div>
     ),
@@ -504,6 +523,8 @@ export const CAR_AND_HOST_POOL_STEPS = [
           label="Départ"
           name={"startingDateHost"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
         <Image
           className="mx-2 drop-shadow-lg"
@@ -517,6 +538,8 @@ export const CAR_AND_HOST_POOL_STEPS = [
           label="Retour"
           name={"endingDateHost"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
       </div>
     ),
@@ -647,6 +670,8 @@ export const EVENT_STEPS = [
           label="Début *"
           name={"startingDate"}
           className="col-span-2"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
         <Image
           className="mx-2 drop-shadow-lg"
@@ -661,6 +686,8 @@ export const EVENT_STEPS = [
           name={"endingDate"}
           className="col-span-2"
           placeholder="Heure de fin (optionnel)"
+          defaultValue={now(getLocalTimeZone())}
+          minValue={today(getLocalTimeZone())}
         />
       </div>
     ),

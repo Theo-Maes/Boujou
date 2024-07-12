@@ -143,6 +143,16 @@ export const EVENT_STEPS = [
       zipCode: yup
         .string()
         .matches(/^\d{5}$/, "Le code postal est requis")
+        .test(
+          "is-normandy",
+          "Ce n'est pas en Normandie",
+          (value) => {
+            if (value) {
+              const validPrefixes = ['27', '76', '14', '61', '50'];
+              return validPrefixes.includes(value.substring(0, 2));
+            }
+          }
+        )
         .required("Le code postal est requis"),
       city: yup.string().required("La ville est requise"),
     },
