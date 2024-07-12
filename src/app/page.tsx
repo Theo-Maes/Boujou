@@ -9,7 +9,7 @@ import CardEvent, {
   InformationsEventProps,
 } from "@/components/cards/EventCard";
 import { Pagination, Select, SelectItem } from "@nextui-org/react";
-import ButtonModal from "@/components/forms/ButtonModal";
+import ButtonModal from "@/components/forms/utils/Modal";
 import EventForm from "@/components/forms/EventForm";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
@@ -180,7 +180,7 @@ export default function Home() {
           </h1>
           {session && session.user ? (
             <div className="flex md:hidden flex-1 justify-center mt-5">
-              <ButtonModal title="Proposer un événement">
+              <ButtonModal title="Proposer un événement" isBlue={true}>
                 <EventForm userId={session.user.id} type="event" />
               </ButtonModal>
             </div>
@@ -235,8 +235,8 @@ export default function Home() {
                   events.length > 0
                     ? "bg-secondary dark:bg-primary"
                     : "bg-gray-200 dark:bg-gray-700",
-                prev: "text-black dark:text-white dark:bg-gray-600 font-bold",
-                next: "text-black dark:text-white dark:bg-gray-600 font-bold",
+                prev: "text-black dark:text-white bg-gray-400 dark:bg-gray-600 font-bold",
+                next: "text-black dark:text-white bg-gray-400 dark:bg-gray-600 font-bold",
               }}
               showControls
             />

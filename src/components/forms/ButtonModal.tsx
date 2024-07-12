@@ -46,7 +46,7 @@ const ButtonModal: React.FC<ButtonModalProps> = ({ children, title }: ButtonModa
         }}
         closeButton={
           <Button onPress={() => setIsOpen(false)} variant="light">
-            Annuler
+            AnnulerX
           </Button>
         }
       >

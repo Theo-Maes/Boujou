@@ -222,7 +222,7 @@ export default function EventPage({
               </CardBody>
               <CardFooter className="flex flex-row justify-center">
                 {session && session.user && !isUserEverGroupCreator(session.user.id) ? (
-                  <div className="hidden md:flex flex-1 justify-center">
+                  <div className="flex flex-1 justify-center">
                     <ButtonModal title="Créer votre collectif" isBlue={true}>
                       <ServiceForm
                         userId={session.user.id}

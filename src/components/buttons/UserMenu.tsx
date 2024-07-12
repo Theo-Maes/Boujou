@@ -75,13 +75,23 @@ export default function UserMenu({
           <MenuButton className="relative flex rounded-full bg-transparent text-sm">
             <span className="absolute -inset-1.5" />
             <span className="sr-only">Open user menu</span>
-            <Image
+            {session.user.avatar?.includes("googleusercontent.com") ? (
+              <Image
               width={36}
               height={36}
               className="rounded-full border-1 border-gray-600 p-0.5"
-              src={`/api/avatar/${session.user.avatar?.substring(8)}`}
+              src={`${session.user.avatar}`}
               alt={session.user.fullname ?? "User"}
             />
+            ) : (
+              <Image
+                width={36}
+                height={36}
+                className="rounded-full border-1 border-gray-600 p-0.5"
+                src={`/api/avatar/${session.user.avatar?.substring(8)}`}
+                alt={session.user.fullname ?? "User"}
+              />
+            )}
           </MenuButton>
         </div>
         <Transition
