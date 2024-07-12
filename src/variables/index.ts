@@ -2,7 +2,7 @@ const vars = {
 	COLORS: {
 		primary: "#007ACC", // bleu
 		primaryLight: "#D5EEFF8A",
-		secondary: "#FFB562", // orange
+		secondary: "#FECFA0", // orange
 		secondaryLight: "#FFB5622E",
 		tertiary: "#F87474", // rouge
 		tertiaryLight: "#FFDFDF",
