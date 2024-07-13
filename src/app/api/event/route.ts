@@ -8,11 +8,13 @@ export async function GET(req: Request) {
       include: { category: true, groups: true },
     });
 
-    eventFind.forEach((event) => {
+    const filteredEvents = eventFind.filter(event => event.validatedAt !== null);
+
+    filteredEvents.forEach((event) => {
       event.image = event.image.replace(/\\/g, "/");
     });
 
-    return NextResponse.json({ data: eventFind }, { status: 200 });
+    return NextResponse.json({ data: filteredEvents }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ erreur: error }, { status: 500 });
   }
