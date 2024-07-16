@@ -6,7 +6,6 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);    
     const filename = url.toString().substring(33);
-
     if (!filename) {
       return NextResponse.json({ error: 'Filename is required' }, { status: 400 });
     }
