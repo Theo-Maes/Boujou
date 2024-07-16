@@ -43,7 +43,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
     <Card className="p-1 w-full md:max-w-[300px] h-[300px] rounded-none shadow-xl dark:bg-gray-800">
       <CardHeader className="flex justify-end">
         <Tooltip content="Supprimer l'utilisateur">
-            <Button color="danger" variant="light" size="sm" onPress={onOpen}>
+            <Button color="danger" variant="light" size="sm" onPress={onOpen} aria-label="Supprimer l'utilisateur">
                 <HiMiniTrash className="text-xl text-red-500" />
             </Button>
         </Tooltip>
@@ -71,7 +71,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ user }) => {
             <Button 
                 color={theme === "dark" ? "secondary" : "primary"}
                 size="sm"
-                className="mx-2 text-white dark:text-black"
+                className="mx-4 text-white dark:text-black"
             >
               Modifier mes infos
             </Button>

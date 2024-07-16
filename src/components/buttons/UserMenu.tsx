@@ -90,6 +90,24 @@ export default function UserMenu({
     fetchUserData();
   }, [fetchUserData, userUpdated]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        handleSignIn();
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isModalOpen, email, password]);
+
   if (session && session.user) {
     return (
       <Menu as="div" className="relative ml-3">
