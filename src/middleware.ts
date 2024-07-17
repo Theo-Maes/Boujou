@@ -24,20 +24,19 @@
     "/api/user/*/delete",
   ];
 
-  function isProtectedRoute(req: NextRequest): boolean {
-    return protectedRoutes.some((route) => {
-      // Simple pattern matching logic, can be expanded for more complex patterns
-      if (route.endsWith("/*")) {
-        return req.nextUrl.pathname.startsWith(route.slice(0, -1));
-      }
-      return req.nextUrl.pathname === route;
-    });
-  }
 
-  export async function middleware(req: NextRequest) {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+function isProtectedRoute(req: NextRequest): boolean {
+  return protectedRoutes.some((route) => {
+    if (route.endsWith("/*")) {
+      return req.nextUrl.pathname.startsWith(route.slice(0, -1));
+    }
+    return req.nextUrl.pathname === route;
+  });
+}
 
-    const restrictedPages = ["/signin", "/signup"];
+export async function middleware(req: NextRequest) {
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const restrictedPages = ["/signin", "/signup"];
 
     if (token && restrictedPages.includes(req.nextUrl.pathname)) {
       return NextResponse.redirect(new URL("/", req.url));
@@ -58,13 +57,24 @@
         // Si l'utilisateur n'a pas le rôle d'administrateur, redirigez-le vers la page d'accueil ou affichez une erreur 403
         return NextResponse.redirect(new URL("/", req.url));
       }
-    } else {
-      // if (isProtectedRoute(req)) {
-      //   if (token) {
-      //     return NextResponse.redirect(new URL("/signin", req.url));
-      //   }
-      // }
     }
+  }
+
+  const isApiRoute = req.nextUrl.pathname.startsWith("/api");
+
+  if (isApiRoute) {
+    if (isProtectedRoute(req) && !token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (token) {
+      const userRoleId = token.roleId;
+      if (userRoleId !== 2) {
+        if (isProtectedRoute(req)) {
+          return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+      }
+    }
+  }
 
     return NextResponse.next();
   }
