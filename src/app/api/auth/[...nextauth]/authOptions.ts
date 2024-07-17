@@ -105,7 +105,6 @@ const authOptions: AuthOptions = {
         const userConnected = await prisma.user.findUnique({
           where: { email: customUser.email },
         });
-        console.log(userConnected);
         token.id = userConnected?.id;
         token.username = customUser.fullname ?? "";
         token.email = customUser.email ?? "";

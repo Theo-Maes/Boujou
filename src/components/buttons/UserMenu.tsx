@@ -1,6 +1,6 @@
-"use client";
+"use client" 
 
-import { useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { classNames } from "@/libs";
 import {
   Menu,
@@ -25,6 +25,7 @@ import {
   Checkbox,
 } from "@nextui-org/react";
 import { useTheme } from "next-themes";
+import { User } from "@prisma/client";
 
 export default function UserMenu({
   session,
@@ -36,7 +37,9 @@ export default function UserMenu({
   const [isModalOpen, setModalOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [user, setUser] = useState<User | null>(null);
   const { theme } = useTheme();
+  const [userUpdated, setUserUpdated] = useState(false);
 
   const handleSignInClick = () => {
     setModalOpen(true);
@@ -67,8 +70,45 @@ export default function UserMenu({
       }
     }
   };
-  
-  if (session && session.user) {    
+
+  const fetchUserData = useCallback(async () => {
+    if (!session?.user?.id) return;
+
+    try {
+      const res = await fetch(`/api/user/${session.user.id}`);
+      if (!res.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+      const data = await res.json();
+      setUser(data.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }, [session]);
+
+  useEffect(() => {
+    fetchUserData();
+  }, [fetchUserData, userUpdated]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Enter") {
+        handleSignIn();
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.removeEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isModalOpen, email, password]);
+
+  if (session && session.user) {
     return (
       <Menu as="div" className="relative ml-3">
         <div>
@@ -77,18 +117,18 @@ export default function UserMenu({
             <span className="sr-only">Open user menu</span>
             {session.user.avatar?.includes("googleusercontent.com") ? (
               <Image
-              width={36}
-              height={36}
-              className="rounded-full border-1 border-gray-600 p-0.5"
-              src={`${session.user.avatar}`}
-              alt={session.user.fullname ?? "User"}
-            />
+                width={36}
+                height={36}
+                className="rounded-full border-1 border-gray-600 p-0.5"
+                src={`${session.user.avatar}`}
+                alt={session.user.fullname ?? "User"}
+              />
             ) : (
               <Image
                 width={36}
                 height={36}
                 className="rounded-full border-1 border-gray-600 p-0.5"
-                src={`/api/avatar/${session.user.avatar?.substring(8)}`}
+                src={`/api/avatar/${user?.avatar?.substring(8)}`}
                 alt={session.user.fullname ?? "User"}
               />
             )}
@@ -114,10 +154,10 @@ export default function UserMenu({
                 </div>
               )}
             </MenuItem>
-            {/* <MenuItem>
+            <MenuItem>
               {({ focus }) => (
                 <Link
-                  href="/profile"
+                  href={`/profile/${user?.id}`}
                   className={classNames(
                     focus ? "bg-gray-200 dark:bg-gray-700" : "",
                     "block px-4 py-2 text-sm"
@@ -126,7 +166,7 @@ export default function UserMenu({
                   Profil
                 </Link>
               )}
-            </MenuItem> */}
+            </MenuItem>
             {session.user.roleId == 2 && (
               <MenuItem>
                 {({ focus }) => (
@@ -144,7 +184,6 @@ export default function UserMenu({
                 )}
               </MenuItem>
             )}
-
             <MenuItem>
               {({ focus }) => (
                 <div
@@ -211,18 +250,6 @@ export default function UserMenu({
               >
                 Se souvenir de moi
               </Checkbox>
-              {/* <Link color={theme === "dark" ? "secondary" : "primary"} href="#" className={classNames(
-                      "text-[13px]",
-                      "md:text-[16px]",
-                      "transition",
-                      "hover:underline",
-                      "underline-offset-4",
-                      "text-primary",
-                      "dark:text-secondary",
-                      "dark:text-neutral-200",
-                      "dark:hover:underline-neutral-200")}>
-                Mot de passe oublié ?
-              </Link> */}
             </div>
             <div className="flex py-2 px-1 justify-center">
               <Button
