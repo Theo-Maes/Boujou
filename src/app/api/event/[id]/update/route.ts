@@ -101,8 +101,8 @@ export async function PATCH(req: Request, params: { params: { id: string } }) {
     long = existingLong;
   }
 
-  const endingDateDateTime = new Date(Number(endingDate));
-  const startingDateDateTime = new Date(Number(startingDate));
+  const endingDateDateTime = new Date(endingDate);
+  const startingDateDateTime = new Date(startingDate);
 
   const updateData: Partial<Event> = {
     ...(name && { name }),
