@@ -18,7 +18,7 @@ model DriverPassenger {
   driverId  Int
   userId    Int
 
-  driver    Driver   @relation(fields: [driverId], references: [id])
+  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id])
 
   @@id([driverId, userId])
@@ -30,7 +30,7 @@ model HostedUser {
   hostId Int
   userId Int
 
-  host Host @relation(fields: [hostId], references: [id])
+  host Host @relation(fields: [hostId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id])
 
   @@id([hostId, userId])
@@ -52,7 +52,7 @@ model Host {
   user         User     @relation(fields: [userId], references: [id])
   hostedUsers  HostedUser[]
   groupId      Int
-  group        Group  @relation(fields: [groupId], references: [id])
+  group        Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 }
 
 
@@ -70,7 +70,7 @@ model Driver {
   user         User     @relation(fields: [userId], references: [id])
   passengers   DriverPassenger[]
   groupId      Int
-  group        Group  @relation(fields: [groupId], references: [id])
+  group        Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 }
 
 model Group {
