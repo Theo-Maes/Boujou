@@ -52,7 +52,7 @@ jobs:
           - 5432:5432
     steps:
       - name: Checkout code
-        uses: actions/checkout@vV3
+        uses: actions/checkout@v3
 
       - name: Install Dependencies
         run: npm ci
