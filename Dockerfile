@@ -17,7 +17,7 @@ RUN npm run build
 
 
 FROM node:20-alpine3.18 AS next
-LABEL org.opencontainers.image.source https://github.com/geoffroyBel/boujou
+LABEL org.opencontainers.image.source https://github.com/Theo-Maes/boujou
 
 WORKDIR /app
 COPY --from=build /usr/local/bin/dockerize /usr/local/bin/dockerize
