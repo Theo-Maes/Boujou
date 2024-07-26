@@ -15,7 +15,7 @@
     "cypress:start": "start-server-and-test 'npm run start:test' 3000 'npm run cypress:open'",
     "cypress:build": "npm run build:test && npm run cypress:start",
     "cypress:run": "start-server-and-test 'npm run start:test' 3000 'env-cmd -f .env.test.local cypress run'",
-    "e2e:run": "start-server-and-test 'npm run start:test' 3000 'cypress run'"
+    "e2e:run": "npx prisma migrate reset && start-server-and-test 'npm run start:test' 3000 'cypress run'"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
