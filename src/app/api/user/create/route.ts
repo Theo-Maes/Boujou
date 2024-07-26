@@ -3,7 +3,7 @@ import { User } from "@prisma/client";
 import { unlink, writeFile } from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 import { join } from "path";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import sharp from "sharp";
 
 interface UserFormData {
