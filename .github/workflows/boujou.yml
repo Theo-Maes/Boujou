@@ -3,15 +3,15 @@ run-name: ${{ github.actor }} initializing GitHub Actions
 on:
   push:
     branches:
-      - "feat#1-cicd"
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
+      - "97-test-unitaire-e2e"
+  # push:
+  #   branches:
+  #     - main
+  #     - develop
+  # pull_request:
+  #   branches:
+  #     - main
+  #     - develop
 jobs:
   info:
     runs-on: ubuntu-latest
