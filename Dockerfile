@@ -1,5 +1,10 @@
 FROM node:20-alpine3.18 AS build
 
+RUN apk add --no-cache openssl
+RUN wget https://github.com/jwilder/dockerize/releases/download/v0.6.1/dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
+    && tar -C /usr/local/bin -xzvf dockerize-alpine-linux-amd64-v0.6.1.tar.gz \
+    && rm dockerize-alpine-linux-amd64-v0.6.1.tar.gz
+
 WORKDIR /app
 COPY package* ./
 
@@ -15,7 +20,7 @@ FROM node:20-alpine3.18 AS next
 LABEL org.opencontainers.image.source https://github.com/geoffroyBel/boujou
 
 WORKDIR /app
-
+COPY --from=build /usr/local/bin/dockerize /usr/local/bin/dockerize
 COPY --from=build /app/package.json /package.json
 COPY --from=build /app/node_modules /node_modules
 COPY --from=build /app/.next /.next

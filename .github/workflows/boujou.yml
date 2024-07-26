@@ -24,13 +24,13 @@ jobs:
       - name: Get code
         uses: actions/checkout@v3
 
-      - name: Cache Node.js modules and Cypress
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cache/Cypress
-            node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+      # - name: Cache Node.js modules and Cypress
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: |
+      #       ~/.cache/Cypress
+      #       node_modules
+      #     key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
         run: npm ci
