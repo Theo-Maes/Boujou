@@ -16,13 +16,15 @@ it("Succes login should redirect to home", async () => {
   suivant.click();
   cy.wait(1000);
   cy.get('button[aria-label="Calendrier"]').eq(0).click();
-  cy.get('span[aria-label="jeudi 25 juillet 2024"]').click();
+  cy.get('span[aria-label="samedi 27 juillet 2024"]').click();
   cy.get('button[aria-label="Calendrier"]').eq(0).click();
   cy.wait(1000);
   cy.get('button[aria-label="Calendrier"]').eq(1).click();
-  cy.get('span[aria-label="jeudi 25 juillet 2024"]').click();
+  cy.get('span[aria-label="samedi 27 juillet 2024"]').click();
   cy.get('button[aria-label="Calendrier"]').eq(1).click();
+  cy.wait(1000);
   suivant.click();
+
   cy.fixture("hero-card.jpeg").as("image");
   //   cy.get("input[type=file]").selectFile("@image", { force: true });
   cy.get("input[type=file]").attachFile("hero-card.jpeg", { force: true });
