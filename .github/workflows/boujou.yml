@@ -65,6 +65,7 @@ jobs:
         run: npm run e2e:run
         env:
           NEXTAUTH_URL: http://localhost:3000
+          NEXTAUTH_SECRET: oOPZ9WewAjRcTeVsVAe6K0daibCQe4g8vfAwNiWnztU=
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/boujoutest
           GEOCODE_API: 66a0a75ad545b465733868xfv7ddcd9
           CYPRESS_ADMIN_USER_EMAIL: john.doe@example.com
