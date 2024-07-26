@@ -58,4 +58,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ghcr.io/geoffroyBel/boujou2:latest
+          tags: ghcr.io/geoffroybel/boujou2:latest
