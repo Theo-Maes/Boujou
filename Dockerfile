@@ -17,15 +17,15 @@ RUN npm run build
 
 
 FROM node:20-alpine3.18 AS next
-LABEL org.opencontainers.image.source https://github.com/geoffroyBel/boujou
+LABEL org.opencontainers.image.source https://github.com/Theo-Maes/boujou
 
 WORKDIR /app
 COPY --from=build /usr/local/bin/dockerize /usr/local/bin/dockerize
-COPY --from=build /app/package.json /package.json
-COPY --from=build /app/node_modules /node_modules
-COPY --from=build /app/.next /.next
-COPY --from=build /app/public /public
-COPY --from=build /app/prisma /prisma
+COPY --from=build /app/package.json ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/public ./public
+COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/docker/docker-bootstrap-app.sh ./
 
 EXPOSE 3000

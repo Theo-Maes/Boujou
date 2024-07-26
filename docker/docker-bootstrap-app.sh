@@ -1,9 +1,16 @@
 #!/bin/sh
+set -e
 
-echo "le docker-entrypoint.prod s'execute"
+echo "Le docker-entrypoint.prod s'exécute"
 
-# npx prisma migrate deploy
-npx prisma generate
+#Attendre que la base de données soit prête
+dockerize -wait tcp://db:5432 -timeout 60s
+echo "Database is ready!"
+
+#initialiser les migrations et la base de données
+echo "Running Prisma migrate reset..."
 npx prisma db push
+echo "start feeding db..."
+npx prisma db seed
 
 exec "$@"
