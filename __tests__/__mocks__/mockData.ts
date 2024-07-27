@@ -5,24 +5,31 @@ const roles = [
 
 const users = [
   {
-    id: 1,
+    // id: 1,
     fullname: "John Doe",
     email: "john.doe@example.com",
     password: "Secret123#",
-    avatar: "john_avatar.png",
+
     firstName: "John",
     lastName: "Doe",
     roleId: 2, // Admin
+    adress: "rue de gessard",
+    city: "Parissss",
+    zipcode: "75008",
+    avatar: "/avatar/defaultAvatar.webp",
   },
   {
-    id: 2,
+    // id: 2,
     fullname: "Jane Smith",
     email: "jane.smith@example.com",
     password: "Secret123#",
-    avatar: "jane_avatar.png",
     firstName: "Jane",
     lastName: "Smith",
     roleId: 1, // User
+    adress: "rue de gessard",
+    city: "Parissss",
+    zipcode: "75008",
+    avatar: "/avatar/defaultAvatar.webp",
   },
 ];
 
