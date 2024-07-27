@@ -1,16 +1,13 @@
 import { testApiHandler } from "next-test-api-route-handler";
-import { Vitest, expect, test, vi, it, beforeEach } from "vitest";
+import { Vitest, expect, test, vi, it, beforeEach, beforeAll } from "vitest";
 import * as listHandler from "@/app/api/event/route";
 import * as detailHandler from "@/app/api/event/[id]/route";
 import * as createHandler from "@/app/api/event/create/route";
 import * as editHandler from "@/app/api/event/[id]/update/route";
 import * as FakeData from "../__mocks__/mockData";
 import { main } from "../../prisma/seed";
-import fs from "fs";
-import path from "path";
-//import FormData from "form-data";
 
-beforeEach(async () => {
+beforeAll(async () => {
   await main();
 });
 
