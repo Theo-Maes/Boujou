@@ -14,7 +14,7 @@ describe("Display Home page ", () => {
   it("showld show the correct event when navigate on detail", () => {
     cy.task("db:reset").visit("/event/1");
     cy.findByText("Music Festival").should("exist");
-    cy.findByText("Du 1 juillet 2024 au 2 juillet 2024").should("exist");
+    cy.findByText("Du 1 juillet 2024 au 1 juillet 2024").should("exist");
   });
   it("showld show the Error page if  event do not exist", () => {
     cy.task("db:reset").visit("/event/155");

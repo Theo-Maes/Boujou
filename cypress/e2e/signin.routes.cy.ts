@@ -16,11 +16,11 @@ it("Succes login should redirect to home", async () => {
   suivant.click();
   cy.wait(1000);
   cy.get('button[aria-label="Calendrier"]').eq(0).click();
-  cy.get('span[aria-label="samedi 27 juillet 2024"]').click();
+  cy.get('span[aria-label="mardi 30 juillet 2024"]').click();
   cy.get('button[aria-label="Calendrier"]').eq(0).click();
   cy.wait(1000);
   cy.get('button[aria-label="Calendrier"]').eq(1).click();
-  cy.get('span[aria-label="samedi 27 juillet 2024"]').click();
+  cy.get('span[aria-label="mardi 30 juillet 2024"]').click();
   cy.get('button[aria-label="Calendrier"]').eq(1).click();
   cy.wait(1000);
   suivant.click();

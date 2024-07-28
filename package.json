@@ -9,7 +9,6 @@
     "start": "next start",
     "start:test": "export NODE_ENV=\"test\" && next start",
     "lint": "next lint",
-    "postinstall": "prisma generate",
     "local": "env-cmd -f .env.test.local npx prisma migrate reset",
     "vitest": "npx prisma migrate reset --force && vitest",
     "test": "npx prisma db seed && env-cmd -f .env.test.local vitest",

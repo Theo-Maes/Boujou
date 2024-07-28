@@ -42,7 +42,7 @@ const categories = [
 const events = [
   {
     id: 1,
-    name: "Musicss Festival",
+    name: "Music Festival",
     cancelledAt: null,
     startingDate: "2024-07-01T00:00:00.000Z",
     endingDate: "2024-07-01T00:00:00.000Z",

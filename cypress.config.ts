@@ -1,5 +1,5 @@
 import { defineConfig } from "cypress";
-import { main } from "./prisma/seed";
+import { main as resetDb } from "./__tests__/__mocks__/resetDb";
 export default defineConfig({
   e2e: {
     baseUrl: "http://localhost:3000",
@@ -7,7 +7,7 @@ export default defineConfig({
       // implement node event listeners here
       on("task", {
         "db:reset": () =>
-          main()
+          resetDb()
             .catch((e) => {
               console.error(e);
               process.exit(1);

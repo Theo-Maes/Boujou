@@ -31,7 +31,7 @@ model HostedUser {
   userId Int
 
   host Host @relation(fields: [hostId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
 
   @@id([hostId, userId])
   @@index([hostId], name: "idx_hosted_user_hostId")

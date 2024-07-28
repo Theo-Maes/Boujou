@@ -1,4 +1,12 @@
-import { PrismaClient } from "@prisma/client";
+import {
+  Driver,
+  Event,
+  Group,
+  Host,
+  PrismaClient,
+  Role,
+  User,
+} from "@prisma/client";
 import { events as eventMocks, users as userMocks } from "./mockData";
 import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
@@ -444,38 +452,154 @@ const prisma = new PrismaClient();
 
 async function clearDb() {
   console.log("remove db entities");
-  await prisma.driverPassenger.deleteMany({});
-  await prisma.userGroup.deleteMany({});
-  await prisma.group.deleteMany({});
-  await prisma.event.deleteMany({});
-  await prisma.category.deleteMany({});
+  console.log("Truncate tables and reset sequences");
 
-  await prisma.user.deleteMany({});
+  // Truncate tables and reset sequences
+  const tables = [
+    "DriverPassenger",
+    "HostedUser",
+    "UserGroup",
+    "Group",
+    "Event",
+    "Category",
+    "User",
+    "Host",
+    "Driver",
+    "Role",
+  ];
 
-  await prisma.host.deleteMany({});
-  await prisma.driver.deleteMany({});
-  await prisma.userGroup.deleteMany({});
-  await prisma.role.deleteMany({});
-
-  await prisma.$executeRaw`ALTER SEQUENCE "User_id_seq" RESTART WITH 1`;
-  await prisma.$executeRaw`ALTER SEQUENCE "Group_id_seq" RESTART WITH 1`;
-  await prisma.$executeRaw`ALTER SEQUENCE "Event_id_seq" RESTART WITH 1`;
-  await prisma.$executeRaw`ALTER SEQUENCE "Category_id_seq" RESTART WITH 1`;
-  await prisma.$executeRaw`ALTER SEQUENCE "Role_id_seq" RESTART WITH 1`;
-  await prisma.$executeRaw`ALTER SEQUENCE "Host_id_seq" RESTART WITH 1`;
-  await prisma.$executeRaw`ALTER SEQUENCE "Driver_id_seq" RESTART WITH 1`;
-  async function truncate() {
-    for (const tableName of ["Role", "Event", "Category"])
-      await prisma.$queryRawUnsafe(
-        `Truncate "${tableName}" restart identity cascade;`
-      );
+  for (const table of tables) {
+    await prisma.$queryRawUnsafe(
+      `TRUNCATE TABLE "${table}" RESTART IDENTITY CASCADE`
+    );
   }
 }
+const createEvents = async (
+  musicCategoryId: number,
+  filmCategoryId: number
+): Promise<{ musicFestival: Event; filmFestival: Event }> => {
+  const { id: mid, ...musicMock } = eventMocks[0];
+  const { id: fid, ...filmMock } = eventMocks[1];
+  const musicFestival = await prisma.event.create({
+    data: {
+      ...musicMock,
+      categoryId: musicCategoryId,
+    },
+  });
+  const filmFestival = await prisma.event.create({
+    data: {
+      ...filmMock,
+      categoryId: filmCategoryId,
+    },
+  });
 
+  return { musicFestival, filmFestival };
+};
+
+const createUsers = async (
+  adminRole: Role,
+  userRole: Role
+): Promise<{ john: User; jane: User }> => {
+  const johnMock = userMocks[0];
+  const janeMock = userMocks[1];
+
+  const hashedPassword = await bcrypt.hash("Secret123#", 10);
+
+  const john = await prisma.user.create({
+    data: {
+      ...johnMock,
+      roleId: adminRole.id,
+      password: hashedPassword,
+    },
+  });
+
+  const jane = await prisma.user.create({
+    data: {
+      ...janeMock,
+      roleId: userRole.id,
+      password: hashedPassword,
+    },
+  });
+
+  return { john, jane };
+};
+
+const createGroup = async (
+  festivals: { musicFestival: Event; filmFestival: Event },
+  creators: { jane: User; john: User }
+): Promise<{ johnGroup: Group; janeGroup: Group }> => {
+  const johnGroup = await prisma.group.create({
+    data: {
+      userId: creators.john!.id,
+      eventId: festivals.musicFestival.id,
+    },
+  });
+
+  const janeGroup = await prisma.group.create({
+    data: {
+      userId: creators.jane!.id,
+      eventId: festivals.filmFestival.id,
+    },
+  });
+
+  return { johnGroup, janeGroup };
+};
+
+const createDriver = async (john: User, johnGroup: Group): Promise<Driver> => {
+  return await prisma.driver.create({
+    data: {
+      quantity: 4,
+      city: "Paris",
+      adress: "123 Rue de la Paix",
+      zipcode: "75002",
+      startingdate: new Date("2024-07-01"),
+      endingdate: new Date("2024-07-02"),
+      longitude: "2.3522",
+      latitude: "48.8566",
+      userId: john!.id,
+      groupId: johnGroup!.id,
+    },
+  });
+};
+const createHost = async (jane: User, johnGroup: Group): Promise<Host> => {
+  return prisma.host.create({
+    data: {
+      quantity: 2,
+      city: "Los Angeles",
+      adress: "456 Hollywood Blvd",
+      zipcode: "90028",
+      startingdate: new Date("2024-08-10"),
+      endingdate: new Date("2024-08-12"),
+      longitude: "-118.2437",
+      latitude: "34.0522",
+      userId: jane.id,
+      groupId: johnGroup.id,
+    },
+  });
+};
+const createPassenger = async (
+  driver: Driver,
+  passenger: User
+): Promise<void> => {
+  await prisma.driverPassenger.create({
+    data: {
+      driverId: driver.id,
+      userId: passenger.id,
+    },
+  });
+};
+
+const addUserToGroup = async (user: User, group: Group): Promise<void> => {
+  await prisma.userGroup.create({
+    data: {
+      userId: user.id,
+      groupId: group.id,
+    },
+  });
+};
 export async function main() {
-  await clearDb();
-
   console.log("Database cleared and sequences reset");
+  await clearDb();
 
   // Création des rôles
 
@@ -488,44 +612,43 @@ export async function main() {
   console.log("Roles created");
 
   // Création des utilisateurs
-  const hashedPassword = await bcrypt.hash("Secret123#", 10);
+  const { john, jane } = await createUsers(adminRole, userRole);
 
-  const users = await prisma.user.createMany({
-    data: [
-      {
-        ...userMocks[0],
-        // fullname: "John Doe",
-        // email: "john.doe@example.com",
-        // avatar: "john_avatar.png",
-        // firstName: "John",
-        // lastName: "Doe",
-        password: hashedPassword,
-        roleId: adminRole.id,
-        createdAt: new Date(),
-      },
-      {
-        ...userMocks[1],
-        // fullname: "Jane Smith",
-        // email: "jane.smith@example.com",
-        // avatar: "jane_avatar.png",
-        // firstName: "Jane",
-        // lastName: "Smith",
-        password: hashedPassword,
-        roleId: userRole.id,
-        createdAt: new Date(),
-      },
-    ],
-    skipDuplicates: true,
-  });
+  //   const users = await prisma.user.createMany({
+  //     data: [
+  //       {
+  //         ...userMocks[0],
+  //         // fullname: "John Doe",
+  //         // email: "john.doe@example.com",
+  //         // avatar: "john_avatar.png",
+  //         // firstName: "John",
+  //         // lastName: "Doe",
+  //         password: hashedPassword,
+  //         roleId: adminRole.id,
+  //         createdAt: new Date(),
+  //       },
+  //       {
+  //         ...userMocks[1],
+  //         // fullname: "Jane Smith",
+  //         // email: "jane.smith@example.com",
+  //         // avatar: "jane_avatar.png",
+  //         // firstName: "Jane",
+  //         // lastName: "Smith",
+  //         password: hashedPassword,
+  //         roleId: userRole.id,
+  //         createdAt: new Date(),
+  //       },
+  //     ],
+  //   });
   console.log("Users created");
 
   // Récupérer les utilisateurs créés
-  const john = await prisma.user.findUnique({
-    where: { email: "john.doe@example.com" },
-  });
-  const jane = await prisma.user.findUnique({
-    where: { email: "jane.smith@example.com" },
-  });
+  //   const john = await prisma.user.findUnique({
+  //     where: { email: "john.doe@example.com" },
+  //   });
+  //   const jane = await prisma.user.findUnique({
+  //     where: { email: "jane.smith@example.com" },
+  //   });
 
   // Création des catégories
   const categories = await prisma.category.createMany({
@@ -536,156 +659,188 @@ export async function main() {
   // Récupérer les catégories créées
   const [musicCategory, filmCategory] = await prisma.category.findMany();
   // Création des événements
-
-  const events = await prisma.event.createMany({
-    data: [
-      {
-        ...eventMocks[0],
-        // id: 1,
-        // name: eventMocks[0].name,
-        // startingDate: eventMocks[0].startingDate,
-        // endingDate: eventMocks[0].endingDate,
-        // latitude: "48.8566",
-        // longitude: "2.3522",
-        // image: "music_festival.jpg",
-        // city: eventMocks[0].city,
-        // address: "Champs-Elysées",
-        // description: "A great music festival in Paris.",
-        // zipCode: "75008",
-        // validatedAt: eventMocks[0].validatedAt,
-        // price: 50,
-        // categoryId: musicCategory.id,
-      },
-      {
-        // id: 2,
-        // name: "Film Festival",
-        // startingDate: new Date("2024-08-10"),
-        // endingDate: new Date("2024-08-12"),
-        // latitude: "34.0522",
-        // longitude: "-118.2437",
-        // image: "film_festival.jpg",
-        // city: "Los Angeles",
-        // address: "Hollywood Blvd",
-        // description: "A renowned film festival in LA.",
-        // zipCode: "90028",
-        // validatedAt: new Date("2024-07-02"),
-        // price: 75,
-        ...eventMocks[1],
-        // categoryId: filmCategory.id,
-      },
-    ],
-    skipDuplicates: true,
-  });
+  const { musicFestival, filmFestival } = await createEvents(
+    musicCategory.id,
+    filmCategory.id
+  );
+  //   await prisma.event.create({
+  //     data: {
+  //       ...eventMocks[0],
+  //       name: "ggg",
+  //       // id: 1,
+  //       // name: eventMocks[0].name,
+  //       // startingDate: eventMocks[0].startingDate,
+  //       // endingDate: eventMocks[0].endingDate,
+  //       // latitude: "48.8566",
+  //       // longitude: "2.3522",
+  //       // image: "music_festival.jpg",
+  //       // city: eventMocks[0].city,
+  //       // address: "Champs-Elysées",
+  //       // description: "A great music festival in Paris.",
+  //       // zipCode: "75008",
+  //       // validatedAt: eventMocks[0].validatedAt,
+  //       // price: 50,
+  //       categoryId: musicCategory.id,
+  //     },
+  //   });
+  //   const events = await prisma.event.createMany({
+  //     data: [
+  //       {
+  //         ...eventMocks[0],
+  //         // id: 1,
+  //         // name: eventMocks[0].name,
+  //         // startingDate: eventMocks[0].startingDate,
+  //         // endingDate: eventMocks[0].endingDate,
+  //         // latitude: "48.8566",
+  //         // longitude: "2.3522",
+  //         // image: "music_festival.jpg",
+  //         // city: eventMocks[0].city,
+  //         // address: "Champs-Elysées",
+  //         // description: "A great music festival in Paris.",
+  //         // zipCode: "75008",
+  //         // validatedAt: eventMocks[0].validatedAt,
+  //         // price: 50,
+  //         categoryId: musicCategory.id,
+  //       },
+  //       {
+  //         // id: 2,
+  //         // name: "Film Festival",
+  //         // startingDate: new Date("2024-08-10"),
+  //         // endingDate: new Date("2024-08-12"),
+  //         // latitude: "34.0522",
+  //         // longitude: "-118.2437",
+  //         // image: "film_festival.jpg",
+  //         // city: "Los Angeles",
+  //         // address: "Hollywood Blvd",
+  //         // description: "A renowned film festival in LA.",
+  //         // zipCode: "90028",
+  //         // validatedAt: new Date("2024-07-02"),
+  //         // price: 75,
+  //         ...eventMocks[1],
+  //         categoryId: filmCategory.id,
+  //       },
+  //     ],
+  //   });
   console.log("Events created");
 
   // Récupérer les événements créés
-  const [musicFestival, filmFestival] = await prisma.event.findMany();
+  //   const [musicFestival, filmFestival] = await prisma.event.findMany();
 
   // Création des groupes
-  const groups = await prisma.group.createMany({
-    data: [
-      {
-        userId: john!.id,
-        eventId: musicFestival.id,
-      },
-      {
-        userId: jane!.id,
-        eventId: filmFestival.id,
-      },
-    ],
-  });
+  //   const groups = await prisma.group.createMany({
+  //     data: [
+  //       {
+  //         userId: john!.id,
+  //         eventId: musicFestival.id,
+  //       },
+  //       {
+  //         userId: jane!.id,
+  //         eventId: filmFestival.id,
+  //       },
+  //     ],
+  //   });
   console.log("Groups created");
-
+  const { johnGroup, janeGroup } = await createGroup(
+    { musicFestival, filmFestival },
+    { john, jane }
+  );
+  await addUserToGroup(john, johnGroup);
+  await addUserToGroup(jane, johnGroup);
   // Récupérer les groupes créés
-  const johnsGroup = await prisma.group.findFirst({
-    where: {
-      userId: john!.id,
-    },
-  });
-  const janesGroup = await prisma.group.findFirst({
-    where: {
-      userId: jane!.id,
-    },
-  });
-
-  await prisma.userGroup.create({
-    data: {
-      userId: john!.id,
-      groupId: johnsGroup!.id,
-    },
-  });
-  await prisma.userGroup.create({
-    data: {
-      userId: jane!.id,
-      groupId: johnsGroup!.id,
-    },
-  });
-
-  // Création des chauffeurs
-  const drivers = await prisma.driver.createMany({
-    data: [
-      {
-        quantity: 4,
-        city: "Paris",
-        adress: "123 Rue de la Paix",
-        zipcode: "75002",
-        startingdate: new Date("2024-07-01"),
-        endingdate: new Date("2024-07-02"),
-        longitude: "2.3522",
-        latitude: "48.8566",
-        userId: john!.id,
-        groupId: johnsGroup!.id,
-      },
-    ],
-  });
-  console.log("Drivers created");
-
-  // Récupérer les chauffeurs
-  const johnDriver = await prisma.driver.findFirst({
-    where: { userId: john!.id },
-  });
-  await prisma.driverPassenger.create({
-    data: {
-      driverId: johnDriver!.id,
-      userId: jane!.id,
-    },
-  });
-
-  //   await prisma.driverPassenger.upsert({
-  //     where: { driverId_userId: { driverId: johnDriver!.id, userId: jane!.id } },
-  //     update: { driverId: johnDriver!.id, userId: jane!.id },
-  //     create: { driverId: johnDriver!.id, userId: jane!.id },
+  //   const johnsGroup = await prisma.group.findFirst({
+  //     where: {
+  //       userId: john!.id,
+  //     },
+  //   });
+  //   const janesGroup = await prisma.group.findFirst({
+  //     where: {
+  //       userId: jane!.id,
+  //     },
   //   });
 
-  // Création des hôtes
-  const hosts = await prisma.host.createMany({
-    data: [
-      {
-        quantity: 2,
-        city: "Los Angeles",
-        adress: "456 Hollywood Blvd",
-        zipcode: "90028",
-        startingdate: new Date("2024-08-10"),
-        endingdate: new Date("2024-08-12"),
-        longitude: "-118.2437",
-        latitude: "34.0522",
-        userId: jane!.id,
-        groupId: johnsGroup!.id,
-      },
-    ],
-  });
-  console.log("Hosts created");
+  //   await prisma.userGroup.create({
+  //     data: {
+  //       userId: john!.id,
+  //       groupId: johnsGroup!.id,
+  //     },
+  //   });
+  //   await prisma.userGroup.create({
+  //     data: {
+  //       userId: jane!.id,
+  //       groupId: johnsGroup!.id,
+  //     },
+  //   });
 
-  const janeHost = await prisma.host.findFirst({
-    where: { userId: jane!.id },
-  });
-  // Création des relations HostedUser
-  await prisma.hostedUser.create({
-    data: {
-      hostId: janeHost!.id,
-      userId: john!.id,
-    },
-  });
+  // Création des chauffeurs
+  const johnDriver = await createDriver(john, johnGroup);
+  //   const drivers = await prisma.driver.createMany({
+  //     data: [
+  //       {
+  //         quantity: 4,
+  //         city: "Paris",
+  //         adress: "123 Rue de la Paix",
+  //         zipcode: "75002",
+  //         startingdate: new Date("2024-07-01"),
+  //         endingdate: new Date("2024-07-02"),
+  //         longitude: "2.3522",
+  //         latitude: "48.8566",
+  //         userId: john!.id,
+  //         groupId: johnsGroup!.id,
+  //       },
+  //     ],
+  //   });
+  //   console.log("Drivers created");
+
+  // Récupérer les chauffeurs
+
+  await createPassenger(johnDriver, jane);
+
+  const janeHost = await createHost(jane, johnGroup);
+  //   const johnDriver = await prisma.driver.findFirst({
+  //     where: { userId: john!.id },
+  //   });
+  //   await prisma.driverPassenger.create({
+  //     data: {
+  //       driverId: johnDriver!.id,
+  //       userId: jane!.id,
+  //     },
+  //   });
+
+  //   //   await prisma.driverPassenger.upsert({
+  //   //     where: { driverId_userId: { driverId: johnDriver!.id, userId: jane!.id } },
+  //   //     update: { driverId: johnDriver!.id, userId: jane!.id },
+  //   //     create: { driverId: johnDriver!.id, userId: jane!.id },
+  //   //   });
+
+  //   // Création des hôtes
+  //   const hosts = await prisma.host.createMany({
+  //     data: [
+  //       {
+  //         quantity: 2,
+  //         city: "Los Angeles",
+  //         adress: "456 Hollywood Blvd",
+  //         zipcode: "90028",
+  //         startingdate: new Date("2024-08-10"),
+  //         endingdate: new Date("2024-08-12"),
+  //         longitude: "-118.2437",
+  //         latitude: "34.0522",
+  //         userId: jane!.id,
+  //         groupId: johnsGroup!.id,
+  //       },
+  //     ],
+  //   });
+  //   console.log("Hosts created");
+
+  //   const janeHost = await prisma.host.findFirst({
+  //     where: { userId: jane!.id },
+  //   });
+  //   // Création des relations HostedUser
+  //   await prisma.hostedUser.create({
+  //     data: {
+  //       hostId: janeHost!.id,
+  //       userId: john!.id,
+  //     },
+  //   });
   //   await prisma.hostedUser.upsert({
   //     where: {
   //       hostId_userId: {
