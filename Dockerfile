@@ -26,6 +26,8 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=build /app/prisma ./prisma
+COPY --from=build /app/__tests__ ./__tests__
+COPY --from=build /app/cypress ./cypress
 COPY --from=build /app/docker/docker-bootstrap-app.sh ./
 
 EXPOSE 3000
