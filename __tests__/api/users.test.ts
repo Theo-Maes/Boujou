@@ -5,11 +5,7 @@ import * as detailHandler from "@/app/api/event/route";
 import * as createHandler from "@/app/api/user/create/route";
 import * as deleteHandler from "@/app/api/user/[id]/delete/route";
 import { users as userMocks } from "../__mocks__/mockData";
-import { main } from "../../prisma/seed";
 let userId = 3;
-beforeAll(async () => {
-  await main();
-});
 
 it("Get api/users/[id] return list of users from db", async () => {
   await testApiHandler({
