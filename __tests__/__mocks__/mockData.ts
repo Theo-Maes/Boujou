@@ -42,7 +42,7 @@ const categories = [
 const events = [
   {
     id: 1,
-    name: "Music Festival",
+    name: "Musicss Festival",
     cancelledAt: null,
     startingDate: "2024-07-01T00:00:00.000Z",
     endingDate: "2024-07-01T00:00:00.000Z",
@@ -105,8 +105,8 @@ const drivers = [
     city: "Paris",
     adress: "123 Rue de la Paix",
     zipcode: "75002",
-    startingdate: new Date("2024-07-01"),
-    endingdate: new Date("2024-07-02"),
+    startingdate: "2024-07-01T00:00:00.000Z",
+    endingdate: "2024-07-01T00:00:00.000Z",
     longitude: "2.3522",
     latitude: "48.8566",
     userId: 1, // John
@@ -121,12 +121,12 @@ const hosts = [
     city: "Los Angeles",
     adress: "456 Hollywood Blvd",
     zipcode: "90028",
-    startingdate: new Date("2024-08-10"),
-    endingdate: new Date("2024-08-12"),
+    startingdate: "2024-07-01T00:00:00.000Z",
+    endingdate: "2024-07-01T00:00:00.000Z",
     longitude: "-118.2437",
     latitude: "34.0522",
     userId: 2, // Jane
-    groupId: 2, // Jane's group
+    groupId: 1, // Jane's group
   },
 ];
 
