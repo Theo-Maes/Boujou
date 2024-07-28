@@ -6,7 +6,6 @@ import { Event } from "@prisma/client";
 // export const metadata: Metadata = {
 //   title: "Boujou", //TODO
 // };
-
 const roboto = Roboto({
   subsets: ["latin"],
   weight: ["100", "300", "400", "500", "700", "900"],
@@ -19,7 +18,7 @@ export default async function Home() {
 
   const jsonResponse = await response.json();
 
-  const data: Event[] = jsonResponse.data;
+  const data: Event[] = jsonResponse.drafts;
 
   return (
     <main className="flex flex-col my-5">
