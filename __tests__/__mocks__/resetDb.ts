@@ -54,13 +54,13 @@ const createEvents = async (
   });
   await prisma.event.create({
     data: {
-      ...mockEvreux,
+      ...mock,
       categoryId: musicCategoryId,
     },
   });
   await prisma.event.create({
     data: {
-      ...mock,
+      ...mockEvreux,
       categoryId: musicCategoryId,
     },
   });
