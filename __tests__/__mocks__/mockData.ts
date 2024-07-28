@@ -48,7 +48,7 @@ const events = [
     endingDate: "2024-07-01T00:00:00.000Z",
     latitude: "48.8566",
     longitude: "2.3522",
-    image: "music_festival.jpg",
+    image: "/event/beauregard.png",
     city: "Parissss",
     address: "Champs-Elysées",
     description: "A great music festival in Paris.",
@@ -65,7 +65,7 @@ const events = [
     endingDate: "2024-07-01T00:00:00.000Z",
     latitude: "34.0522",
     longitude: "-118.2437",
-    image: "film_festival.jpg",
+    image: "/event/rush.jpg",
     city: "Los Angeles",
     address: "Hollywood Blvd",
     description: "A renowned film festival in LA.",
@@ -73,6 +73,24 @@ const events = [
     validatedAt: "2024-07-01T00:00:00.000Z",
     price: 75,
     categoryId: 2, // Film
+  },
+  {
+    id: 3,
+    name: "Beauregard Festival",
+    cancelledAt: null,
+    startingDate: "2024-07-01T00:00:00.000Z",
+    endingDate: "2024-07-01T00:00:00.000Z",
+    latitude: "34.0522",
+    longitude: "-118.2437",
+    image: "/event/rush.jpg",
+    city: "Hérouville-Saint-Clair",
+    address: "Domaine de Beauregard",
+    description:
+      "Créé en 2009, festival de musique se déroulant dans le parc du château",
+    zipCode: "14200",
+    validatedAt: "2024-07-01T00:00:00.000Z",
+    price: 75,
+    categoryId: 1, // Film
   },
 ];
 const updateEvent = {
