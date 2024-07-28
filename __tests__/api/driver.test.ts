@@ -41,7 +41,6 @@ it("POST api/driver jane can become drive driver for this group", async () => {
 
       expect(res.status).toBe(200);
       const errorData = await res.json();
-      console.log(errorData);
       //   const errorMsg = errorData.erreur.toLowerCase();
       //   expect(errorMsg).toBe("no file");
     },

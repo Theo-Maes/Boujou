@@ -37,10 +37,7 @@ it("POST api/users", async () => {
       });
 
       const errorData = await res.json();
-      console.log("check l id");
       userId = errorData.newUser.id;
-      console.log(errorData.newUser.id);
-      //   const errorMsg = errorData.erreur.toLowerCase();
 
       expect(res.status).toBe(201);
     },

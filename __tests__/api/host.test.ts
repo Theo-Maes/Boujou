@@ -41,9 +41,6 @@ it("POST api/host/create john can host ", async () => {
 
       expect(res.status).toBe(200);
       const errorData = await res.json();
-      console.log(errorData);
-      //   const errorMsg = errorData.erreur.toLowerCase();
-      //   expect(errorMsg).toBe("no file");
     },
   });
 });
