@@ -92,6 +92,24 @@ const events = [
     price: 75,
     categoryId: 1, // Film
   },
+  {
+    id: 4,
+    name: "Rock in Evreux Festival",
+    cancelledAt: null,
+    startingDate: "2024-07-01T00:00:00.000Z",
+    endingDate: "2024-07-01T00:00:00.000Z",
+    latitude: "34.0522",
+    longitude: "-118.2437",
+    image: "/event/1719348533964440017425.png",
+    city: "Evreux",
+    address: "Domaine de Beauregard",
+    description:
+      "Créé en 2009, festival de musique se déroulant dans le parc du château",
+    zipCode: "27000",
+    validatedAt: "2024-07-01T00:00:00.000Z",
+    price: 75,
+    categoryId: 1, // Film
+  },
 ];
 const updateEvent = {
   id: 1,

@@ -39,6 +39,7 @@ const createEvents = async (
   const { id: mid, ...musicMock } = eventMocks[0];
   const { id: fid, ...filmMock } = eventMocks[1];
   const { id: fdid, ...mock } = eventMocks[2];
+  const { id: feid, ...mockEvreux } = eventMocks[3];
   const musicFestival = await prisma.event.create({
     data: {
       ...musicMock,
@@ -49,6 +50,12 @@ const createEvents = async (
     data: {
       ...filmMock,
       categoryId: filmCategoryId,
+    },
+  });
+  await prisma.event.create({
+    data: {
+      ...mockEvreux,
+      categoryId: musicCategoryId,
     },
   });
   await prisma.event.create({
