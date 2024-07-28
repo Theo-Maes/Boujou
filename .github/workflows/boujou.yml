@@ -59,8 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     environment:
-      name: Tests E2E
-      url: https://edu.boujounormandie.org
+      name: Tests api routes
     services:
       postgres:
         image: postgres:15-alpine
@@ -80,6 +79,8 @@ jobs:
 
         env:
           NEXTAUTH_URL: http://localhost:3000
+          # NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          # GEOCODE_API: ${{ secrets.GEOCODE_API }}
           NEXTAUTH_SECRET: oOPZ9WewAjRcTeVsVAe6K0daibCQe4g8vfAwNiWnztU=
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/boujoutest
           GEOCODE_API: 66a0a75ad545b465733868xfv7ddcd9
@@ -91,6 +92,8 @@ jobs:
   test-e2e:
     runs-on: ubuntu-latest
     needs: [test-api]
+    environment:
+      name: Tests UI and Api E2E
     services:
       postgres:
         image: postgres:15-alpine
