@@ -75,6 +75,7 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
+      - run: echo "DATABASE_URL=postgres://postgres:postgres@localhost:5432/boujoutest" >> $GITHUB_ENV
       - run: npx prisma migrate deploy
       - run: npm run vitest
         env:
