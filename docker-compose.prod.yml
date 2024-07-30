@@ -1,0 +1,37 @@
+services:
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 30 --label-enable
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=boujou
+
+  next:
+    image: ghcr.io/theo-maes/boujou:latest
+    ports:
+      - "80:3000"
+    depends_on:
+      - db
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/boujou
+      - NEXTAUTH_SECRET=oOPZ9WewAjRcTeVsVAe6K0daibCQe4g8vfAwNiWnztU=
+      - NEXTAUTH_URL=https://edu.boujounormandie.org
+      - GEOCODE_API=66a0a75ad545b465733868xfv7ddcd9
+      - GOOGLE_CLIENT_ID=608600596344-o18t36hatm63pnhjq0rj6ks9bo31jkeg.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=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
+    command: npm run start
+volumes:
+  data:
+  uploads:
