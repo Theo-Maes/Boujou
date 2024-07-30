@@ -18,16 +18,27 @@ on:
   #     - main
   #     - develop
 jobs:
-  info:
+  lighthouse:
     runs-on: ubuntu-latest
     steps:
-      - name: Output github context
-        run: echo "${{ toJSON(secrets) }}"
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          # urls: |
+          #   http://3.82.101.200/
+          uploadArtifacts: true
+
+      # info:
+      #   runs-on: ubuntu-latest
+      #   steps:
+      #     - name: Output github context
+      #       run: echo "${{ toJSON(secrets) }}"
+      # build:
+      #   runs-on: ubuntu-latest
+      #   steps:
+      #     - name: Get code
+      #       uses: actions/checkout@v3
 
       # - name: Cache Node.js modules and Cypress
       #   uses: actions/cache@v3
