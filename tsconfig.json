@@ -21,8 +21,21 @@
     "paths": {
       "@/*": ["./src/*"],
       "next-auth": ["./types/next-auth.d.ts"]
-    }
+    },
+    "types": [
+      "node",
+      "cypress",
+      "@testing-library/cypress",
+      "./cypress/support/commands",
+      "cypress-file-upload"
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "types/next-auth.d.ts", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "types/next-auth.d.ts",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }

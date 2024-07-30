@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  //binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -18,8 +18,8 @@ model DriverPassenger {
   driverId  Int
   userId    Int
 
-  driver    Driver   @relation(fields: [driverId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  driver    Driver   @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([driverId, userId])
   @@index([driverId], name: "idx_driver_passenger_driverId")
@@ -30,7 +30,7 @@ model HostedUser {
   hostId Int
   userId Int
 
-  host Host @relation(fields: [hostId], references: [id])
+  host Host @relation(fields: [hostId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id])
 
   @@id([hostId, userId])
@@ -49,10 +49,10 @@ model Host {
   longitude    String
   latitude     String
   userId       Int
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   hostedUsers  HostedUser[]
   groupId      Int
-  group        Group  @relation(fields: [groupId], references: [id])
+  group        Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 }
 
 
@@ -67,17 +67,17 @@ model Driver {
   longitude    String
   latitude     String
   userId       Int
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   passengers   DriverPassenger[]
   groupId      Int
-  group        Group  @relation(fields: [groupId], references: [id])
+  group        Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
 }
 
 model Group {
   id        Int       @id @default(autoincrement())
   userId    Int
   eventId   Int
-  creator   User      @relation("createdGroups", fields: [userId], references: [id])
+  creator   User      @relation("createdGroups", fields: [userId], references: [id], onDelete: Cascade )
   event     Event     @relation(fields: [eventId], references: [id])
   members   UserGroup[]
   drivers   Driver[]
