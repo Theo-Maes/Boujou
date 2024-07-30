@@ -25,6 +25,8 @@ jobs:
       - name: Audit URLs using Lighthouse
         uses: treosh/lighthouse-ci-action@v10
         with:
+          urls: |
+            https://edu.boujounormandie.org/
           uploadArtifacts: true
   # info:
   #   runs-on: ubuntu-latest
