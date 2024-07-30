@@ -1,6 +1,5 @@
-import { beforeAll, afterEach, afterAll } from "vitest";
-import { server } from "./__tests__/__mocks__/msw/server";
-
-// beforeAll(() => server.listen());
-// afterEach(() => server.resetHandlers());
-// afterAll(() => server.close());
+import { beforeAll, afterEach, afterAll, beforeEach } from "vitest";
+import { main as resetDb } from "./__tests__/__mocks__/resetDb";
+beforeAll(async () => {
+  await resetDb();
+});

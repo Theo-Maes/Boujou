@@ -12,6 +12,15 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: ["./vitest.setup.js"],
-    // ...
+    poolOptions: {
+      vmThreads: {
+        // VM threads related options here
+        maxThreads: 1,
+        minThreads: 1,
+        useAtomics: true,
+      },
+    },
+    maxWorkers: 1,
+    minWorkers: 1,
   },
 });

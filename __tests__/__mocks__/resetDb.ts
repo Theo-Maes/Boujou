@@ -10,9 +10,8 @@ import {
 import { events as eventMocks, users as userMocks } from "./mockData";
 import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
-async function clearDb() {
-  console.log("remove db entities");
 
+export async function clearDb() {
   const tables = [
     "DriverPassenger",
     "HostedUser",
@@ -91,7 +90,7 @@ const createUsers = async (
       password: hashedPassword,
     },
   });
-  console.log("Users created");
+
   return { john, jane };
 };
 
@@ -99,7 +98,6 @@ const createGroup = async (
   festivals: { musicFestival: Event; filmFestival: Event },
   creators: { jane: User; john: User }
 ): Promise<{ johnGroup: Group; janeGroup: Group }> => {
-  console.log("Groups created");
   const johnGroup = await prisma.group.create({
     data: {
       userId: creators.john!.id,
@@ -173,7 +171,6 @@ const addUserToGroup = async (user: User, group: Group): Promise<void> => {
 };
 export async function main() {
   await clearDb();
-
   const userRole = await prisma.role.create({
     data: { name: "User" },
   });
