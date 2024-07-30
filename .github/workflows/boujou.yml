@@ -25,20 +25,17 @@ jobs:
       - name: Audit URLs using Lighthouse
         uses: treosh/lighthouse-ci-action@v10
         with:
-          # urls: |
-          #   http://3.82.101.200/
           uploadArtifacts: true
-
-      # info:
-      #   runs-on: ubuntu-latest
-      #   steps:
-      #     - name: Output github context
-      #       run: echo "${{ toJSON(secrets) }}"
-      # build:
-      #   runs-on: ubuntu-latest
-      #   steps:
-      #     - name: Get code
-      #       uses: actions/checkout@v3
+  # info:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Output github context
+  #       run: echo "${{ toJSON(secrets) }}"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
 
       # - name: Cache Node.js modules and Cypress
       #   uses: actions/cache@v3
@@ -138,25 +135,25 @@ jobs:
           CYPRESS_TEST_USER_PASSWORD: Secret123#
           CYPRESS_baseUrl: http://localhost:3000
 
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [test-e2e]
-    environment:
-      name: Deploiement
-      url: https://edu.boujounormandie.org
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v3
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          push: true
-          tags: ghcr.io/theo-maes/boujou:latest
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [test-e2e]
+  #   environment:
+  #     name: Deploiement
+  #     url: https://edu.boujounormandie.org
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Login to GitHub Container Registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Build and push
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         push: true
+  #         tags: ghcr.io/theo-maes/boujou:latest
