@@ -1,10 +1,4 @@
 services:
-  next:
-    image: ghcr.io/geoffroybel/next-boujou:latest
-    ports:
-      - "80:3000"
-    labels:
-      - "com.centurylinklabs.watchtower.enable=true"
   db:
     image: postgres:15-alpine
     ports:
@@ -15,6 +9,23 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_DB=boujou
+
+  next:
+    image: ghcr.io/theo-maes/boujou:latest
+    ports:
+      - "80:3000"
+    depends_on:
+      - db
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/boujou
+      - NEXTAUTH_SECRET=oOPZ9WewAjRcTeVsVAe6K0daibCQe4g8vfAwNiWnztU=
+      - NEXTAUTH_URL=https://edu.boujounormandie.org
+      - GEOCODE_API=66a0a75ad545b465733868xfv7ddcd9
+      - GOOGLE_CLIENT_ID=xxxxxxxxxxxxxxx
+      - GOOGLE_CLIENT_SECRET=xxxxxxxxxxxx
+    command: npm run start
 
 volumes:
   data:
