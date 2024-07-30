@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} initializing GitHub Actions
 on:
   push:
     branches:
-      - "lightouse"
+      - "lighthouse"
   pull_request:
     branches:
       - main
