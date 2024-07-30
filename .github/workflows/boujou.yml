@@ -3,7 +3,7 @@ run-name: ${{ github.actor }} initializing GitHub Actions
 on:
   push:
     branches:
-      - "97-test-unitaire-e2e"
+      - "lightouse"
   pull_request:
     branches:
       - main
