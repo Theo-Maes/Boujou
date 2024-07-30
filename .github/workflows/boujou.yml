@@ -28,6 +28,8 @@ jobs:
           urls: |
             https://edu.boujounormandie.org/
           uploadArtifacts: true
+          configPath: "./lighthouserc.json"
+
   # info:
   #   runs-on: ubuntu-latest
   #   steps:
