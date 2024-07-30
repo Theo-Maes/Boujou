@@ -75,7 +75,7 @@ jobs:
 
       - name: Install Dependencies
         run: npm ci
-      - run: npx prisma db push
+      - run: npx prisma migrate deploy
       - run: npm run vitest
         env:
           NEXTAUTH_URL: http://localhost:3000
