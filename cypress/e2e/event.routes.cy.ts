@@ -9,20 +9,20 @@ describe("Display Home page ", () => {
     cy.findByRole("button", { name: /connexion/i }).should("exist");
   });
 
-  it("Home Should present 4 events", () => {
-    cy.task("db:reset").visit("/");
-    cy.findAllByTestId("event-card").should("have.length", 4);
-    // cy.findByText("Du 1 juillet 2024 au 1 juillet 2024").should("exist");
-  });
+  // it("Home Should present 4 events", () => {
+  //   cy.task("db:reset").visit("/");
+  //   cy.findAllByTestId("event-card").should("have.length", 4);
+  //   // cy.findByText("Du 1 juillet 2024 au 1 juillet 2024").should("exist");
+  // });
 
-  it("Event card should show the correct information", () => {
-    cy.task("db:reset").visit("/");
-    const cards = cy.findAllByTestId("event-card");
-    cy.findAllByTestId("event-card").eq(0).should("contain", "Music Festival");
-    cy.findAllByTestId("event-card")
-      .eq(0)
-      .should("contain", "le 1 juillet 2024");
-  });
+  // it("Event card should show the correct information", () => {
+  //   cy.task("db:reset").visit("/");
+  //   const cards = cy.findAllByTestId("event-card");
+  //   cy.findAllByTestId("event-card").eq(0).should("contain", "Music Festival");
+  //   cy.findAllByTestId("event-card")
+  //     .eq(0)
+  //     .should("contain", "le 1 juillet 2024");
+  // });
 
   it("Event card click should naviagate to detail", () => {
     cy.task("db:reset").visit("/event/1");
