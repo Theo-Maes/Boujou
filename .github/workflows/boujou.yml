@@ -50,7 +50,7 @@ jobs:
       - name: Archive code coverage results
         uses: actions/upload-artifact@v4
         with:
-          name: lightouse-desktop-results
+          name: lightouse-mobile-results
           path: ./
 
   # info:
