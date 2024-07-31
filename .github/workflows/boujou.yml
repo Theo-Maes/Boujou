@@ -28,7 +28,7 @@ jobs:
           urls: |
             https://edu.boujounormandie.org/
             https://edu.boujounormandie.org/event/1
-            https://edu.boujounormandie.org/admin/
+            https://edu.boujounormandie.org/signin
           uploadArtifacts: true
           configPath: "./lighthouserc.json"
 
