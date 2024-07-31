@@ -30,11 +30,8 @@ jobs:
             https://edu.boujounormandie.org/event/1
             https://edu.boujounormandie.org/signin
           configPath: "./.github/workflows/lighthouse/lighthouserc.json"
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: lightouse-desktop-results
-          path: ./
+          uploadArtifacts: true
+          artifactName: "lighthouse-desktop"
 
   lighthouseMobile:
     runs-on: ubuntu-latest
@@ -47,11 +44,8 @@ jobs:
             https://edu.boujounormandie.org/
             https://edu.boujounormandie.org/event/1
             https://edu.boujounormandie.org/signin
-      - name: Archive code coverage results
-        uses: actions/upload-artifact@v4
-        with:
-          name: lightouse-mobile-results
-          path: ./
+          uploadArtifacts: true
+          artifactName: "lighthouse-mobile"
 
   # info:
   #   runs-on: ubuntu-latest
