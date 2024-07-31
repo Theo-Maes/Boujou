@@ -3,7 +3,7 @@
     "collect": {
       "numberOfRuns": 1,
       "settings": {
-        "configPath": ".github/lighthouse/lighthouse-config.js"
+        "configPath": "./lighthouse-config.js"
       }
     }
   }
