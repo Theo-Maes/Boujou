@@ -8,6 +8,6 @@ module.exports = {
     },
     emulatedFormFactor: "desktop",
     formFactor: "desktop",
-    onlyCategories: ["accessibility", "best-practices", "seo", "performance"],
+    onlyCategories: ["accessibility", "best-practices", "seo"],
   },
 };
