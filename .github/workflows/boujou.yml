@@ -30,7 +30,7 @@ jobs:
             https://edu.boujounormandie.org/event/1
             https://edu.boujounormandie.org/signin
           uploadArtifacts: true
-          configPath: "./lighthouserc.json"
+          configPath: "./.github/workflows/lighthouse/lighthouserc.json"
 
   # info:
   #   runs-on: ubuntu-latest
