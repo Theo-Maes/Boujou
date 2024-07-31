@@ -45,7 +45,7 @@ export default function SignInForm({
   };
 
   if (session && session.user) {
-    router.replace("/profile");
+    router.replace("/");
   } else if (mounted)
     return (
       <section className="auth-card mx-4 md:mx-auto my-12 flex min-h-full flex-1 flex-col px-6 py-12 lg:px-8 border-1">
