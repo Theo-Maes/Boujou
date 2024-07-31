@@ -29,7 +29,7 @@ jobs:
             https://edu.boujounormandie.org/
             https://edu.boujounormandie.org/event/1
             https://edu.boujounormandie.org/signin
-          configPath: "./.github/workflows/lighthouse/lighthouserc.json"
+          configPath: "./.github/workflows/lighthouse/lighthouserc-desktop.json"
           uploadArtifacts: true
           artifactName: "lighthouse-desktop"
 
@@ -44,6 +44,7 @@ jobs:
             https://edu.boujounormandie.org/
             https://edu.boujounormandie.org/event/1
             https://edu.boujounormandie.org/signin
+          configPath: "./.github/workflows/lighthouse/lighthouserc-mobile.json"
           uploadArtifacts: true
           artifactName: "lighthouse-mobile"
 
