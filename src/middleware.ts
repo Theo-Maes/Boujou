@@ -1,31 +1,55 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const protectedRoutes = [
-  "/api/category/create",
-  "/api/category/*/update",
-  "/api/category/*/delete",
-  "/api/driver/create",
-  "/api/driver/*/update",
-  "/api/driver/*/delete",
-  "/api/event/*/create",
-  "/api/event/*/update",
-  "/api/event/*/delete",
-  "/api/group/create",
-  "/api/group/*/update",
-  "/api/group/*/delete",
-  "/api/host/create",
-  "/api/host/*/update",
-  "/api/host/*/delete",
-  "/api/role/create",
-  "/api/role/*/update",
-  "/api/role/*/delete",
-  "/api/user/*/update",
-  "/api/user/*/delete",
+const protectedApiRoutesAdmin = [
+  "api/category/*",
+  "api/event/*/delete",
+  "api/event/*/update",
+  "api/group/*/update",
+  "api/role/create",
+  "api/role/*/update",
+  "api/role/*/delete",
+];
+
+const protectedApiRoutesUser = [
+  "api/driver/create",
+  "api/driver/*/update",
+  "api/driver/*/delete",
+  "api/driver/*/join",
+  "api/driver/*/leave",
+  "api/event/create",
+  "api/group/create",
+  "api/group/*/delete",
+  "api/group/*/join",
+  "api/group/*/leave",
+  "api/host/create",
+  "api/host/*/update",
+  "api/host/*/delete",
+  "api/host/*/join",
+  "api/host/*/leave",
+  "api/user/*/update",
+  "api/user/*/delete",
 ];
 
 function isProtectedRoute(req: NextRequest): boolean {
-  return protectedRoutes.some((route) => {
+  return (
+    protectedApiRoutesAdmin.some((route) => {
+      if (route.endsWith("/*")) {
+        return req.nextUrl.pathname.startsWith(route.slice(0, -1));
+      }
+      return req.nextUrl.pathname === route;
+    }) ||
+    protectedApiRoutesUser.some((route) => {
+      if (route.endsWith("/*")) {
+        return req.nextUrl.pathname.startsWith(route.slice(0, -1));
+      }
+      return req.nextUrl.pathname === route;
+    })
+  );
+}
+
+function isProtectedRouteAdmin(req: NextRequest): boolean {
+  return protectedApiRoutesAdmin.some((route) => {
     if (route.endsWith("/*")) {
       return req.nextUrl.pathname.startsWith(route.slice(0, -1));
     }
@@ -66,7 +90,7 @@ export async function middleware(req: NextRequest) {
     if (token) {
       const userRoleId = token.roleId;
       if (userRoleId !== 2) {
-        if (isProtectedRoute(req)) {
+        if (isProtectedRouteAdmin(req)) {
           return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
       }
