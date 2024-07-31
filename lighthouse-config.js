@@ -1,6 +1,6 @@
 module.exports = {
   extends: "lighthouse:default",
   settings: {
-    onlyCategories: ["performance"],
+    onlyCategories: ["accessibility", "best-practices", "performance", "seo"],
   },
 };
