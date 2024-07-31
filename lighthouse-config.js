@@ -3,8 +3,8 @@ module.exports = {
   settings: {
     screenEmulation: {
       mobile: false,
-      width: 1350,
-      height: 940,
+      width: 1920,
+      height: 1080,
     },
     emulatedFormFactor: "desktop",
     formFactor: "desktop",
