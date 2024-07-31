@@ -103,10 +103,12 @@ jobs:
             node_modules
           key: node-${{ hashFiles('**/package-lock.json') }}
       - run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - run: npm run vitest
         env:
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/boujoutest?schema=public
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GEOCODE_API: ${{ secrets.GEOCODE_API }}
           CYPRESS_ADMIN_USER_EMAIL: ${{ secrets.CYPRESS_ADMIN_USER_EMAIL }}
           CYPRESS_ADMIN_USER_PASSWORD: ${{ secrets.CYPRESS_ADMIN_USER_PASSWORD }}
