@@ -1,8 +1,5 @@
 name: CICD
 on:
-  push:
-    branches:
-      - fix-cicd
   pull_request:
     branches:
       - main
@@ -22,13 +19,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Install dependencies
         run: npm ci
-
       - name: build
         run: npm run build
-
       - name: Cache Node.js modules and Cypress
         uses: actions/cache/save@v4
         with:
@@ -94,7 +88,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - uses: actions/cache/restore@v4
         with:
           path: |
@@ -103,7 +96,6 @@ jobs:
             node_modules
             .next
           key: node-${{ hashFiles('**/package-lock.json') }}
-
       - name: Run Cypress tests
         run: npm run e2e:run
         env:
