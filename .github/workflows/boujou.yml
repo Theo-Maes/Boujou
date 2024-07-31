@@ -36,6 +36,7 @@ jobs:
             ~/.cache/Cypress
             ~/.npm
             node_modules
+            .next
           key: node-${{ hashFiles('**/package-lock.json') }}
 
   test-api:
@@ -61,6 +62,7 @@ jobs:
             ~/.cache/Cypress
             ~/.npm
             node_modules
+            .next
           key: node-${{ hashFiles('**/package-lock.json') }}
       - run: npx prisma migrate deploy
         env:
@@ -99,6 +101,7 @@ jobs:
             ~/.cache/Cypress
             ~/.npm
             node_modules
+            .next
           key: node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Run Cypress tests
