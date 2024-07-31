@@ -1,4 +1,4 @@
-"use client" 
+"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import { classNames } from "@/libs";
@@ -116,7 +116,10 @@ export default function UserMenu({
     return (
       <Menu as="div" className="relative ml-3">
         <div>
-          <MenuButton className="relative flex rounded-full bg-transparent text-sm">
+          <MenuButton
+            data-testid="avatar-button"
+            className="relative flex rounded-full bg-transparent text-sm"
+          >
             <span className="absolute -inset-1.5" />
             <span className="sr-only">Open user menu</span>
             {session.user.avatar?.includes("googleusercontent.com") ? (

@@ -38,7 +38,10 @@ export default function EventCard({
   image,
 }: InformationsEventProps): JSX.Element {
   return (
-    <Card className="p-1 w-full md:max-w-[300px] h-[350px] dark:bg-gray-800 transition-transform transform hover:scale-105">
+    <Card
+      data-testid="event-card"
+      className="p-1 w-full md:max-w-[300px] h-[350px] dark:bg-gray-800 transition-transform transform hover:scale-105"
+    >
       <CardHeader className="flex-col items-start overflow-visible relative">
         <Image
           alt="Event image"

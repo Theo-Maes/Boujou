@@ -6,7 +6,7 @@ import * as createHandler from "@/app/api/event/create/route";
 import * as editHandler from "@/app/api/event/[id]/update/route";
 import * as FakeData from "../__mocks__/mockData";
 
-it("Get api/event return list of events from db", async () => {
+it("Get api/event return a list of events", async () => {
   await testApiHandler({
     appHandler: listHandler,
     test: async ({ fetch }) => {
@@ -22,7 +22,7 @@ it("Get api/event return list of events from db", async () => {
   });
 });
 
-it("Get api/event/[eventId] return event from db", async () => {
+it("Get api/event/[eventId] return event id 1", async () => {
   await testApiHandler({
     appHandler: detailHandler,
     paramsPatcher: (params) => {
@@ -38,7 +38,7 @@ it("Get api/event/[eventId] return event from db", async () => {
   });
 });
 
-it("POST api/event require file", async () => {
+it("POST api/event: create event require file to be uplloaded", async () => {
   await testApiHandler({
     appHandler: createHandler,
     test: async ({ fetch }) => {
@@ -72,35 +72,35 @@ it("POST api/event require file", async () => {
   });
 });
 
-// it("PATCH api/event return updated event from db", async () => {
-//   await testApiHandler({
-//     appHandler: editHandler,
-//     paramsPatcher: (params) => {
-//       params.id = "1";
-//     },
-//     test: async ({ fetch }) => {
-//       const formData = new FormData();
-//       const updateMock = FakeData.updateEvent;
-//       formData.append("name", updateMock.name);
-//       formData.append("description", updateMock.description);
-//       formData.append("startingDate", updateMock.startingDate);
-//       formData.append("endingDate", updateMock.endingDate);
-//       formData.append("address", updateMock.address);
-//       formData.append("city", updateMock.city);
-//       formData.append("zipCode", updateMock.zipCode);
-//       formData.append("categoryId", updateMock.categoryId.toString());
-//       formData.append("price", updateMock.price.toString());
-//       formData.append("url", updateMock.url);
-//       const res = await fetch({
-//         method: "PATCH",
-//         body: formData,
-//       });
+it("PATCH api/event/id/update: event can be updated", async () => {
+  await testApiHandler({
+    appHandler: editHandler,
+    paramsPatcher: (params) => {
+      params.id = "1";
+    },
+    test: async ({ fetch }) => {
+      const formData = new FormData();
+      const updateMock = FakeData.updateEvent;
+      formData.append("name", updateMock.name);
+      formData.append("description", updateMock.description);
+      formData.append("startingDate", updateMock.startingDate);
+      formData.append("endingDate", updateMock.endingDate);
+      formData.append("address", updateMock.address);
+      formData.append("city", updateMock.city);
+      formData.append("zipCode", updateMock.zipCode);
+      formData.append("categoryId", updateMock.categoryId.toString());
+      formData.append("price", updateMock.price.toString());
+      formData.append("url", updateMock.url);
+      const res = await fetch({
+        method: "PATCH",
+        body: formData,
+      });
 
-//       expect(res.status).toBe(200);
-//       const {
-//         data: { image, ...dbEvent },
-//       } = await res.json();
-//       expect(dbEvent).toEqual(updateMock);
-//     },
-//   });
-// });
+      expect(res.status).toBe(200);
+      const {
+        data: { image, ...dbEvent },
+      } = await res.json();
+      expect(dbEvent).toEqual(updateMock);
+    },
+  });
+});
