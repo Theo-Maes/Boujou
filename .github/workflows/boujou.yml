@@ -47,7 +47,7 @@ jobs:
           configPath: "./.github/workflows/lighthouse/lighthouserc-mobile.json"
           uploadArtifacts: true
           artifactName: "lighthouse-mobile"
-
+  #  - name: Output github context
   # info:
   #   runs-on: ubuntu-latest
   #   steps:
