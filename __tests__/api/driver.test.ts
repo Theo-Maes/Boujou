@@ -25,7 +25,7 @@ it("POST api/driver john already driver for that group", async () => {
     },
   });
 });
-it("POST api/driver jane can become drive driver for this group", async () => {
+it("POST api/driver jane can become a driver in this group", async () => {
   await testApiHandler({
     appHandler: createHandler,
     test: async ({ fetch }) => {
