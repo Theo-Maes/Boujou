@@ -1,8 +1,5 @@
 name: CICD
 on:
-  push:
-    branches:
-      - artifact-cicd
   pull_request:
     branches:
       - main
