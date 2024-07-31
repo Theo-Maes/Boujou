@@ -25,7 +25,7 @@ export default function MainNavbar() {
         <div className="relative flex h-16 items-center justify-between">
           <div className="flex flex-1 items-center justify-start">
             <div className="flex flex-shrink-0 items-center p-2">
-              <Link href={"/"}>
+              <Link data-testid="logo" href={"/"}>
                 <Image
                   priority
                   src="/logo.png"

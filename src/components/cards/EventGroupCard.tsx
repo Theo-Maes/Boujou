@@ -27,7 +27,7 @@
         fullname: string;
     }
 
-    interface Group {
+    export interface GroupFullData {
         id: number;
         event: Event;
         drivers: {

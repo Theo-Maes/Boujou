@@ -2,7 +2,7 @@ import { AuthOptions, CustomUser } from "next-auth";
 import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/libs";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 interface GoogleUser extends GoogleProfile {
   given_name: string;
@@ -105,7 +105,6 @@ const authOptions: AuthOptions = {
         const userConnected = await prisma.user.findUnique({
           where: { email: customUser.email },
         });
-        console.log(userConnected);
         token.id = userConnected?.id;
         token.username = customUser.fullname ?? "";
         token.email = customUser.email ?? "";

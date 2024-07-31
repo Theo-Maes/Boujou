@@ -25,6 +25,7 @@ export interface EventData {
   image: string;
   url: string;
   category: Category;
+  validatedAt: Date | null;
   groups: {
     id: number;
     userId: number;
@@ -202,7 +203,7 @@ export default function EventPage({
               <Image
                 alt="Event image"
                 className="relative w-full z-10 !rounded-none"
-                src={`${event.image}`}
+                src={`/api/event/image/${event.image.substring(7)}`}
                 width={1200}
                 height={800}
               />
@@ -221,7 +222,7 @@ export default function EventPage({
               </CardBody>
               <CardFooter className="flex flex-row justify-center">
                 {session && session.user && !isUserEverGroupCreator(session.user.id) ? (
-                  <div className="hidden md:flex flex-1 justify-center">
+                  <div className="flex flex-1 justify-center">
                     <ButtonModal title="Créer votre collectif" isBlue={true}>
                       <ServiceForm
                         userId={session.user.id}

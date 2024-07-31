@@ -10,6 +10,9 @@ export async function GET(req: Request, params: { params: { id: string } }) {
         id: id,
       },
     });
+    if (!userFind) {
+      return NextResponse.json({ error: "Utilisateur non trouvé." }, { status: 404 });
+    }
     return NextResponse.json({ data: userFind }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ erreur: error }, { status: 500 });

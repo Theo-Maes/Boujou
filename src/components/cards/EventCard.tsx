@@ -1,11 +1,17 @@
 import React from "react";
-import { Card, CardHeader, CardBody, CardFooter, Image } from "@nextui-org/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Image,
+} from "@nextui-org/react";
 
 function truncateText(text: string, maxLength: number) {
   if (text && text.length <= maxLength) {
     return text;
   }
-  return text?.slice(0, maxLength) + '...';
+  return text?.slice(0, maxLength) + "...";
 }
 
 export interface InformationsEventProps {
@@ -32,12 +38,15 @@ export default function EventCard({
   image,
 }: InformationsEventProps): JSX.Element {
   return (
-    <Card className="p-1 w-full md:max-w-[300px] h-[350px] dark:bg-transparent transition-transform transform hover:scale-105">
+    <Card
+      data-testid="event-card"
+      className="p-1 w-full md:max-w-[300px] h-[350px] dark:bg-gray-800 transition-transform transform hover:scale-105"
+    >
       <CardHeader className="flex-col items-start overflow-visible relative">
         <Image
           alt="Event image"
           className="object-cover w-full rounded-xl"
-          src={`${image}`}
+          src={`/api/event/image/${image.replace(/^.*[\\\/]/, "")}`}
           width={800}
           height={192}
         />
@@ -50,7 +59,9 @@ export default function EventCard({
               width={18}
               height={18}
             />
-            <span className="text-xs text-black dark:text-black">{numberOfGroups}</span>
+            <span className="text-xs text-black dark:text-black">
+              {numberOfGroups}
+            </span>
           </div>
           <div className="flex items-center space-x-1 mr-2">
             <Image
@@ -60,7 +71,9 @@ export default function EventCard({
               width={18}
               height={18}
             />
-            <span className="text-xs text-black dark:text-black">{numberOfPeople}</span>
+            <span className="text-xs text-black dark:text-black">
+              {numberOfPeople}
+            </span>
           </div>
           <div className="flex items-center space-x-1">
             <Image
@@ -70,7 +83,7 @@ export default function EventCard({
               width={18}
               height={18}
             />
-            <span className="text-xs text-black dark:text-black">              
+            <span className="text-xs text-black dark:text-black">
               {truncateText(city, 15)}
             </span>
           </div>
@@ -83,15 +96,29 @@ export default function EventCard({
         <small className="text-dark text-[14px]">
           {endingDate && endingDate.getTime() !== startingDate.getTime() ? (
             <span>
-              du {startingDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}
-              &nbsp;au {endingDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+              du{" "}
+              {startingDate.toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+              })}
+              &nbsp;au{" "}
+              {endingDate.toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </span>
           ) : (
             <span>
-              le {startingDate.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
+              le{" "}
+              {startingDate.toLocaleDateString("fr-FR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
             </span>
           )}
-        </small>        
+        </small>
       </CardFooter>
     </Card>
   );

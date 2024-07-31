@@ -19,7 +19,7 @@ const config: Config = {
       colors: {
         primary: "#007ACC", // bleu
         primaryLight: "#D5EEFF8A",
-        secondary: "#FDBA74", // orange
+        secondary: "#FECFA0", // orange
         secondaryLight: "#FFB5622E",
         secondaryText: "#333333",
         tertiary: "#F87474", // rouge

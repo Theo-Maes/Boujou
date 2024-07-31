@@ -1,0 +1,27 @@
+services:
+  dbtest:
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: boujou
+
+  test:
+    build: .
+    image: boujou
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    depends_on:
+      - dbtest
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@dbtest:5432/boujou
+      - GEOCODE_API=66a0a75ad545b465733868xfv7ddcd9
+      - ENV=dbtest
+    command: "npm run vitest"
+
+volumes:
+  data:
+  node_modules:
