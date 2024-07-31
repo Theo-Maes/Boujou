@@ -18,6 +18,7 @@ export default function SignInForm({
   const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -25,14 +26,16 @@ export default function SignInForm({
   }, []);
 
   const handleSignIn = async () => {
+    setError(null);
     const result = await signIn("credentials", {
+      redirect: false,
       email,
       password,
     });
-    if (result?.error) {
-      console.error(result.error);
-    } else {
 
+    if (result?.error) {
+      setError(result.error);
+    } else {
       if (["/signin", "/signup"].includes(currentPath)) {
         window.location.href = "/";
       } else {
@@ -59,6 +62,7 @@ export default function SignInForm({
             Page de connexion
           </h2>
         </div>
+        {error && <p className="text-red-500 text-center">Erreur de connexion</p>}
         <Input
               label="Email"
               placeholder="Entrez votre adresse email"
