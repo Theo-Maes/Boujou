@@ -40,6 +40,7 @@ export default function UserMenu({
   const [user, setUser] = useState<User | null>(null);
   const { theme } = useTheme();
   const [userUpdated, setUserUpdated] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSignInClick = () => {
     setModalOpen(true);
@@ -54,12 +55,15 @@ export default function UserMenu({
   };
 
   const handleSignIn = async () => {
+    setError(null);
     const result = await signIn("credentials", {
+      redirect: false,
       email,
       password,
     });
+
     if (result?.error) {
-      console.error(result.error);
+      setError(result.error);
     } else {
       handleCloseModal();
 
@@ -226,6 +230,7 @@ export default function UserMenu({
             Connexion
           </ModalHeader>
           <ModalBody>
+            {error && <p className="text-red-500 text-center">Erreur de connexion</p>}
             <Input
               label="Email"
               placeholder="Entrez votre adresse email"
