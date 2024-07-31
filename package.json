@@ -15,7 +15,8 @@
     "cypress:start": "start-server-and-test 'npm run start:test' 3000 'npm run cypress:open'",
     "cypress:build": "npm run build:test && npm run cypress:start",
     "cypress:run": "start-server-and-test 'npm run start:test' 3000 'env-cmd -f .env.test.local cypress run'",
-    "e2e:run": "npx prisma migrate reset --force && start-server-and-test 'npm run start:test' 3000 'cypress run'"
+    "e2e:run": "npx prisma migrate reset --force && start-server-and-test 'npm run start:test' 3000 'cypress run'",
+    "test:ui": "env-cmd -f .env.test.local vitest --ui"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -60,6 +61,7 @@
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/ui": "^2.0.4",
     "autoprefixer": "^10.4.19",
     "cypress": "^13.13.1",
     "cypress-file-upload": "^5.0.8",
@@ -77,5 +79,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "vitest": "^2.0.3"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "4.9.5"
   }
 }
