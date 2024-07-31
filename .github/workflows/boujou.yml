@@ -106,7 +106,7 @@ jobs:
       - run: npm run vitest
         env:
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/boujoutest
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/boujoutest?schema=public
           GEOCODE_API: ${{ secrets.GEOCODE_API }}
           CYPRESS_ADMIN_USER_EMAIL: ${{ secrets.CYPRESS_ADMIN_USER_EMAIL }}
           CYPRESS_ADMIN_USER_PASSWORD: ${{ secrets.CYPRESS_ADMIN_USER_PASSWORD }}
