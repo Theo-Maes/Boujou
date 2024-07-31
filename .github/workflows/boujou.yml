@@ -1,5 +1,8 @@
 name: CICD
 on:
+  push:
+    branches:
+      - artifact-cicd
   pull_request:
     branches:
       - main
@@ -63,6 +66,7 @@ jobs:
       - run: npm run vitest
         env:
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GEOCODE_API: ${{ secrets.GEOCODE_API }}
           CYPRESS_ADMIN_USER_EMAIL: ${{ secrets.CYPRESS_ADMIN_USER_EMAIL }}
@@ -99,6 +103,7 @@ jobs:
         run: npm run e2e:run
         env:
           NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           GEOCODE_API: ${{ secrets.GEOCODE_API }}
           CYPRESS_ADMIN_USER_EMAIL: ${{ secrets.CYPRESS_ADMIN_USER_EMAIL }}
