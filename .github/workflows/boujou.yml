@@ -18,7 +18,7 @@ on:
   #     - main
   #     - develop
 jobs:
-  lighthouse:
+  lighthouseDesktop:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,6 +31,18 @@ jobs:
             https://edu.boujounormandie.org/signin
           uploadArtifacts: true
           configPath: "./.github/workflows/lighthouse/lighthouserc.json"
+  lighthouseMobile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit URLs using Lighthouse
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://edu.boujounormandie.org/
+            https://edu.boujounormandie.org/event/1
+            https://edu.boujounormandie.org/signin
+          uploadArtifacts: true
 
   # info:
   #   runs-on: ubuntu-latest
