@@ -39,6 +39,7 @@ const createEvents = async (
   const { id: fid, ...filmMock } = eventMocks[1];
   const { id: fdid, ...mock } = eventMocks[2];
   const { id: feid, ...mockEvreux } = eventMocks[3];
+  const { id: ffid, ...mockEventToValidte } = eventMocks[4];
   const musicFestival = await prisma.event.create({
     data: {
       ...musicMock,
@@ -63,6 +64,14 @@ const createEvents = async (
       categoryId: musicCategoryId,
     },
   });
+
+  await prisma.event.create({
+    data: {
+      ...mockEventToValidte,
+      categoryId: musicCategoryId,
+    },
+  });
+
   return { musicFestival, filmFestival };
 };
 
@@ -72,6 +81,7 @@ const createUsers = async (
 ): Promise<{ john: User; jane: User }> => {
   const johnMock = userMocks[0];
   const janeMock = userMocks[1];
+  // const paulMock = userMocks[2];
 
   const hashedPassword = await bcrypt.hash("Secret123#", 10);
 
@@ -90,6 +100,14 @@ const createUsers = async (
       password: hashedPassword,
     },
   });
+
+  // const paul = await prisma.user.create({
+  //   data: {
+  //     ...paulMock,
+  //     roleId: userRole.id,
+  //     password: hashedPassword,
+  //   },
+  // });
 
   return { john, jane };
 };

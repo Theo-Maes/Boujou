@@ -43,7 +43,7 @@ import {
 //   });
 // });
 
-it("POST api/group: Should create new group for event", async () => {
+it("POST api/group create group: 200", async () => {
   await testApiHandler({
     appHandler: createHandler,
     test: async ({ fetch }) => {
@@ -71,7 +71,7 @@ it("POST api/group: Should create new group for event", async () => {
   });
 });
 
-it("DELETE api/group/3/delete should return status code 200", async () => {
+it("DELETE api/group delete group: 200", async () => {
   await testApiHandler({
     appHandler: deleteHandler,
     paramsPatcher: (params) => {
@@ -87,7 +87,7 @@ it("DELETE api/group/3/delete should return status code 200", async () => {
   });
 });
 
-it("POST api/group/1: Jane already join group should return 403", async () => {
+it("POST api/group user already in group: 403", async () => {
   const [john, jane] = userMocks.map((el, index) => ({
     ...el,
     id: index + 1,

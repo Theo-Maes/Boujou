@@ -6,7 +6,7 @@ import * as createHandler from "@/app/api/event/create/route";
 import * as editHandler from "@/app/api/event/[id]/update/route";
 import * as FakeData from "../__mocks__/mockData";
 
-it("Get api/event return a list of events", async () => {
+it("Get api/event list events: 200", async () => {
   await testApiHandler({
     appHandler: listHandler,
     test: async ({ fetch }) => {
@@ -17,12 +17,14 @@ it("Get api/event return a list of events", async () => {
       const dbEvents = json.data.map(
         ({ groups, category, url, ...el }: any) => el
       );
-      expect(dbEvents).toEqual(FakeData.events); // ◄ Passes!
+      const eventsMocks = FakeData.events;
+      eventsMocks.pop();
+      expect(dbEvents).toEqual(eventsMocks); // ◄ Passes!
     },
   });
 });
 
-it("Get api/event/[eventId] return event id 1", async () => {
+it("Get api/event/ show detail: 200", async () => {
   await testApiHandler({
     appHandler: detailHandler,
     paramsPatcher: (params) => {
@@ -38,7 +40,7 @@ it("Get api/event/[eventId] return event id 1", async () => {
   });
 });
 
-it("POST api/event: create event require file to be uplloaded", async () => {
+it("POST api/event create event require  a file: 400", async () => {
   await testApiHandler({
     appHandler: createHandler,
     test: async ({ fetch }) => {
@@ -72,7 +74,7 @@ it("POST api/event: create event require file to be uplloaded", async () => {
   });
 });
 
-it("PATCH api/event/id/update: event can be updated", async () => {
+it("PATCH api/event update event: 200", async () => {
   await testApiHandler({
     appHandler: editHandler,
     paramsPatcher: (params) => {

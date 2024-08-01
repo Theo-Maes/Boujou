@@ -110,6 +110,24 @@ const events = [
     price: 75,
     categoryId: 1, // Film
   },
+  {
+    id: 5,
+    name: "Fooding Maromme",
+    cancelledAt: null,
+    startingDate: "2024-07-01T00:00:00.000Z",
+    endingDate: "2024-07-01T00:00:00.000Z",
+    latitude: "34.0522",
+    longitude: "-118.2437",
+    image: "/event/1719348533964440017425.png",
+    city: "Maromme",
+    address: "rue leclerc",
+    description:
+      "Créé en 2009, festival de musique se déroulant dans le parc du château",
+    zipCode: "76000",
+    validatedAt: null,
+    price: 75,
+    categoryId: 1, // Film
+  },
 ];
 const updateEvent = {
   id: 1,

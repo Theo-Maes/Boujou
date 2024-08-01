@@ -6,7 +6,7 @@ import * as createHandler from "@/app/api/host/create/route";
 import * as editHandler from "@/app/api/event/[id]/update/route";
 import { hosts as hostMocks } from "../__mocks__/mockData";
 
-it("POST api/host/create jane is already a host  for that group", async () => {
+it("POST api/host user already host: 403", async () => {
   await testApiHandler({
     appHandler: createHandler,
     test: async ({ fetch }) => {
@@ -25,7 +25,7 @@ it("POST api/host/create jane is already a host  for that group", async () => {
     },
   });
 });
-it("POST api/host/create john can host ", async () => {
+it("POST api/host become host: 200", async () => {
   await testApiHandler({
     appHandler: createHandler,
     test: async ({ fetch }) => {

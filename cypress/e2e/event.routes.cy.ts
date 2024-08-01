@@ -35,7 +35,7 @@ describe("Display Home page ", () => {
     cy.findByText("404 - Page non trouvée !").should("exist");
   });
 
-  it("Event form step must be prived before create an event navigate throw all steps step should succes", async () => {
+  it("User create event", async () => {
     cy.task("db:reset").visit("/signin");
 
     cy.findByRole("heading", { name: /Page de connexion/i }).should("exist");
@@ -52,24 +52,51 @@ describe("Display Home page ", () => {
     suivant.click();
     cy.wait(1000);
     cy.get('button[aria-label="Calendrier"]').eq(0).click();
-    cy.get('span[aria-label="mardi 30 juillet 2024"]').click();
+    cy.wait(1000);
+    cy.get('button[data-slot="next-button"]').eq(0).click();
+    cy.wait(1000);
+    cy.get('span[aria-label="vendredi 2 août 2024"]').click();
     cy.get('button[aria-label="Calendrier"]').eq(0).click();
     cy.wait(1000);
     cy.get('button[aria-label="Calendrier"]').eq(1).click();
-    cy.get('span[aria-label="mardi 30 juillet 2024"]').click();
+    cy.wait(1000);
+    cy.get('button[data-slot="next-button"]').eq(0).click();
+    cy.wait(1000);
+    cy.get('span[aria-label="vendredi 2 août 2024"]').click();
     cy.get('button[aria-label="Calendrier"]').eq(1).click();
     cy.wait(1000);
     suivant.click();
 
     cy.fixture("hero-card.jpeg").as("image");
     //   cy.get("input[type=file]").selectFile("@image", { force: true });
-    cy.get("input[type=file]").attachFile("hero-card.jpeg", { force: true });
+    cy.get("input[type=file]")
+      .attachFile("hero-card.jpeg", { force: true })
+      .wait(1000);
     suivant.click();
     cy.findByLabelText(/tarif/i).type(updateEvent.price.toString());
     suivant.click();
     cy.findByLabelText(/description/i).type(updateEvent.description);
     cy.findByLabelText(/lien url de l'événement/i).type(updateEvent.url);
     suivant.click();
+    cy.wait(1000);
     suivant.click();
+  });
+
+  it("Validate event", async () => {
+    cy.visit("/");
+    cy.findByRole("button", { name: /connexion/i }).click();
+    cy.findByLabelText(/email/i)
+      .type(Cypress.env("TEST_USER_EMAIL"))
+      .wait(1000);
+    cy.findByLabelText(/mot de passe/i)
+      .type(Cypress.env("TEST_USER_PASSWORD"))
+      .wait(1000);
+    cy.findByRole("button", { name: /Se connecter/i }).click();
+    cy.wait(1000);
+    cy.findByTestId("avatar-button").should("be.visible").click();
+    cy.findByRole("menuitem", { name: "Accès admin" }).click();
+    cy.wait(1000).contains("button", "Evenements").click();
+    cy.wait(1000).findByTestId("avatar-button").should("be.visible").click();
+    cy.findByRole("menuitem", { name: "Déconnexion" }).click();
   });
 });
